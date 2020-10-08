@@ -1,0 +1,17 @@
+name: dermclass_api
+channels:
+  - defaults
+  - conda-forge
+dependencies:
+- pip
+- setuptools
+- wheel
+- flask
+- flask_restful
+- flask_marshmallow
+- flas_sqlalchemy
+- gunicorn
+- pytest
+#- pymongo
+#- pip:
+#    -

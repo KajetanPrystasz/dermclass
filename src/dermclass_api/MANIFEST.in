@@ -1,0 +1,9 @@
+#TODO: Change this
+include README.md
+include environment.yml
+recursive-include ./dermclass_structured/*
+
+include dermclass_structured/datasets/attribute_info.txt
+include dermclass_structured/datasets/dermatology_dataset.csv
+include dermclass_structured/pickles/*.pkl
+include dermclass_structured/VERSION

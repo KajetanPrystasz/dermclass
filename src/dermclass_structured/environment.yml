@@ -1,4 +1,4 @@
-name: dermclass2
+name: dermclass_structured
 channels:
   - defaults
   - conda-forge
@@ -13,7 +13,6 @@ dependencies:
 - joblib
 - pytest
 - pytest-dependency
-- pytest-ordering
 - pathlib
 - optuna
 - pip:
