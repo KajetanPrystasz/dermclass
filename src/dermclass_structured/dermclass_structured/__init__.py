@@ -1,5 +1,4 @@
 import logging
-
 from dermclass_structured import config
 
 VERSION_PATH = config.PACKAGE_ROOT / "VERSION"

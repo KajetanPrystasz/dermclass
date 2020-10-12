@@ -28,11 +28,11 @@ variables = {
         'fibrosis_of_the_papillary_dermis', 'exocytosis', 'acanthosis', 'hyperkeratosis', 'parakeratosis',
         'clubbing_of_the_rete_ridges', 'elongation_of_the_rete_ridges', 'thinning_of_the_suprapapillary_epidermis',
         'spongiform_pustule', 'munro_microabcess', 'focal_hypergranulosis', 'disappearance_of_the_granular_layer',
-        'vacuolisation_and_damage_of_basal_layer', 'spongiosis', 'saw-tooth_appearance_of_retes',
+        'vacuolisation_and_damage_of_basal_layer', 'spongiosis', 'saw_tooth_appearance_of_retes',
         'follicular_horn_plug', 'perifollicular_parakeratosis', 'inflammatory_monoluclear_inflitrate',
-        'band-like_infiltrate'],
+        'band_like_infiltrate'],
 
-    "TARGET": ["class"]
+    "TARGET": ["class_"]
 }
 
 PACKAGE_ROOT = pathlib.Path(dermclass_structured.__file__).resolve().parent

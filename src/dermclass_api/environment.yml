@@ -7,11 +7,20 @@ dependencies:
 - setuptools
 - wheel
 - flask
-- flask_restful
-- flask_marshmallow
-- flas_sqlalchemy
-- gunicorn
+- flask-restful
+- flask-marshmallow
+- flask-sqlalchemy
+- marshmallow-sqlalchemy
 - pytest
-#- pymongo
-#- pip:
-#    -
+- pytest-dependency
+- pymongo
+- scikit-learn
+- numpy
+- pandas
+- scipy
+- joblib
+- pathlib
+- optuna
+- pip:
+    - gunicorn
+    - xgboost

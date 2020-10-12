@@ -1,6 +1,9 @@
 import pytest
+from dermclass_api.app import create_app
+from dermclass_api.config import TestingConfig
 
-#TODO: Extend testing
+
+# TODO: Extend testing
 def pytest_addoption(parser):
     parser.addoption(
         "--runslow", action="store_true", default=False, help="run slow tests"
@@ -19,3 +22,17 @@ def pytest_collection_modifyitems(config, items):
     for item in items:
         if "slow" in item.keywords:
             item.add_marker(skip_slow)
+
+
+@pytest.fixture
+def app():
+    app = create_app(config_object=TestingConfig)
+
+    with app.app_context():
+        yield app
+
+
+@pytest.fixture
+def flask_test_client(app):
+    with app.test_client() as test_client:
+        yield test_client

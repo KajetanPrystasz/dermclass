@@ -19,7 +19,7 @@ except FileNotFoundError:
     long_description = DESCRIPTION
 
 ROOT_DIR = Path(__file__).resolve().parent
-PACKAGE_DIR = ROOT_DIR / 'dermclass_structured'
+PACKAGE_DIR = ROOT_DIR / 'dermclass_api'
 with open(PACKAGE_DIR / 'VERSION') as f:
     _version = f.read().strip()
 
@@ -50,7 +50,7 @@ setup(
     author=AUTHOR,
     author_email=EMAIL,
     packages=find_packages(exclude=('tests',)),
-    package_data={'dermclass_structured': ['VERSION']},
+    package_data={'dermclass_api': ['VERSION']},
     install_requires=list_reqs(),
     include_package_data=True,
 )

@@ -1,6 +1,7 @@
 import dermclass_api
 import pathlib
 import logging
+from logging.handlers import TimedRotatingFileHandler
 import sys
 
 PACKAGE_ROOT = pathlib.Path(dermclass_api.__file__).resolve().parent
@@ -8,6 +9,15 @@ log_format = logging.Formatter("%(asctime)s — %(name)s — %(levelname)s —" 
 LOG_DIR = PACKAGE_ROOT / 'logs'
 LOG_DIR.mkdir(exist_ok=True)
 LOG_FILE = LOG_DIR / 'api.log'
+
+LABEL_MAPPING = {
+    1: "psoriasis",
+    2:  "seboreic dermatitis",
+    3: "lichen planus",
+    4: "pityriasis rosea",
+    5: "cronic dermatitis",
+    6: "pityriasis rubra pilaris"
+}
 
 
 def get_console_handler() -> logging:
@@ -21,23 +31,27 @@ def get_console_handler() -> logging:
 def get_file_handler():
     """Use file handler for logger to log to file using proper format"""
 
-    file_handler = logging.handlers.TimedRotatingFileHandler(LOG_FILE, when='midnight')
+    file_handler = TimedRotatingFileHandler(LOG_FILE, when='midnight')
     file_handler.setFormatter(log_format)
     file_handler.setLevel(logging.WARNING)
     return file_handler
 
 
 class BaseConfig:
-    pass
+    DEBUG = False
+    TESTING = False
+    SQLALCHEMY_DATABASE_URI = "sqlite:////tmp/test.db"
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 
 class DevelopmentConfig(BaseConfig):
-    pass
+    DEVELOPMENT = True
+    DEBUG = True
 
 
-class Testing(BaseConfig):
-    pass
+class TestingConfig(BaseConfig):
+    TESTING = True
 
 
 class ProductionConfig(BaseConfig):
-    pass
+    DEBUG = False
