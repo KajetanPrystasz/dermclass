@@ -1,0 +1,20 @@
+version: 2
+jobs:
+  test_dermclass_structured:
+    working_directory: ~/project
+    docker:
+      - image: circleci/python:3.7.9
+    steps:
+      - checkout
+      - run:
+          name: Runnning tests
+          command: |
+            pip install --upgrade pip
+            pip install conda
+            conda install -f src/dermclass_structured/environment.yml
+            py.test -vv src/dermclass_structured/tests
+workflows:
+  version: 2
+  test-all:
+    jobs:
+      - test_dermclass_structured
