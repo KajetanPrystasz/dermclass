@@ -20,6 +20,7 @@ dependencies:
 - scipy
 - joblib
 - pathlib
+- seaborn
 - optuna
 - pip:
     - gunicorn

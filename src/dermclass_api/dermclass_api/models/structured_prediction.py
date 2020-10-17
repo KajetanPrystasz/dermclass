@@ -1,5 +1,5 @@
 from dermclass_api.extensions import db, ma
-
+from dermclass_structured import __version__ as model_version
 
 class StructuredPredictionModel(db.Model):
 
@@ -7,6 +7,7 @@ class StructuredPredictionModel(db.Model):
 
     prediction_id = db.Column(db.Integer, primary_key=True)
 
+    erythema = db.Column(db.Integer, nullable=False)
     scaling = db.Column(db.Integer, nullable=False)
     definite_borders = db.Column(db.Integer, nullable=False)
     itching = db.Column(db.Integer, nullable=False)
@@ -24,6 +25,7 @@ class StructuredPredictionModel(db.Model):
     exocytosis = db.Column(db.Integer, nullable=False)
     acanthosis = db.Column(db.Integer, nullable=False)
     hyperkeratosis = db.Column(db.Integer, nullable=False)
+    parakeratosis = db.Column(db.Integer, nullable=False)
     clubbing_of_the_rete_ridges = db.Column(db.Integer, nullable=False)
     elongation_of_the_rete_ridges = db.Column(db.Integer, nullable=False)
     thinning_of_the_suprapapillary_epidermis = db.Column(db.Integer, nullable=False)
@@ -41,20 +43,21 @@ class StructuredPredictionModel(db.Model):
 
     age = db.Column(db.Integer, nullable=True)
 
-    class_ = db.Column(db.Integer, nullable=True)                                  #changed input name
+    target = db.Column(db.Integer, nullable=True)                                  #changed input name
 
-    def __init__(self, prediction_id, scaling, definite_borders, itching, koebner_phenomenon, polygonal_papules,
+    def __init__(self, prediction_id, erythema, scaling, definite_borders, itching, koebner_phenomenon, polygonal_papules,
                  follicular_papules, oral_mucosal_involvement, knee_and_elbow_involvement,scalp_involvement,
                  family_history, melanin_incontinence, eosinophils_in_the_infiltrate, pnl_infiltrate,
-                 fibrosis_of_the_papillary_dermis, exocytosis, acanthosis, hyperkeratosis, clubbing_of_the_rete_ridges,
+                 fibrosis_of_the_papillary_dermis, exocytosis, acanthosis, hyperkeratosis, parakeratosis,  clubbing_of_the_rete_ridges,
                  elongation_of_the_rete_ridges, thinning_of_the_suprapapillary_epidermis, spongiform_pustule,
                  munro_microabcess, focal_hypergranulosis, disappearance_of_the_granular_layer,
                  vacuolisation_and_damage_of_basal_layer, spongiosis, saw_tooth_appearance_of_retes,
                  follicular_horn_plug, perifollicular_parakeratosis, inflammatory_monoluclear_inflitrate,
-                 band_like_infiltrate, age, class_):
+                 band_like_infiltrate, age, target):
 
         self.prediction_id = prediction_id
 
+        self.erythema = erythema
         self.scaling = scaling
         self.definite_borders = definite_borders
         self.itching = itching
@@ -72,6 +75,7 @@ class StructuredPredictionModel(db.Model):
         self.exocytosis = exocytosis
         self.acanthosis = acanthosis
         self.hyperkeratosis = hyperkeratosis
+        self.parakeratosis = parakeratosis
         self.clubbing_of_the_rete_ridges = clubbing_of_the_rete_ridges
         self.elongation_of_the_rete_ridges = elongation_of_the_rete_ridges
         self.thinning_of_the_suprapapillary_epidermis = thinning_of_the_suprapapillary_epidermis
@@ -89,11 +93,13 @@ class StructuredPredictionModel(db.Model):
 
         self.age = age
 
-        self.class_ = class_
+        self.target = target
 
     def json(self):
-        return {'prediction_id': self.prediction_id,
-                'predictions': [prediction.json() for prediction in self.predictions.all()]}
+        print(self.target)
+        return {"prediction_id": self.prediction_id,
+                "target" : self.target,
+                "version" : model_version}
 
     @classmethod
     def find_by_prediction_id(cls, prediction_id):

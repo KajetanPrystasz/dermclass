@@ -82,7 +82,7 @@ def tune_hyperparameters(x_train, x_test, y_train, y_test, trials_dict,
     studies = {}
     for model_name, trial_func in trials_dict.items():
         _logger.info(f"Finding hyperameters for {model_name}")
-        sampler = TPESampler(seed=42)
+        sampler = TPESampler(seed=config.SEED)
         study = create_study(direction="maximize", study_name=model_name, sampler=sampler)
         study.optimize(lambda trial: _hyper_param_optimization(trial, model_name, trial_func,
                                                                x_train, x_test, y_train, y_test,

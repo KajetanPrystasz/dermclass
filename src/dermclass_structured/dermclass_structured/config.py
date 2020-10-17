@@ -32,13 +32,15 @@ variables = {
         'follicular_horn_plug', 'perifollicular_parakeratosis', 'inflammatory_monoluclear_inflitrate',
         'band_like_infiltrate'],
 
-    "TARGET": ["class_"]
+    "TARGET": ["target"]
 }
 
 PACKAGE_ROOT = pathlib.Path(dermclass_structured.__file__).resolve().parent
 PICKLE_DIR = PACKAGE_ROOT / "pickles"
 DATA_PATH = PACKAGE_ROOT / "datasets/dermatology_dataset.csv"
 PIPELINE_NAME = "structured_pipeline"
+
+SEED = 42
 
 log_format = logging.Formatter("%(asctime)s — %(name)s — %(levelname)s —" "%(funcName)s:%(lineno)d — %(message)s")
 

@@ -16,7 +16,7 @@ def run():
 
     # Load data
     x, y, df = load_data(config.DATA_PATH)
-    x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=42)
+    x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=config.SEED)
 
     # Fit preprocessing pipeline and transform data
     ppc_pipeline = fit_ppc_pipeline(x_train)

@@ -13,7 +13,7 @@ def make_prediction(input_data: Union[dict, pd.DataFrame]) -> np.ndarray:
     """Make for the input_data"""
 
     if isinstance(input_data, dict):
-        data = pd.DataFrame(input_data)
+        data = pd.DataFrame([input_data])
     elif isinstance(input_data, pd.DataFrame):
         data = input_data
     else:

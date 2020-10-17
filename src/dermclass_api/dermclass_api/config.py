@@ -9,6 +9,8 @@ log_format = logging.Formatter("%(asctime)s — %(name)s — %(levelname)s —" 
 LOG_DIR = PACKAGE_ROOT / 'logs'
 LOG_DIR.mkdir(exist_ok=True)
 LOG_FILE = LOG_DIR / 'api.log'
+TEST_DB_FILE = PACKAGE_ROOT.parent / "tests" / "test_db.json"
+
 
 LABEL_MAPPING = {
     1: "psoriasis",
@@ -40,7 +42,7 @@ def get_file_handler():
 class BaseConfig:
     DEBUG = False
     TESTING = False
-    SQLALCHEMY_DATABASE_URI = "sqlite:////tmp/test.db"
+    SQLALCHEMY_DATABASE_URI = "sqlite://"
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 
@@ -51,6 +53,7 @@ class DevelopmentConfig(BaseConfig):
 
 class TestingConfig(BaseConfig):
     TESTING = True
+    SQLALCHEMY_DATABASE_URI = "sqlite://"
 
 
 class ProductionConfig(BaseConfig):

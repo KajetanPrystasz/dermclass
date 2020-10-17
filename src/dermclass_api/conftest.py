@@ -1,7 +1,7 @@
 import pytest
 from dermclass_api.app import create_app
 from dermclass_api.config import TestingConfig
-
+from dermclass_api.extensions import db
 
 # TODO: Extend testing
 def pytest_addoption(parser):
@@ -36,3 +36,8 @@ def app():
 def flask_test_client(app):
     with app.test_client() as test_client:
         yield test_client
+
+
+@pytest.fixture
+def db_connection(flask_test_client):
+    db.init_app(flask_test_client)

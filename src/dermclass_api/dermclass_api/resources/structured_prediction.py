@@ -20,11 +20,9 @@ class StructuredPrediction(Resource):
 
         data = request.get_json()
         data_valid = StructuredPrediction.schema.load(data)
-
-        data_valid["target_"] = make_prediction(data_valid)
-        _logger.debug(f'Outputs: {data_valid["target_"]}')
+        data_valid["target"] = make_prediction(data_valid).tolist()[0]
+        _logger.debug(f'Outputs: {data_valid["target"]}')
         prediction = StructuredPredictionModel(prediction_id, **data_valid)
-
 
         try:
             prediction.save_to_db()
@@ -39,27 +37,3 @@ class StructuredPrediction(Resource):
             prediction.delete_from_db()
             return {'message': 'Prediction deleted.'}
         return {'message': 'Prediction not found.'}, 404
-
-
-#@prediction_app.route('/v1/predict/regression', methods=['POST'])
-#def predict():
-#    if request.method == 'POST':
-#        # Step 1: Extract POST data from request body as JSON
-#        json_data = request.get_json()
-#        _logger.debug(f'Inputs: {json_data}')
-#
-#        # Step 2: Validate the input using marshmallow schema
-#        input_data, errors = validate_inputs(input_data=json_data)
-#
-#        # Step 3: Model prediction
-#        result = make_prediction(input_data=input_data)
-#        _logger.debug(f'Outputs: {result}')
-#
-#        # Step 4: Convert numpy ndarray to list
-#        predictions = result.get('predictions').tolist()
-#        version = result.get('version')
-#
-#        # Step 5: Return the response as JSON
-#        return jsonify({'predictions': predictions,
-#                        'version': version,
-#                        'errors': errors})
