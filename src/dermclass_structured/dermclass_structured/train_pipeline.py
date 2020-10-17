@@ -11,7 +11,7 @@ from sklearn.pipeline import Pipeline
 _logger = logging.getLogger(__name__)
 
 
-def run():
+def run(testing=False):
     _logger.info("Started training the pipeline")
 
     # Load data
@@ -28,9 +28,11 @@ def run():
     y_test = y_test.values.ravel()
 
     # Find optimal hyperparameters /// Increase number of trials for better results
-    best_model = tune_hyperparameters(x_train, x_test, y_train, y_test, config.trials_dict,
-                                      n_trials=20, n_jobs=1, max_overfit=0.05, cv=3)
+    tuning_func_params = config.TUNING_FUNC_PARAMS
+    if testing:
+        config.TUNING_FUNC_PARAMS["n_trials"] = 1
 
+    best_model = tune_hyperparameters(x_train, x_test, y_train, y_test, **tuning_func_params)
     # Assemble final pipeline
     final_pipeline = Pipeline([("Ppc_pipeline", ppc_pipeline),
                                ("Model", best_model)])

@@ -17,7 +17,7 @@ jobs:
             conda env create -f src/dermclass_structured/environment.yml
             conda activate dermclass_structured
 
-            pytest -vv src/dermclass_structured/tests/tests.py
+            pytest -vv src/dermclass_structured/tests
 workflows:
   version: 2
   test-all:

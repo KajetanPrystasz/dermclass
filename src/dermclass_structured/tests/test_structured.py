@@ -15,7 +15,7 @@ def test_train_pipeline():
 
     remove_old_pipelines([])
 
-    run()
+    run(testing=True)
     pipeline_file_name = f"{config.PIPELINE_NAME}_{_version}.pkl"
     pipeline = load_pipeline(file_name=pipeline_file_name)
 
