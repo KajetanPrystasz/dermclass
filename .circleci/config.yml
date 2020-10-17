@@ -14,7 +14,8 @@ jobs:
             source miniconda/etc/profile.d/conda.sh
 
             pip install --upgrade pip
-            conda env create -f src/dermclass_structured/environment.yml:
+            conda env create -f src/dermclass_structured/environment.yml
+            conda activate dermclass_structured
             pytest -vv src/dermclass_structured/tests
 workflows:
   version: 2
