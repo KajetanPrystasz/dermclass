@@ -32,7 +32,7 @@ def run(testing=False):
     if testing:
         config.TUNING_FUNC_PARAMS["n_trials"] = 1
 
-    best_model = tune_hyperparameters(x_train, x_test, y_train, y_test, **tuning_func_params)
+    best_model = tune_hyperparameters(x_train, x_test, y_train, y_test, config.trials_dict, **tuning_func_params)
     # Assemble final pipeline
     final_pipeline = Pipeline([("Ppc_pipeline", ppc_pipeline),
                                ("Model", best_model)])
