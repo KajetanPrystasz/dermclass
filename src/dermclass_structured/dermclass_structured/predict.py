@@ -9,6 +9,7 @@ import numpy as np
 _logger = logging.getLogger(__name__)
 
 
+# TODO: Fix problem with change in orded of json that provides to error with ColumnTransformer
 def make_prediction(input_data: Union[dict, pd.DataFrame]) -> np.ndarray:
     """Make for the input_data"""
 

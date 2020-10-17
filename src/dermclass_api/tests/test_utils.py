@@ -1,8 +1,10 @@
 from dermclass_structured import __version__ as model_version
 from dermclass_api import __version__ as api_version
 import json
+import pytest
 
 
+@pytest.mark.dependency(scope="module")
 def test_health_endpoint(flask_test_client):
     # When
     response = flask_test_client.get('/health')

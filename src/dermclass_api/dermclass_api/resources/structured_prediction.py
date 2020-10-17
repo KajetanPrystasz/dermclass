@@ -11,7 +11,7 @@ class StructuredPrediction(Resource):
     def get(self, prediction_id):
         prediction = StructuredPredictionModel.find_by_prediction_id(prediction_id)
         if prediction:
-            return prediction.json()
+            return prediction.json(), 200
         return {'message': 'prediction not found'}, 404
 
     def post(self, prediction_id):
@@ -35,5 +35,5 @@ class StructuredPrediction(Resource):
         prediction = StructuredPredictionModel.find_by_prediction_id(prediction_id)
         if prediction:
             prediction.delete_from_db()
-            return {'message': 'Prediction deleted.'}
+            return {'message': 'Prediction deleted.'}, 200
         return {'message': 'Prediction not found.'}, 404

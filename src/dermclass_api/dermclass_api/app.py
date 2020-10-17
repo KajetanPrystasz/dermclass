@@ -5,7 +5,7 @@ import logging
 
 from dermclass_api.extensions import db, ma
 from dermclass_api.resources.utils import utils_blueprint
-from dermclass_api.config import DevelopmentConfig
+from dermclass_api.config import DevelopmentConfig, TestingConfig
 from dermclass_api.resources.structured_prediction import StructuredPrediction
 
 _logger = logging.getLogger(__name__)
