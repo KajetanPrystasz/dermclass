@@ -60,8 +60,9 @@ def xgboost_trial(trial : trial) -> dict:
               "gamma": trial.suggest_discrete_uniform("gamma", 0.1, 30, 0.1)}
     return params
 
-
-trials_dict = {"XGBRFClassifier": xgboost_trial, "XGBClassifier": xgboost_trial}
+#Turn off random forest during development to make training faster
+#trials_dict = {"XGBRFClassifier": xgboost_trial, "XGBClassifier": xgboost_trial}
+trials_dict = {"XGBClassifier": xgboost_trial}
 
 
 def get_console_handler() -> logging:
