@@ -1,3 +1,4 @@
+# TODO: Remove redundant code
 version: 2
 
 defaults: &defaults
@@ -24,14 +25,17 @@ jobs:
           command: |
             source miniconda/etc/profile.d/conda.sh
             conda env create -f src/dermclass_structured/environment.yml
-            conda activate dermclass_structured
       - run:
           name: Train model
           command: |
+            source miniconda/etc/profile.d/conda.sh
+            conda activate dermclass_structured
             PYTHONPATH=./src/dermclass_structured python src/dermclass_structured/dermclass_structured/train_pipeline.py --testing=True
       - run:
           name: Run tests
           command: |
+            source miniconda/etc/profile.d/conda.sh
+            conda activate dermclass_structured
             pytest -vv src/dermclass_structured/tests
 
   test_dermclass_api:
@@ -44,10 +48,11 @@ jobs:
           command: |
             source miniconda/etc/profile.d/conda.sh
             conda env create -f src/dermclass_api/environment.yml
-            conda activate dermclass_api
       - run:
           name: Runnning tests
           command: |
+            source miniconda/etc/profile.d/conda.sh
+            conda activate dermclass_api
             pytest -vv src/dermclass_api/tests
 
 
@@ -61,10 +66,11 @@ jobs:
           command: |
             source miniconda/etc/profile.d/conda.sh
             conda env create -f src/dermclass_structured/environment.yml
-            conda activate dermclass_structured
       - run:
           name: Train model
           command: |
+            source miniconda/etc/profile.d/conda.sh
+            conda activate dermclass_structured
             PYTHONPATH=./src/dermclass_structured python src/dermclass_structured/dermclass_structured/train_pipeline.py
       - run:
           name: Publish model to Gemfury
