@@ -9,6 +9,7 @@ from sklearn.pipeline import Pipeline
 import pytest
 
 
+# TODO: Fix logging with pytest
 @pytest.mark.dependency()
 def test_train_pipeline():
     """Test 'train_pipeline' function using Pytest"""

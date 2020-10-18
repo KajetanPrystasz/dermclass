@@ -1,6 +1,5 @@
-#TODO: Docker
-#TODO: Budowa paczki
 #TODO: CircleCI
-#TODO: DB change/ pytest
+#TODO: Docker
 
-# TODO: Fix testing to be done in order, use testing
+#TODO: Change DB
+#TODO: Deploy on web

@@ -1,3 +1,4 @@
+#TODO: Fix double dependencies
 name: dermclass_api
 channels:
   - defaults
@@ -22,6 +23,7 @@ dependencies:
 - pathlib
 - seaborn
 - optuna
+- fire
 - pip:
     - gunicorn
     - xgboost

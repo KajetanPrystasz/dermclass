@@ -1,25 +1,91 @@
 version: 2
+
+defaults: &defaults
+  docker:
+    - image: circleci/python:3.7.9
+  working_directory: ~/project
+
+prepare_venv: &prepare_env
+  run:
+    name: Prepare conda env
+    command: |
+      wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
+      bash miniconda.sh -b -p miniconda
+      source miniconda/etc/profile.d/conda.sh
+      pip install --upgrade pip
+
 jobs:
   test_dermclass_structured:
-    working_directory: ~/project
-    docker:
-      - image: circleci/python:3.7.9
+    <<: *defaults
     steps:
       - checkout
+      - *prepare_env
+      - run:
+          name: Install requirements and activate conda env
+          command: |
+            conda env create -f src/dermclass_structured/environment.yml
+            conda activate dermclass_structured
+      - run:
+          name: Train model
+          command: |
+            PYTHONPATH=./src/dermclass_structured python src/dermclass_structured/dermclass_structured/train_pipeline.py --testing=True
+      - run:
+          name: Run tests
+          command: |
+            . venv/bin/activate
+            pytest -vv src/dermclass_structured/tests
+
+  test_dermclass_api:
+    <<: *defaults
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - py-deps-{{ checksum "src/dermclass_api/environment.yaml" }}
       - run:
           name: Runnning tests
           command: |
-            wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
-            bash miniconda.sh -b -p miniconda
-            source miniconda/etc/profile.d/conda.sh
+            conda env create -f src/dermclass_api/environment.yml
+            conda activate dermclass_api
+            pytest -vv src/dermclass_api/tests
+      - save_cache:
+          key: py-deps-{{ checksum "src/dermclass_api/environment.yaml" }}
+          paths:
+            - "/venv"
 
-            pip install --upgrade pip
+  train_and_upload_structured_model:
+    <<: *defaults
+    steps:
+      - checkout
+      - *prepare_env
+      - run:
+          name: Install requirements
+          command: |
             conda env create -f src/dermclass_structured/environment.yml
             conda activate dermclass_structured
+      - run:
+          name: Train model
+          command: |
+            . venv/bin/activate
+            PYTHONPATH=./src/dermclass_structured python src/dermclass_structured/dermclass_structured/train_pipeline.py
+      - run:
+          name: Publish model to Gemfury
+          command: |
+            . venv/bin/activate
+            chmod +x ./scripts/publish_model.sh
+            ./scripts/publish_model.sh ./src/dermclass_structured/
 
-            pytest -vv src/dermclass_structured/tests
 workflows:
   version: 2
   test-all:
     jobs:
       - test_dermclass_structured
+      - test_dermclass_api
+      - train_and_upload_structured_model:
+          requires:
+            - test_dermclass_structured
+            - test_dermclass_api
+          # filters:
+          #   branches:
+          #     only:
+          #       - master

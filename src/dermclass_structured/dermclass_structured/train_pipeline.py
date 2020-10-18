@@ -1,4 +1,5 @@
 import logging
+import fire
 
 from dermclass_structured.processing.pipeline import fit_ppc_pipeline, tune_hyperparameters
 from dermclass_structured.processing.preprocessors import load_data
@@ -27,6 +28,8 @@ def run(testing=False):
     y_train = y_train.values.ravel()
     y_test = y_test.values.ravel()
 
+    # TODO: Separate testing config
+
     # Find optimal hyperparameters /// Increase number of trials for better results
     tuning_func_params = config.TUNING_FUNC_PARAMS
     if testing:
@@ -40,3 +43,6 @@ def run(testing=False):
     # Save pipeline to pickle
     remove_old_pipelines([])
     save_pipeline(final_pipeline)
+
+if __name__ == "__main__":
+    fire.Fire(run)
