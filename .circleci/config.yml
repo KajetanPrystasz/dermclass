@@ -82,12 +82,12 @@ workflows:
   version: 2
   test-all:
     jobs:
-      - test_dermclass_structured
-      - test_dermclass_api
+      #- test_dermclass_structured
+      #- test_dermclass_api
       - train_and_upload_structured_model:
           requires:
             - test_dermclass_structured
-            - test_dermclass_api
+            #- test_dermclass_api
           # filters:
           #   branches:
           #     only:
