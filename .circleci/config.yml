@@ -76,6 +76,8 @@ jobs:
           name: Publish model to Gemfury
           command: |
             chmod +x ./scripts/publish_model.sh
+            source miniconda/etc/profile.d/conda.sh
+            conda activate dermclass_structured
             ./scripts/publish_model.sh ./src/dermclass_structured/
 
 workflows:
