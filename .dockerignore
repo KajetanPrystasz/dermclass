@@ -1,0 +1,10 @@
+jupyter_notebooks*
+.circleci*
+
+*.log
+.git
+.gitignore
+
+src/dermclass_structured
+src/dermclass_image
+src/dermclass_text

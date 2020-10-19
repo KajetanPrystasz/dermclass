@@ -44,5 +44,6 @@ def run(testing=False):
     remove_old_pipelines([])
     save_pipeline(final_pipeline)
 
+
 if __name__ == "__main__":
     fire.Fire(run)

@@ -3,6 +3,7 @@ import pathlib
 import logging
 from logging.handlers import TimedRotatingFileHandler
 import sys
+import os
 
 PACKAGE_ROOT = pathlib.Path(dermclass_api.__file__).resolve().parent
 log_format = logging.Formatter("%(asctime)s — %(name)s — %(levelname)s —" "%(funcName)s:%(lineno)d — %(message)s")
@@ -44,17 +45,16 @@ class BaseConfig:
     TESTING = False
     SQLALCHEMY_DATABASE_URI = "sqlite://"
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-
+    SERVER_PORT = 5000
 
 class DevelopmentConfig(BaseConfig):
     DEVELOPMENT = True
     DEBUG = True
 
-
 class TestingConfig(BaseConfig):
     TESTING = True
-    SQLALCHEMY_DATABASE_URI = "sqlite://"
 
 
 class ProductionConfig(BaseConfig):
     DEBUG = False
+    SERVER_PORT = os.environ.get('PORT', 5000)
