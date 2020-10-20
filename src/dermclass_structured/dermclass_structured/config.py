@@ -40,7 +40,8 @@ PICKLE_DIR = PACKAGE_ROOT / "pickles"
 DATA_PATH = PACKAGE_ROOT / "datasets/dermatology_dataset.csv"
 PIPELINE_NAME = "structured_pipeline"
 
-TUNING_FUNC_PARAMS = {"n_trials": 1, "n_jobs": 1, "max_overfit": 0.05, "cv": 3, "n_trials": 20}
+# Increase n_trials and number of folds for better score
+TUNING_FUNC_PARAMS = {"n_jobs": -1, "max_overfit": 0.05, "cv": 3, "n_trials": 10}
 SEED = 42
 
 log_format = logging.Formatter("%(asctime)s — %(name)s — %(levelname)s —" "%(funcName)s:%(lineno)d — %(message)s")

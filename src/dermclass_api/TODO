@@ -1,2 +1,2 @@
-#TODO: Deploy on web
-#TODO: Change DB
+#TODO: Deploy to AWS/Azure
+#TODO: Change DB, make db persistent
