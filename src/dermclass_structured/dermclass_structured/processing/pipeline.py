@@ -76,7 +76,7 @@ def _hyper_param_optimization(trial, model_name:str , trial_func,
 
 # TODO: Add pruning
 def tune_hyperparameters(x_train, x_test, y_train, y_test, trials_dict,
-                         max_overfit=0.1, cv=5, n_trials=30, n_jobs=-1):
+                         max_overfit=0.05, cv=5, n_trials=20, n_jobs=-1):
     """Find best model and best hyperparameters from searched parameter space"""
 
     studies = {}
