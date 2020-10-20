@@ -1,4 +1,4 @@
-# Create a script to link to conda env
+#TODO: Create a script to link to conda env
 setuptools
 wheel
 flask

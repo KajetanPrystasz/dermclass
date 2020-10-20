@@ -12,7 +12,6 @@ WORKDIR /opt/dermclass_api
 ARG PIP_EXTRA_INDEX_URL
 ENV FLASK_APP run.py
 
-
 # Install requirements, including from Gemfury
 ADD ./src/dermclass_api /opt/dermclass_api/
 
