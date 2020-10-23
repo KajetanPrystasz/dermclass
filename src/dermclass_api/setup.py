@@ -29,14 +29,14 @@ def list_reqs(file_name: str= ROOT_DIR / 'environment.yml') -> list:
     with open(file_name) as file:
         yaml_list = yaml.load(file, Loader=yaml.FullLoader)["dependencies"]
         pip_list = yaml_list.pop(-1)["pip"]
-        for package_lists in (yaml_list, pip_list):
-            try:
-                # Handle additional data written from conda export
-                packages = [package.split("=")[:2] for package in package_lists]
-                packages = ["==".join(package) for package in packages]
-            except:
-                packages = [package.replace("=", "==") for package in package_lists]
+        package_list = yaml_list + pip_list
 
+        packages = []
+        for package in package_list:
+            if ">" or "<" in package:
+                packages.append(package)
+            else:
+                packages.append(package.replace("=", "=="))
         return packages
 
 

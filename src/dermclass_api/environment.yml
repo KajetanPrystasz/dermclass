@@ -1,4 +1,3 @@
-#TODO: Fix double dependencies
 name: dermclass_api
 channels:
   - defaults
@@ -7,6 +6,7 @@ dependencies:
 - pip
 - setuptools
 - wheel
+- pyyaml
 - flask
 - flask-restful
 - flask-marshmallow
@@ -14,17 +14,7 @@ dependencies:
 - marshmallow-sqlalchemy
 - pytest
 - pytest-dependency
-- pymongo
-- scikit-learn
-- numpy
-- pandas
-- scipy
-- joblib
 - pathlib
-- seaborn
-- optuna
-- fire
 - pip:
     - gunicorn
-    - xgboost
     - dermclass_structured
