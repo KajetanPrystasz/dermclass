@@ -2,4 +2,4 @@
 #TODO: Change DB, make db persistent
 #TODO: Add proper automatic versioning
 
-# Fix logging in gunicorn
+#TODO: Fix logging in gunicorn
