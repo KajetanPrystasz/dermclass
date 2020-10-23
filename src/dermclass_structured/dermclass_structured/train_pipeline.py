@@ -28,12 +28,11 @@ def run(testing=False):
     y_train = y_train.values.ravel()
     y_test = y_test.values.ravel()
 
-    # TODO: Separate testing config
-
+    # TODO: Separate testing config?
     # Find optimal hyperparameters /// Increase number of trials for better results
     tuning_func_params = config.TUNING_FUNC_PARAMS
     if testing:
-        config.TUNING_FUNC_PARAMS["n_trials"] = 2
+        config.TUNING_FUNC_PARAMS["n_trials"] = 1
 
     best_model = tune_hyperparameters(x_train, x_test, y_train, y_test, config.trials_dict, **tuning_func_params)
     # Assemble final pipeline

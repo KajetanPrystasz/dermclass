@@ -6,6 +6,7 @@ dependencies:
 - pip
 - setuptools
 - wheel
+- pyyaml
 - scikit-learn
 - numpy
 - pandas

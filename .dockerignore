@@ -5,6 +5,8 @@ jupyter_notebooks*
 .git
 .gitignore
 
+resources
+
 src/dermclass_structured
 src/dermclass_image
 src/dermclass_text

@@ -1,0 +1,115 @@
+{
+	"info": {
+		"_postman_id": "7c43f5a6-5f04-469b-978c-0243e5385bd3",
+		"name": "Development",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Health",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:5000/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "post_structured_prediction",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{   \"erythema\" : 2,\r\n    \"scaling\" : 2,\r\n    \"definite_borders\" : 2,\r\n    \"itching\" : 0,\r\n    \"koebner_phenomenon\" : 3, \r\n    \"polygonal_papules\" : 0,\r\n    \"follicular_papules\" : 0,\r\n    \"oral_mucosal_involvement\" : 0,\r\n    \"knee_and_elbow_involvement\" : 0,\r\n    \"scalp_involvement\" : 1,\r\n    \"family_history\" : 0,\r\n    \"melanin_incontinence\" : 0,\r\n    \"eosinophils_in_the_infiltrate\" : 0,\r\n    \"pnl_infiltrate\" : 0,\r\n    \"fibrosis_of_the_papillary_dermis\" : 3,\r\n    \"exocytosis\" : 2,\r\n    \"acanthosis\" : 0,\r\n    \"hyperkeratosis\" : 0,\r\n    \"parakeratosis\" : 0,\r\n    \"clubbing_of_the_rete_ridges\" : 0,\r\n    \"elongation_of_the_rete_ridges\" : 0,\r\n    \"thinning_of_the_suprapapillary_epidermis\" : 0,\r\n    \"spongiform_pustule\" : 0,\r\n    \"munro_microabcess\" : 0,\r\n    \"focal_hypergranulosis\" : 0,\r\n    \"disappearance_of_the_granular_layer\" : 0,\r\n    \"vacuolisation_and_damage_of_basal_layer\" : 0,\r\n    \"spongiosis\" : 3,\r\n    \"saw_tooth_appearance_of_retes\" : 0,\r\n    \"follicular_horn_plug\" : 0,\r\n    \"perifollicular_parakeratosis\" : 0,\r\n    \"inflammatory_monoluclear_inflitrate\" : 1,\r\n    \"band_like_infiltrate\" : 0,\r\n    \"age\" : 55\r\n}\r\n\r\n",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:5000/structured_prediction/1",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"structured_prediction",
+						"1"
+					]
+				},
+				"description": "sadasdasdsadasdasda"
+			},
+			"response": []
+		},
+		{
+			"name": "get_structured_prediction",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:5000/structured_prediction/1",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"structured_prediction",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "del_structured_prediction",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:5000/structured_prediction/1",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"structured_prediction",
+						"1"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}

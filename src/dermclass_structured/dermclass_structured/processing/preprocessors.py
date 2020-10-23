@@ -1,4 +1,3 @@
-# TODO: Explore some feature engineering to get better scores
 import logging
 from sklearn.base import TransformerMixin, BaseEstimator
 from dermclass_structured import config

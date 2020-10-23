@@ -91,7 +91,7 @@ def tune_hyperparameters(x_train, x_test, y_train, y_test, trials_dict,
 
         studies[model_name] = study
 
-    best_score, best_model, best_params = 0, "Best model doesn't exist", {}
+    best_score, best_model, best_params = 0, "XGBClassifier", {}
     for study in studies.values():
         if study.best_value > best_score:
             best_model = study.study_name
