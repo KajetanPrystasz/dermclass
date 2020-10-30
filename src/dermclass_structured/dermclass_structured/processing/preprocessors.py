@@ -16,7 +16,7 @@ def split_target(df: pd.DataFrame) -> Tuple[pd.DataFrame, pd.Series]:
     return x, y
 
 
-def load_data(path: str) -> Tuple[pd.DataFrame, pd.Series, pd.DataFrame,]:
+def load_data(path: str) -> Tuple[pd.DataFrame, pd.Series, pd.DataFrame]:
     """Load data from provided path"""
 
     df = pd.read_csv(path)
@@ -45,7 +45,9 @@ class CastTypesTransformer(TransformerMixin, BaseEstimator):
         self.y = y
         return self
 
-    def transform(self, x, y=None):
+    def transform(self, x=None, y=None):
+        if x is None:
+            x = self.x
         x_cat = x[self.categorical_variables]
         x_ord = x[self.ordinal_variables]
         x_num = x[self.numeric_variables]

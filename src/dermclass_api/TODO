@@ -3,3 +3,4 @@
 #TODO: Add proper automatic versioning
 
 #TODO: Fix logging in gunicorn
+#TODO: Create independant scripts

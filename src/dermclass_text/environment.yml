@@ -1,0 +1,12 @@
+name: dermclass_text
+channels:
+  - defaults
+  - conda-forge
+dependencies:
+- pip
+- setuptools
+- wheel
+- pyyaml
+- scikit-learn
+- spacy
+- pandas

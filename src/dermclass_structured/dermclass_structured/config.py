@@ -6,7 +6,7 @@ from optuna import trial
 
 LABEL_MAPPING = {
     1: "psoriasis",
-    2:  "seboreic dermatitis",
+    2: "seboreic dermatitis",
     3: "lichen planus",
     4: "pityriasis rosea",
     5: "cronic dermatitis",
