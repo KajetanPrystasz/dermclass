@@ -1,49 +1,59 @@
-import logging
-import spacy
-import numpy as np
-
-from dermclass_structured import config
-import pandas as pd
 from typing import Tuple
+from pathlib import Path
+
+import pandas as pd
+import numpy as np
+import spacy
 
 from sklearn.base import TransformerMixin, BaseEstimator
 
-_logger = logging.getLogger(__name__)
+from dermclass_models.base.processing.preprocessors import Preprocessors
+from dermclass_models.base.config import BaseConfig
+
+from dermclass_models.text.config import TextConfig
 
 
+class TextPreprocessors(Preprocessors):
 
+    def __init__(self, config: BaseConfig = TextConfig):
+        super().__init__(config)
 
-def load_class_from_dir(path: str) -> pd.DataFrame:
-    """Load data from provided path"""
-    class_name = path.name
+    def load_class_from_dir(self, path: Path) -> pd.DataFrame:
+        """Load data from provided path"""
+        class_name = path.name
 
-    df = pd.DataFrame()
-    index_num = [0]
-    for child in path.iterdir():
-        with open(child, "r", encoding='utf-8') as file:
-            text = file.read().replace("\n", " ")
-            file_df = pd.DataFrame({"target": class_name,
-                                    "text": text},
-                                   index=index_num)
-            index_num[0] = index_num[0] + 1
-            df = pd.concat([df, file_df], axis=0)
+        df = pd.DataFrame()
+        index_num = [0]
+        for child in path.iterdir():
+            with open(child, "r", encoding='utf-8') as file:
+                text = file.read().replace("\n", " ")
+                file_df = pd.DataFrame({"target": class_name,
+                                        "text": text},
+                                       index=index_num)
+                index_num[0] = index_num[0] + 1
+                df = pd.concat([df, file_df], axis=0)
 
-    _logger.info(f"Successfully loaded class {class_name}")
-    return df
+        self.logger.info(f"Successfully loaded class {class_name}")
+        return df
 
+    def load_dataset_from_dir(self, path: Path) -> Tuple[pd.DataFrame, pd.Series, pd.DataFrame]:
+        df = pd.DataFrame()
 
-def load_dataset_from_dir(path: str) -> Tuple[pd.DataFrame, pd.Series, pd.DataFrame]:
-    df = pd.DataFrame()
+        for class_dir in path.iterdir():
+            class_df = self.load_class_from_dir(class_dir)
+            df = pd.concat([df, class_df])
+        df = df.reset_index().drop("index", axis=1)
 
-    for class_dir in path.iterdir():
-        class_df = load_class_from_dir(class_dir)
-        df = pd.concat([df, class_df])
-    df = df.reset_index().drop("index", axis=1)
+        self.logger.info("Successfully loaded the data")
+        return df
 
-    _logger.info("Successfully loaded the data")
-    x, y, df_final = split_target(df)
+    def load_data(self) -> Tuple[pd.DataFrame, pd.Series, pd.DataFrame]:
 
-    return x, y, df_final
+        path = self.config.DATA_PATH
+        s_ppc = TextPreprocessors(self.config)
+        df = s_ppc.load_dataset_from_dir(path)
+
+        return df
 
 
 class SpacyPreprocessor(TransformerMixin, BaseEstimator):

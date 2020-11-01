@@ -24,12 +24,15 @@ class Main:
         """Desc"""
         self.logger.info("Started training the pipeline")
 
-        x, y, df = self.preprocessor.load_data()
-        x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=self.config.TEST_SIZE, random_state=self.config.SEED)
+        df = self.preprocessor.load_data()
+        x, y = self.preprocessor.split_target(df)
+        x_train, x_test, y_train, y_test = train_test_split(x, y,
+                                                            test_size=self.config.TEST_SIZE,
+                                                            random_state=self.config.SEED)
 
         # TODO: Check if return necessary
         self.ppcpipeline.fit_data(x_train, x_test, y_train, y_test)
-        custom_pipeline = self.ppcpipeline.fit_ppc_pipeline(x_train)
+        custom_pipeline = self.ppcpipeline.fit_ppc_pipeline()
 
         x_train = custom_pipeline.transform(x_train)
         x_test = custom_pipeline.transform(x_test)
@@ -47,8 +50,3 @@ class Main:
         pickler = Pickle(self.config)
         pickler.remove_old_pipelines([])
         pickler.save_pipeline(self.pipeline)
-
-
-if __name__ == "__main__":
-    main = Main()
-    main.run()

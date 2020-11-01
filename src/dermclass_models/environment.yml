@@ -17,5 +17,6 @@ dependencies:
 - scikit-learn
 - optuna
 - spacy
+- spacy-model-en_core_web_sm
 - pip:
   - xgboost

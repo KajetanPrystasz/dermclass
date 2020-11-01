@@ -1,4 +1,3 @@
-from dermclass_models.base.config import BaseConfig
 from dermclass_models.base.train_pipeline import Main
 
 from dermclass_models.structured.config import StructuredConfig
@@ -8,7 +7,7 @@ from dermclass_models.structured.processing.preprocessors import StructuredPrepr
 
 class StructuredMain(Main):
 
-    def __init__(self, config: BaseConfig = StructuredConfig):
+    def __init__(self, config: StructuredConfig = StructuredConfig):
         super().__init__(config)
 
         self.preprocessor = StructuredPreprocessors(self.config)

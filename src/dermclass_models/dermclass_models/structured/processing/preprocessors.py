@@ -11,24 +11,14 @@ from dermclass_models.structured.config import StructuredConfig
 
 class StructuredPreprocessors(Preprocessors):
 
-    def __init__(self, config: StructuredConfig):
+    def __init__(self, config: StructuredConfig = StructuredConfig):
         super().__init__(config)
 
-    def load_csv(self, path: str) -> Tuple[pd.DataFrame, pd.Series, pd.DataFrame]:
-        """Load data from provided path"""
-
-        df = pd.read_csv(path)
-        x, y = self.split_target(df)
-        self.logger.info("Successfully loaded the data")
-        return x, y, df
-
-    # TODO: Fix this
     def load_data(self) -> Tuple[pd.DataFrame, pd.Series, pd.DataFrame]:
-
         path = self.config.DATA_PATH
-        s_ppc = StructuredPreprocessors(self.config)
-        x, y, df = s_ppc.load_csv(path)
-        return x, y, df
+        df = pd.read_csv(path)
+        self.logger.info("Successfully loaded the data")
+        return df
 
 
 class CastTypesTransformer(TransformerMixin, BaseEstimator):

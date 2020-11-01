@@ -6,7 +6,7 @@ from dermclass_models.structured.processing.validation import Validation
 
 class StructuredPredict(Predict):
 
-    def __init__(self, config: StructuredConfig):
+    def __init__(self, config: StructuredConfig = StructuredConfig):
         super().__init__(config)
 
         self.validator = Validation(self.config)

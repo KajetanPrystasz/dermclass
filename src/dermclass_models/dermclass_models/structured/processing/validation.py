@@ -7,7 +7,7 @@ from dermclass_models.structured.config import StructuredConfig
 
 class StructuredValidation(Validation):
 
-    def __init__(self, config: StructuredConfig):
+    def __init__(self, config: StructuredConfig = StructuredConfig):
         super().__init__(config)
 
     def custom_validation(self, df: pd.DataFrame) -> pd.DataFrame:

@@ -19,9 +19,8 @@ class Preprocessors:
         self.logger.info("Successfully splat the data")
         return x, y
 
+    # TODO: Add way of handling func with path instead of self
     @abc.abstractmethod
     def load_data(self):
-        x = pd.DataFrame
-        y = pd.Series
         df = pd.DataFrame
-        return x, y, df
+        return df

@@ -1,29 +1,15 @@
-from dermclass_text import config
-import logging
 import pandas as pd
-import csv
 
-_logger = logging.getLogger(__name__)
+from dermclass_models.base.processing.validation import Validation
 
-
-def validate_inputs():
-    pass
+from dermclass_models.text.config import TextConfig
 
 
-def reorder_df(data: pd.DataFrame, list_to_reorder: list):
-    """A function to order input DataFrame created from json file"""
-    data = data.reindex(columns=list_to_reorder)
-    return data
+# TODO: Add text validation
+class TextValidation(Validation):
 
+    def __init__(self, config: TextConfig = TextConfig):
+        super().__init__(config)
 
-def reorder_df_from_file(data: pd.DataFrame, file_path: str = config.DATA_PATH):
-    """A function to order input DataFrame created from json file using file"""
-    with open(file_path, 'r') as file:
-        reader = csv.DictReader(file)
-        fieldnames = reader.fieldnames
-        if "target" in fieldnames:
-            fieldnames.remove("target")
-        reordered_data = reorder_df(data, fieldnames)
-
-        return reordered_data
-
+    def custom_validation(self, df: pd.DataFrame) -> pd.DataFrame:
+        return df
