@@ -14,12 +14,14 @@ class Preprocessors:
 
     def split_target(self, df: pd.DataFrame) -> Tuple[pd.DataFrame, pd.Series]:
         """Split x and y data from given Pandas DataFrame"""
-
-        x = df.drop(self.config.VARIABLE_ORDER["TARGET"], 1)
-        y = df[self.config.VARIABLE_ORDER["TARGET"]]
+        x = df.drop(self.config.TARGET, 1)
+        y = df[self.config.TARGET]
         self.logger.info("Successfully splat the data")
         return x, y
 
     @abc.abstractmethod
     def load_data(self):
-        pass
+        x = pd.DataFrame
+        y = pd.Series
+        df = pd.DataFrame
+        return x, y, df

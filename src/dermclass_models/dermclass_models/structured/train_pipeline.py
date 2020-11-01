@@ -1,14 +1,17 @@
+from dermclass_models.base.config import BaseConfig
+from dermclass_models.base.train_pipeline import Main
+
 from dermclass_models.structured.config import StructuredConfig
 from dermclass_models.structured.processing.pipeline import StructuredPpcPipeline
-from dermclass_models.base.processing.preprocessors import Preprocessors
+from dermclass_models.structured.processing.preprocessors import StructuredPreprocessors
 
 
-class StructuredMain:
+class StructuredMain(Main):
 
-    def __init__(self, config: StructuredConfig):
+    def __init__(self, config: BaseConfig = StructuredConfig):
         super().__init__(config)
 
-        self.preprocessor = Preprocessors(self.config)
+        self.preprocessor = StructuredPreprocessors(self.config)
         self.ppcpipeline = StructuredPpcPipeline(self.config)
 
 

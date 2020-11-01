@@ -19,7 +19,7 @@ class BaseConfig:
 
     VARIABLE_ORDER = []
 
-    DEFAULT_BEST_MODEL = ""
+    DEFAULT_BEST_MODEL = "XGBClassifier"
 
     trials_dict = {}
 

@@ -54,6 +54,8 @@ class StructuredConfig(BaseConfig):
 
     DEFAULT_BEST_MODEL = "XGBClassifier"
 
+    DATA_PATH = BaseConfig.PACKAGE_ROOT/"structured"/"datasets"/"dermatology_dataset.csv"
+
     trials_dict = {"XGBClassifier": xgboost_trial}
 
 

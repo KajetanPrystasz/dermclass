@@ -23,7 +23,9 @@ class StructuredPreprocessors(Preprocessors):
         return x, y, df
 
     # TODO: Fix this
-    def load_data(self, path: str) -> Tuple[pd.DataFrame, pd.Series, pd.DataFrame]:
+    def load_data(self) -> Tuple[pd.DataFrame, pd.Series, pd.DataFrame]:
+
+        path = self.config.DATA_PATH
         s_ppc = StructuredPreprocessors(self.config)
         x, y, df = s_ppc.load_csv(path)
         return x, y, df

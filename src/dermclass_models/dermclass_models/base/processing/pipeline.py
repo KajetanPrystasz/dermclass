@@ -1,5 +1,6 @@
 import abc
 import logging
+from typing import Type
 
 import pandas as pd
 import numpy as np
@@ -10,6 +11,8 @@ from optuna.samplers import TPESampler
 from sklearn.compose import ColumnTransformer
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import cross_val_score
+
+from xgboost import XGBClassifier
 
 from dermclass_models.base.config import BaseConfig
 
@@ -30,8 +33,8 @@ class PpcPipeline:
         self.final_model = None
 
     @abc.abstractmethod
-    def fit_ppc_pipeline(self, x_train: pd.Dataframe = None) -> ColumnTransformer:
-        pass
+    def fit_ppc_pipeline(self, x_train: pd.DataFrame = None) -> Type[ColumnTransformer]:
+        return ColumnTransformer
 
     def fit_data(self, x_train, x_test, y_train, y_test):
         self.x_train = x_train
@@ -73,7 +76,7 @@ class PpcPipeline:
                              max_overfit=0.05, cv=5, n_trials=20, n_jobs=-1):
         """Find best model and best hyperparameters from searched parameter space"""
 
-        if any([x_train, x_test, y_train, y_test]) is not None:
+        if None in [x_train.all(), x_test.all(), y_train.all(), y_test.all()]:
             x_train = self.x_train
             x_test = self.x_test
             y_train = self.y_train

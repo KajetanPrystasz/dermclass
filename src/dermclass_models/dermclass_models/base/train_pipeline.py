@@ -25,14 +25,14 @@ class Main:
         self.logger.info("Started training the pipeline")
 
         x, y, df = self.preprocessor.load_data()
-        x_train, x_test, y_train, y_test = train_test_split(x, y, self.config.TEST_SIZE, self.config.SEED)
+        x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=self.config.TEST_SIZE, random_state=self.config.SEED)
 
         # TODO: Check if return necessary
         self.ppcpipeline.fit_data(x_train, x_test, y_train, y_test)
-        self.ppcpipeline.fit_ppc_pipeline(x_train)
+        custom_pipeline = self.ppcpipeline.fit_ppc_pipeline(x_train)
 
-        x_train = self.ppcpipeline.transform(x_train)
-        x_test = self.ppcpipeline.transform(x_test)
+        x_train = custom_pipeline.transform(x_train)
+        x_test = custom_pipeline.transform(x_test)
         y_train = y_train.values.ravel()
         y_test = y_test.values.ravel()
 
@@ -40,7 +40,7 @@ class Main:
                                                            x_train, x_test, y_train, y_test,
                                                            **self.config.tuning_func_params)
         # Assemble final pipeline
-        self.pipeline = Pipeline([("Preprocessing pipeline", self.ppcpipeline),
+        self.pipeline = Pipeline([("Preprocessing pipeline", custom_pipeline),
                                   ("Model", best_model)])
 
         # Save pipeline to pickle
