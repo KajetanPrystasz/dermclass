@@ -1,0 +1,13 @@
+include README.md
+include environment.yml
+recursive-include ./dermclass_models/*
+
+include dermclass_models/structured/datasets/attribute_info.txt
+include dermclass_models/structured/datasets/dermatology_dataset.csv
+include dermclass_models/structured/pickles/*.pkl
+
+
+include dermclass_models/text/datasets/*
+include dermclass_models/text/pickles/*.pkl
+
+include dermclass_models/VERSION

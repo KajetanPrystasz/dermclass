@@ -1,0 +1,21 @@
+name: dermclass_models
+channels:
+  - defaults
+  - conda-forge
+dependencies:
+- pip
+- setuptools
+- wheel
+- pyyaml
+- pathlib
+- joblib
+- pytest
+- pytest-dependency
+- numpy
+- pandas
+- scipy
+- scikit-learn
+- optuna
+- spacy
+- pip:
+  - xgboost
