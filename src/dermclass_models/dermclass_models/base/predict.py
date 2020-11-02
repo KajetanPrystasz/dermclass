@@ -1,4 +1,5 @@
 import logging
+from pathlib import Path
 
 import pandas as pd
 import numpy as np
@@ -13,7 +14,6 @@ class Predict:
     def __init__(self, config):
         self.config = config
 
-        self.pipeline_type = self.config.pipeline_type
         self.pipeline_version = _version
 
         self.logger = logging.getLogger(__name__)
@@ -21,11 +21,13 @@ class Predict:
         self.validator = Validation(self.config)
         self.pickler = Pickle(self.config)
 
-    def make_prediction(self, input_dict: dict) -> np.ndarray:
+    def make_prediction(self, input_data: dict) -> np.ndarray:
         """Make for the input_data"""
 
-        if isinstance(input_dict, dict):
-            df = pd.DataFrame([input_dict])
+        if isinstance(input_data, dict):
+            df = pd.DataFrame([input_data])
+        elif isinstance(input_data, pd.DataFrame):
+            df = input_data
         else:
             raise TypeError("Wrong data input")
 
@@ -33,8 +35,9 @@ class Predict:
         df_reordered = self.validator.reorder_df(df_valid)
         df_final = self.validator.custom_validation(df_reordered)
 
-        pipeline_file_name = f"{self.config.PIPELINE_NAME}_{_version}.pkl"
-        pipeline = self.pickler.load_pipeline(pipeline_file_name)
+        pipeline_file_name = Path(f"{self.config.PIPELINE_TYPE}_{_version}.pkl")
+        pipeline_path = self.config.PICKLE_DIR / pipeline_file_name
+        pipeline = self.pickler.load_pipeline(pipeline_path)
 
         prediction = pipeline.predict(df_final)
 

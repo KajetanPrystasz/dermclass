@@ -60,4 +60,4 @@ class StructuredConfig(BaseConfig):
 
 
 class TestingStructuredConfig(TestingConfig, StructuredConfig):
-    pass
+    PIPELINE_TYPE = "testing_structured_pipeline"

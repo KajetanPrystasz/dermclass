@@ -30,7 +30,7 @@ class Main:
                                                             test_size=self.config.TEST_SIZE,
                                                             random_state=self.config.SEED)
 
-        # TODO: Check if return necessary
+        # TODO: Check if return necessary, make these lines stick to the convention of rest of the code
         self.ppcpipeline.fit_data(x_train, x_test, y_train, y_test)
         custom_pipeline = self.ppcpipeline.fit_ppc_pipeline()
 
@@ -38,6 +38,7 @@ class Main:
         x_test = custom_pipeline.transform(x_test)
         y_train = y_train.values.ravel()
         y_test = y_test.values.ravel()
+        ###############################
 
         best_model = self.ppcpipeline.tune_hyperparameters(self.config.trials_dict,
                                                            x_train, x_test, y_train, y_test,

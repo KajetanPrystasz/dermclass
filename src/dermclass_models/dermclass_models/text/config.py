@@ -28,4 +28,4 @@ class TextConfig(BaseConfig):
 
 
 class TestingTextConfig(TestingConfig, TextConfig):
-    pass
+    PIPELINE_TYPE = "testing_text_pipeline"

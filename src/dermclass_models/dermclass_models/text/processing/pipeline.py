@@ -1,11 +1,7 @@
-from typing import Type
-
 import pandas as pd
 
 from sklearn.pipeline import Pipeline
 from sklearn.feature_extraction.text import TfidfVectorizer
-
-from sklearn.naive_bayes import MultinomialNB
 
 from dermclass_models.base.processing.pipeline import PpcPipeline
 

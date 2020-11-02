@@ -12,7 +12,9 @@ from sklearn.compose import ColumnTransformer
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import cross_val_score
 
+# TODO: Fix how evals and imports work
 from xgboost import XGBClassifier
+from sklearn.naive_bayes import MultinomialNB
 
 from dermclass_models.base.config import BaseConfig
 
@@ -71,20 +73,14 @@ class PpcPipeline:
 
     # TODO: Add pruning
     def tune_hyperparameters(self, trials_dict,
-                             x_train: pd.DataFrame = None, x_test: pd.DataFrame = None,
-                             y_train: pd.DataFrame = None, y_test: pd.DataFrame = None,
+                             x_train: pd.DataFrame, x_test: pd.DataFrame,
+                             y_train: pd.DataFrame, y_test: pd.DataFrame,
                              max_overfit=0.05, cv=5, n_trials=20, n_jobs=-1):
         """Find best model and best hyperparameters from searched parameter space"""
 
-        if None in [x_train.all(), x_test.all(), y_train.all(), y_test.all()]:
-            x_train = self.x_train
-            x_test = self.x_test
-            y_train = self.y_train
-            y_test = self.y_test
-
         self.studies = {}
         for model_name, trial_func in trials_dict.items():
-            self.logger.info(f"Finding hyperameters for {model_name}")
+            self.logger.info(f"Finding hyperparameters for {model_name}")
             sampler = TPESampler(seed=self.config.SEED)
             study = create_study(direction="maximize", study_name=model_name, sampler=sampler)
             study.optimize(lambda trial:

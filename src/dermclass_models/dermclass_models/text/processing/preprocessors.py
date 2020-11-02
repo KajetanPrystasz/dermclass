@@ -56,6 +56,7 @@ class TextPreprocessors(Preprocessors):
         return df
 
 
+# TODO: Think about making it faster (no for loop on rows)
 class SpacyPreprocessor(TransformerMixin, BaseEstimator):
 
     def __init__(self):

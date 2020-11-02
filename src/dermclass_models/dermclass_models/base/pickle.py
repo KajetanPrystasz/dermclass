@@ -30,6 +30,7 @@ class Pickle:
         return trained_model
 
     # TODO: Add note about turning off automatic use of this function for archiving purposes
+    # TODO: Make it always use same input (full path or .name?)
     def save_pipeline(self, pipeline_object: Pipeline):
         """Save pipeline to pickle folder"""
 
