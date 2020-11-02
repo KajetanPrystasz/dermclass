@@ -1,4 +1,6 @@
 .idea
+.idea/dermclass.iml
+.idea/misc.xml
 .ipynb_checkpoints
 *.egg-info
 dist
