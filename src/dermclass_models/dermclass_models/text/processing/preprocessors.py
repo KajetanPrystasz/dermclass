@@ -8,14 +8,13 @@ import spacy
 from sklearn.base import TransformerMixin, BaseEstimator
 
 from dermclass_models.base.processing.preprocessors import Preprocessors
-from dermclass_models.base.config import BaseConfig
 
 from dermclass_models.text.config import TextConfig
 
 
 class TextPreprocessors(Preprocessors):
 
-    def __init__(self, config: BaseConfig = TextConfig):
+    def __init__(self, config: TextConfig = TextConfig):
         super().__init__(config)
 
     def load_class_from_dir(self, path: Path) -> pd.DataFrame:

@@ -10,7 +10,8 @@ dependencies:
 - pathlib
 - joblib
 - pytest
-- pytest-dependency
+- pytest-sugar
+- pytest-cov
 - numpy
 - pandas
 - scipy
@@ -18,5 +19,6 @@ dependencies:
 - optuna
 - spacy
 - spacy-model-en_core_web_sm
+- tensorflow
 - pip:
   - xgboost

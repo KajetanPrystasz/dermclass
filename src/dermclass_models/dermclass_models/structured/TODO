@@ -1,2 +1,4 @@
 # TODO: Extend exploratory notebook
 # TODO: Explore some feature engineering to get better scores
+
+# TODO: Switch to lightbm sklearn wrapper

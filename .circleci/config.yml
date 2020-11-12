@@ -1,6 +1,6 @@
 # TODO: Remove redundant code, fix sourcing and add conda prefixes, add caching of env
 # TODO: Add spacy model download to API
-
+# TODO: Check this: https://circleci.com/developer/orbs/orb/roopakv/swissknife#commands-run_if_modified
 version: 2
 
 defaults: &defaults

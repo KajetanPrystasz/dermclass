@@ -73,10 +73,14 @@ class PpcPipeline:
 
     # TODO: Add pruning
     def tune_hyperparameters(self, trials_dict,
-                             x_train: pd.DataFrame, x_test: pd.DataFrame,
-                             y_train: pd.DataFrame, y_test: pd.DataFrame,
-                             max_overfit=0.05, cv=5, n_trials=20, n_jobs=-1):
+                             x_train: pd.DataFrame = None, x_test: pd.DataFrame = None,
+                             y_train: pd.DataFrame = None, y_test: pd.DataFrame = None,
+                             max_overfit: float = 0.05, cv: int = 5, n_trials: int = 20, n_jobs: int = -1):
         """Find best model and best hyperparameters from searched parameter space"""
+        x_train = x_train or self.x_train
+        x_test = x_test or self.x_test
+        y_train = y_train or self.y_train
+        y_test = y_test or self.y_test
 
         self.studies = {}
         for model_name, trial_func in trials_dict.items():
