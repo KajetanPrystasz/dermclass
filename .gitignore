@@ -7,4 +7,5 @@ dist
 build
 __pycache__
 *.pkl
+*.h5
 .pytest_cache

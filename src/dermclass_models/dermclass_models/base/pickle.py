@@ -21,12 +21,13 @@ class Pickle:
     # TODO: Add proper type output
     def load_pipeline(self, path: str = None, from_pck=True):
         """Load pipeline from to pickle folder using file name"""
+
         if from_pck:
             path = path or self.config.PICKLE_DIR / f"{self.config.PIPELINE_TYPE}_{self.pipeline_version}.pkl"
             trained_model = joblib.load(filename=path)
         else:
             path = path or self.config.PICKLE_DIR / f"{self.config.PIPELINE_TYPE}_{self.pipeline_version}.h5"
-            trained_model = load_model.load(path)
+            trained_model = load_model(path)
 
         file_name = path.name
 

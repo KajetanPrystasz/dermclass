@@ -31,12 +31,11 @@ class ImageMain:
                             epochs=self.config.NUM_EPOCHS,
                             validation_data=validation_dataset,
                             callbacks=[pipeline.callback])
-        # save model using h5
 
-        # Save pipeline to pickle
+        # Save pipeline to h5 (pickle)
         pickler = Pickle(self.config)
         pickler.remove_old_pipelines([])
-        pickler.save_pipeline(self.pipeline)
+        pickler.save_pipeline(model, to_pck=False)
 
 
 if __name__ == "__main__":

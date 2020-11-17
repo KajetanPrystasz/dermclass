@@ -1,5 +1,3 @@
-# TODO: Add image module
-
 # TODO: Finish text module (word2wec or other embedding model)
 
 # TODO: Refactor and finalize models package
@@ -13,8 +11,3 @@
 
 # TODO: Deploy to AWS and have persistent database
 # TODO: Have an ensemble of data inputs
-
-# TODO: Ideas for the future:
-# TODO: Add MLflow tracking
-# TODO: Scraping of images for image module
-# TODO: Dashboard in plotly
