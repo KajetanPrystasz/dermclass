@@ -30,22 +30,19 @@ class ImagePipeline:
         self.data_augmentation = data_augmentation
         return data_augmentation
 
-    def setup_model(self, img_size=None, model_obj=None, learning_rate=None, metrics=None):
-        if img_size is None or model_obj is None:
-            preprocessor = ImagePreprocessors(self.config)
-            img_size, model_obj = preprocessor.get_efficientnet_and_size()
-
+    def setup_model(self, img_size=None, model_obj=None, learning_rate=None, metrics=None, data_augmentation=None):
         learning_rate = learning_rate or self.config.LEARNING_RATE
         metrics = metrics or self.config.METRICS
+        data_augmentation = data_augmentation or self.data_augmentation
 
         base_model = model_obj(include_top=False, weights='imagenet', classes=3)
         base_model.trainable = False
 
-        model = tf.keras.Sequential([tf.keras.Input(shape=img_size+(3,)),
-                                     self.data_augmentation,
+        model = tf.keras.Sequential([tf.keras.Input(shape=img_size + (3,)),
+                                     data_augmentation,
                                      base_model,
-                                     tf.keras.layers.GlobalAveragePooling2D,
-                                     tf.keras.layers.Dense(len(self.config.DISEASES), "softmax")
+                                     tf.keras.layers.GlobalAveragePooling2D(),
+                                     tf.keras.layers.Dense(3, "softmax")
                                      ])
 
         model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=learning_rate),

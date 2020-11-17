@@ -54,12 +54,10 @@ class ImagePreprocessors:
         if img_size <= 492:
             img_size = (456, 456)
             model = tf.keras.applications.EfficientNetB5
-
-        if 492 < img_size <= 564:
+        elif 492 < img_size <= 564:
             img_size = (528, 528)
             model = tf.keras.applications.EfficientNetB6
-
-        if 564 < img_size:
+        elif 564 < img_size:
             img_size = (600, 600)
             model = tf.keras.applications.EfficientNetB7
 
@@ -70,7 +68,7 @@ class ImagePreprocessors:
 
         return img_size, model
 
-    def get_dataset(self, image_size: Tuple[int, int, int] = None, batch_size: int = None, data_path: Path = None):
+    def get_dataset(self, image_size: Tuple[int, int] = None, batch_size: int = None, data_path: Path = None):
         image_size = image_size or self.img_size
         batch_size = batch_size or self.config.BATCH_SIZE
         data_path = data_path or self.config.DATA_PATH

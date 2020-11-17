@@ -18,10 +18,13 @@ class ImageMain:
         self.logger.info("Started training the pipeline")
 
         preprocessors = ImagePreprocessors(self.config)
-        train_dataset, validation_dataset, test_dataset = preprocessors.get_and_speed_up_loading()
+        img_size = preprocessors.get_avg_img_size()
+        img_size, model = preprocessors.get_efficientnet_and_size(img_size)
+        train_dataset, validation_dataset, test_dataset = preprocessors.get_and_speed_up_loading(img_size)
 
         pipeline = ImagePipeline(self.config)
-        model = pipeline.setup_model()
+        data_augmentation = pipeline.get_data_augmentation()
+        model = pipeline.setup_model(img_size=img_size, model_obj=model, data_augmentation=data_augmentation)
 
         # fit model
         history = model.fit(train_dataset,

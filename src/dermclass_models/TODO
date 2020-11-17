@@ -11,10 +11,8 @@
 # TODO: Get more data / decide on metrics / prepare notebooks
 # TODO: Start writing text
 
-
-# TODO: NICE TO HAVE: Deploy to AWS and have persistent database
-# TODO: NICE TO HAVE: GPT3
-
+# TODO: Deploy to AWS and have persistent database
+# TODO: Have an ensemble of data inputs
 
 # TODO: Ideas for the future:
 # TODO: Add MLflow tracking
