@@ -1,3 +1,4 @@
+# TODO: Add additional normalization
 from typing import Tuple
 from pathlib import Path
 
@@ -72,7 +73,7 @@ class SpacyPreprocessor(TransformerMixin, BaseEstimator):
             x = self.x
 
         array = np.array([])
-        # CHANGE IT TO APPLY ON DF
+        # TODO: CHANGE IT TO APPLY ON DF
         for row in x["text"]:
             tokens = self.nlp(row)
             clean_tokens = [token for token in tokens if not (token.is_punct or token.is_stop)]
