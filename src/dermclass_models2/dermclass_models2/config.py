@@ -1,10 +1,13 @@
 import pathlib
 import logging
 import sys
+import abc
 
 from optuna import trial
 
 import dermclass_models2
+
+import tensorflow as tf
 
 
 # TODO: Add more models for the future
@@ -46,9 +49,9 @@ class BaseConfig:
     DEFAULT_BEST_MODEL = "XGBClassifier"
     DEFAULT_BEST_DL_MODEL = "TFDistilBertForSequenceClassification"
 
-    trials_dict = {}
+    TRIALS_DICT = {}
 
-    tuning_func_params = {"n_jobs": -1, "max_overfit": 0.05, "cv": 4, "n_trials": 20}
+    TUNING_FUNC_PARAMS = {"n_jobs": -1, "max_overfit": 0.05, "cv": 3, "n_trials": 10}
 
 
 class StructuredConfig(BaseConfig):
@@ -89,10 +92,25 @@ class StructuredConfig(BaseConfig):
 
     DATA_PATH = BaseConfig.PACKAGE_ROOT / "datasets" / "structured" / "dermatology_dataset.csv"
 
-    trials_dict = {"XGBClassifier": xgboost_trial}
+    TRIALS_DICT = {"XGBClassifier": xgboost_trial}
 
 
-class ImageConfig(BaseConfig):
+class _TfConfig(abc.ABC):
+
+    BATCH_SIZE = 3
+    NUM_EPOCHS = 5
+    METRICS = ["accuracy"]
+    LEARNING_RATE = 0.0001
+
+    DISEASES = ["psoriasis", "lichen_planus", "pityriasis_rosea"]
+
+    GPU_CONFIG = tf.compat.v1.ConfigProto()
+    GPU_CONFIG.gpu_options.allow_growth = True
+
+    PATIENCE = 3
+
+
+class ImageConfig(BaseConfig, _TfConfig):
 
     PIPELINE_TYPE = "image_pipeline"
 
@@ -103,18 +121,8 @@ class ImageConfig(BaseConfig):
     IMG_HEIGHT = 255
     IMG_WIDTH = 255
 
-    LEARNING_RATE = 0.001
 
-    METRICS = ["accuracy"]
-
-    BATCH_SIZE = 2
-
-    NUM_EPOCHS = 20
-
-    DISEASES = ["psoriasis", "lichen_planus", "pityriasis_rosea"]
-
-
-class TextConfig(BaseConfig):
+class TextConfig(BaseConfig, _TfConfig):
 
     PIPELINE_TYPE = "text_pipeline"
 
@@ -124,15 +132,9 @@ class TextConfig(BaseConfig):
 
     DATA_PATH = BaseConfig.PACKAGE_ROOT / "datasets" / "text"
 
-    DISEASES = ["psoriasis", "lichen_planus"]
+    TRIALS_DICT = {"MultinomialNB": multinomial_nb_trial}
 
-    BATCH_SIZE = 2
-
-    NUM_EPOCHS = 20
-
-    trials_dict = {"MultinomialNB": multinomial_nb_trial}
-
-    tuning_func_params = {"n_jobs": -1, "max_overfit": 0.2, "cv": 2, "n_trials": 10}
+    TUNING_FUNC_PARAMS = {"n_jobs": -1, "max_overfit": 0.2, "cv": 2, "n_trials": 10}
 
 
 def get_console_handler() -> logging:

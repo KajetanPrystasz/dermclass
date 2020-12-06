@@ -7,11 +7,18 @@ import numpy as np
 import pandas as pd
 import spacy
 import cv2
+
 import tensorflow as tf
+
 from sklearn.model_selection import train_test_split
 from sklearn.base import TransformerMixin, BaseEstimator
 
 from dermclass_models2.config import StructuredConfig, ImageConfig, TextConfig
+
+DataFrame = pd.DataFrame
+Series = pd.Series
+Dataset = tf.data.Dataset
+Sequential = tf.keras.models.Sequential
 
 
 class _SklearnPreprocessors(abc.ABC):
@@ -31,17 +38,12 @@ class _SklearnPreprocessors(abc.ABC):
         self.y_test = pd.Series
 
     @abc.abstractmethod
-    def load_data(self):
-        pass
+    def _load_structured_data(self, path: Path) -> DataFrame:
+        return DataFrame()
 
-    @abc.abstractmethod
-    def _load_data_from_files(self, path: Path) -> pd.DataFrame:
-        df = pd.DataFrame()
-        return df
-
-    def _split_target_structured(self, df: pd.DataFrame = None, target_col: str = None)\
-            -> Tuple[pd.DataFrame, pd.Series]:
-        if isinstance(df, pd.DataFrame):
+    def _split_target_structured(self, df: DataFrame = None, target_col: str = None)\
+            -> Tuple[DataFrame, Series]:
+        if isinstance(df, DataFrame):
             df = df
         elif df is None:
             df = self.df
@@ -52,11 +54,11 @@ class _SklearnPreprocessors(abc.ABC):
 
         self.x = x
         self.y = y
-        self.logger.info("Successfully splat the target data")
+        self.logger.info("Successfully splat the target")
         return x, y
 
-    def _split_train_test_structured(self, x: pd.DataFrame = None, y: pd.Series = None)\
-            -> Tuple[pd.DataFrame, pd.DataFrame, pd.Series, pd.Series]:
+    def _split_train_test_structured(self, x: DataFrame = None, y: Series = None)\
+            -> Tuple[DataFrame, DataFrame, Series, Series]:
         if isinstance(x, pd.DataFrame):
             x = x
         elif x is None:
@@ -78,7 +80,7 @@ class _SklearnPreprocessors(abc.ABC):
         self.logger.info("Successfully splat train and test data")
         return x_train, x_test, y_train, y_test
 
-    def _load_data_structured(self, df: pd.DataFrame = None) -> Tuple[pd.DataFrame, pd.DataFrame, pd.Series, pd.Series]:
+    def _load_data_structured(self, df: DataFrame = None) -> Tuple[DataFrame, DataFrame, Series, Series]:
         x, y = self._split_target_structured(df)
         x_train, x_test, y_train, y_test = self._split_train_test_structured(x, y)
 
@@ -92,43 +94,11 @@ class _TfPreprocessors(abc.ABC):
         self.config = config
         self.logger = logging.getLogger(__name__)
 
-        self.train_dataset = tf.data.Dataset
-        self.validation_dataset = tf.data.Dataset
-        self.test_dataset = tf.data.Dataset
+        self.train_dataset = Dataset
+        self.validation_dataset = Dataset
+        self.test_dataset = Dataset
 
         self.prefetch = True
-        self.img_size = None
-
-    @abc.abstractmethod
-    def load_data(self):
-        pass
-
-    def _load_data_tf(self, batch_size: int = None, data_path: Path = None, img_size: Tuple[int, int] = None):
-        batch_size = batch_size or self.config.BATCH_SIZE
-        data_path = data_path or self.config.DATA_PATH
-
-        loading_func = tf.keras.preprocessing.text_dataset_from_directory
-        func_kwargs = dict(directory=data_path,
-                           validation_split=self.config.TEST_SIZE,
-                           batch_size=batch_size,
-                           subset="training",
-                           seed=self.config.SEED,
-                           shuffle=True)
-
-        img_size = img_size or self.img_size
-        if img_size:
-            loading_func = tf.keras.preprocessing.image_dataset_from_directory
-            func_kwargs["image_size"] = img_size
-
-        train_dataset = loading_func(**func_kwargs)
-        func_kwargs["subset"] = "training"
-        validation_dataset = loading_func(**func_kwargs)
-
-        self.train_dataset = train_dataset
-        self.validation_dataset = validation_dataset
-
-        self.logger.info(f"Successfully loaded train and validation datasets ")
-        return train_dataset, validation_dataset
 
     def _split_train_test_tf(self, train_dataset: tf.data.Dataset = None, validation_dataset: tf.data.Dataset = None):
         train_dataset = train_dataset or self.train_dataset
@@ -147,6 +117,7 @@ class _TfPreprocessors(abc.ABC):
         self.validation_dataset = validation_dataset
         self.test_dataset = test_dataset
 
+        self.logger.info(f"Successfully prefetched train, test and validation datasets")
         self.logger.info(f'Number of train batches: {tf.data.experimental.cardinality(train_dataset)}\
         Number of validation batches: {tf.data.experimental.cardinality(validation_dataset)}\
         Number of test batches: {tf.data.experimental.cardinality(test_dataset)}')
@@ -159,15 +130,15 @@ class StructuredPreprocessor(_SklearnPreprocessors):
     def __init__(self, config: StructuredConfig = StructuredConfig):
         super().__init__(config)
 
-    def _load_data_from_files(self, path: Path = None) -> pd.DataFrame:
+    def _load_structured_data(self, path: Path = None) -> pd.DataFrame:
         path = path or self.config.DATA_PATH
         df = pd.read_csv(path)
         self.df = df
-        self.logger.info("Data loaded from csv")
+        self.logger.info("Successfully loaded data from csv")
         return df
 
-    def load_data(self, path: Path = None) -> Tuple[pd.DataFrame, pd.DataFrame, pd.Series, pd.Series]:
-        df = self._load_data_from_files(path)
+    def load_data(self, path: Path = None) -> Tuple[DataFrame, DataFrame, Series, Series]:
+        df = self._load_structured_data(path)
         x_train, x_test, y_train, y_test = self._load_data_structured(df)
         return x_train, x_test, y_train, y_test
 
@@ -185,7 +156,7 @@ class ImagePreprocessors(_TfPreprocessors):
         self.img_size = ()
         self.img_shape = ()
 
-    def _get_avg_img_size(self, path: Path = None):
+    def _get_avg_img_size(self, path: Path = None) -> Tuple[int, int]:
         path = path or self.config.DATA_PATH
 
         height_list = []
@@ -200,42 +171,66 @@ class ImagePreprocessors(_TfPreprocessors):
         mean_width = int(sum(width_list) / len(width_list))
 
         self.img_size = (mean_height, mean_width)
-        self.img_shape = self.img_size + (3,)
 
         self.logger.info(f"Mean height is: {mean_height}, mean width is: {mean_width}")
-
         return self.img_size
 
-    def _get_efficientnet_and_size(self, img_size: Tuple[int, int] = None):
+    def _get_efficientnet_and_size(self, img_size: Tuple[int, int] = None) -> Tuple[Tuple[int, int], Sequential]:
         """https://keras.io/examples/vision/image_classification_efficientnet_fine_tuning/"""
-
         img_size = img_size or self.img_size
 
-        model = None
         img_size = (img_size[0] + img_size[1]) / 2
-        if img_size <= 492:
-            img_size = (456, 456)
-            model = tf.keras.applications.EfficientNetB5
+
+        if 564 < img_size:
+            img_size = (600, 600)
+            model = tf.keras.applications.EfficientNetB7
         elif 492 < img_size <= 564:
             img_size = (528, 528)
             model = tf.keras.applications.EfficientNetB6
-        elif 564 < img_size:
-            img_size = (600, 600)
-            model = tf.keras.applications.EfficientNetB7
+        else:
+            img_size = (456, 456)
+            model = tf.keras.applications.EfficientNetB5
 
         self.img_size = img_size
         self.model = model
 
         self.logger.info(f"Chosen model is {model} with img_size {img_size}")
-
         return img_size, model
 
-    def load_data(self, path: Path = None):
+    def _load_dataset(self, batch_size: int = None, data_path: Path = None, img_size: Tuple[int, int] = None)\
+            -> Tuple[Dataset, Dataset]:
+        batch_size = batch_size or self.config.BATCH_SIZE
+        data_path = data_path or self.config.DATA_PATH
+        img_size = img_size or self.img_size
+
+        train_dataset = tf.keras.preprocessing.image_dataset_from_directory(directory=data_path,
+                                                                            image_size=img_size,
+                                                                            validation_split=self.config.TEST_SIZE,
+                                                                            batch_size=batch_size,
+                                                                            subset="training",
+                                                                            seed=self.config.SEED,
+                                                                            shuffle=True)
+
+        validation_dataset = tf.keras.preprocessing.image_dataset_from_directory(directory=data_path,
+                                                                                 image_size=img_size,
+                                                                                 validation_split=self.config.TEST_SIZE,
+                                                                                 batch_size=batch_size,
+                                                                                 subset="validation",
+                                                                                 seed=self.config.SEED,
+                                                                                 shuffle=True)
+
+        self.train_dataset = validation_dataset
+        self.validation_dataset = validation_dataset
+
+        self.logger.info(f"Successfully loaded train and validation datasets ")
+        return train_dataset, validation_dataset
+
+    def load_data(self, path: Path = None) -> Tuple[Dataset, Dataset, Dataset]:
         path = path or self.config.DATA_PATH
 
         img_size = self._get_avg_img_size(path)
         img_size, _ = self._get_efficientnet_and_size(img_size)
-        train_dataset, validation_dataset = self._load_data_tf(img_size=img_size, data_path=path)
+        train_dataset, validation_dataset = self._load_dataset(img_size=img_size, data_path=path)
         train_dataset, validation_dataset, test_dataset = self._split_train_test_tf(train_dataset,
                                                                                     validation_dataset)
 
@@ -251,10 +246,7 @@ class TextPreprocessors(_SklearnPreprocessors, _TfPreprocessors):
         self.config = config
         self.logger = logging.getLogger(__name__)
 
-        # Todo: Remove this and fix tf_loading function
-        self.img_size = None
-
-    def _load_class_from_dir(self, path: Path) -> pd.DataFrame:
+    def _load_class_from_dir(self, path: Path) -> DataFrame:
         """Load data from provided path"""
         class_name = path.name
 
@@ -272,7 +264,7 @@ class TextPreprocessors(_SklearnPreprocessors, _TfPreprocessors):
         self.logger.info(f"Successfully loaded class {class_name}")
         return df
 
-    def _load_data_from_files(self, path: Path = None) -> pd.DataFrame:
+    def _load_structured_data(self, path: Path = None) -> DataFrame:
         path = path or self.config.DATA_PATH
         df = pd.DataFrame()
 
@@ -282,22 +274,45 @@ class TextPreprocessors(_SklearnPreprocessors, _TfPreprocessors):
         df = df.reset_index().drop("index", axis=1)
 
         self.df = df
-        self.logger.info("Successfully loaded the data")
+        self.logger.info("Successfully loaded the data from file")
         return df
 
-    def load_data(self, get_datasets: bool = False, path: Path = None)\
-            -> Union[Tuple[tf.data.Dataset, tf.data.Dataset, tf.data.Dataset],
-                     Tuple[pd.DataFrame, pd.DataFrame, pd.Series, pd.Series]]:
+    def _load_dataset(self, batch_size: int = None, data_path: Path = None) -> Tuple[Dataset, Dataset]:
+        batch_size = batch_size or self.config.BATCH_SIZE
+        data_path = data_path or self.config.DATA_PATH
+
+        train_dataset = tf.keras.preprocessing.text_dataset_from_directory(directory=data_path,
+                                                                           validation_split=self.config.TEST_SIZE,
+                                                                           batch_size=batch_size,
+                                                                           subset="training",
+                                                                           seed=self.config.SEED,
+                                                                           shuffle=True)
+
+        validation_dataset = tf.keras.preprocessing.text_dataset_from_directory(directory=data_path,
+                                                                                validation_split=self.config.TEST_SIZE,
+                                                                                batch_size=batch_size,
+                                                                                subset="validation",
+                                                                                seed=self.config.SEED,
+                                                                                shuffle=True)
+
+        self.train_dataset = validation_dataset
+        self.validation_dataset = validation_dataset
+
+        self.logger.info(f"Successfully loaded train and validation datasets ")
+        return train_dataset, validation_dataset
+
+    def load_data(self, path: Path = None, get_datasets: bool = False)\
+            -> Union[Tuple[Dataset, Dataset, Dataset],
+                     Tuple[DataFrame, DataFrame, Series, Series]]:
         path = path or self.config.DATA_PATH
 
         if get_datasets:
-            train_dataset, validation_dataset = self._load_data_tf(data_path=path)
+            train_dataset, validation_dataset = self._load_dataset(data_path=path)
             train_dataset, validation_dataset, test_dataset = self._split_train_test_tf(train_dataset,
                                                                                         validation_dataset)
-
             return train_dataset, validation_dataset, test_dataset
         else:
-            df = self._load_data_from_files(path)
+            df = self._load_structured_data(path)
             x_train, x_test, y_train, y_test = self._load_data_structured(df)
             return x_train, x_test, y_train, y_test
 
@@ -353,13 +368,12 @@ class SpacyPreprocessor(TransformerMixin, BaseEstimator):
         if x is None:
             x = self.x
 
+        # TODO: Change to apply on df instead of iterating over df rows
         array = np.array([])
-        # TODO: CHANGE IT TO APPLY ON DF
         for row in x["text"]:
             tokens = self.nlp(row)
             clean_tokens = [token for token in tokens if not (token.is_punct or token.is_stop)]
             lemmas = [token.lemma_ for token in clean_tokens]
             text_lemmatized = " ".join(lemmas)
             array = np.append(array, text_lemmatized)
-
         return array
