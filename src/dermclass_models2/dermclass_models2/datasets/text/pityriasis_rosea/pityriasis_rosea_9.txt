@@ -1,0 +1,125 @@
+https://www.aafp.org/afp/2004/0101/p87.html
+
+DANIEL L. STULBERG, M.D., Utah Valley Regional Medical Center, Provo, Utah
+
+JEFF WOLFREY, M.D., Good Samaritan Regional Medical Center, Phoenix, Arizona
+
+Am Fam Physician. 2004 Jan 1;69(1):87-91.
+
+  Patient Information Handout
+
+Pityriasis rosea is a common, acute exanthem of uncertain etiology. Viral and bacterial causes have been sought, but convincing answers have not yet been found. Pityriasis rosea typically affects children and young adults. It is characterized by an initial herald patch, followed by the development of a diffuse papulosquamous rash. The herald patch often is misdiagnosed as eczema. Pityriasis rosea is difficult to identify until the appearance of characteristic smaller secondary lesions that follow Langer's lines (cleavage lines). Several medications can cause a rash similar to pityriasis rosea, and several diseases, including secondary syphilis, are included in the differential diagnosis. One small controlled trial reported faster clearing of the exanthem with the use of erythromycin, but the mechanism of effect is unknown. Resolution of the rash may be hastened by ultraviolet light therapy but not without the risk of hyperpigmentation. Topical or systemic steroids and antihistamines often are used to relieve itching.
+
+Pityriasis rosea is a common skin condition characterized by a herald patch and the later appearance of lesions arrayed along Langer's lines (cleavage lines). The condition is diagnosed most often in children and young adults. Several large case series from dermatology practices indicate that the incidence of pityriasis rosea peaks in persons 20 to 29 years of age, with no consistent gender predilection (Table 1).1–3
+
+Etiology
+Although the etiology of pityriasis rosea is unclear, several factors indicate an infectious cause. First, outbreaks of the condition occur in clusters, suggesting that an infectious agent is circulating within a community.4 Second, recurrence of pityriasis rosea outside the acute phase is rare, suggesting that there is long-lasting immunity after the infection. Third, up to 69 percent of patients with pityriasis rosea have a prodromal illness before the herald patch appears.5 Finally, some patients with pityriasis rosea show an increase in B lymphocytes, a decrease in T lymphocytes, and an elevated sedimentation rate.6
+
+Unfortunately, even though electron microscopy shows some viral changes and possible viral particles, antibody and polymerase chain reaction tests for known viruses have failed to identify an offending virus. The results of one study7 showed elevated levels of human herpesvirus 7 in patients with pityriasis rosea. However, subsequent study results6,8,9 showed no consistent increase of human herpesvirus 7 levels in affected patients compared with control patients. Furthermore, human herpesvirus 7 infection is common in childhood, and the virus is prone to reactivation. Several other viruses have been examined, but none has been found to be causative.6
+
+Chlamydia pneumoniae, Legionella pneumophila, and Mycoplasma pneumoniae also have been suggested as potential infectious agents in pityriasis rosea. However, the results of a small prospective case-control study10 did not show a significant rise in antibodies to these bacteria when affected patients were compared with matched control patients.
+
+Diagnosis
+Identification of pityriasis rosea can be challenging for a number of reasons. The diagnosis is unclear at the onset of symptoms, and there are no noninvasive tests that confirm the condition. In at least one half of patients, the first symptoms of pityriasis rosea are nonspecific and consistent with a viral upper respiratory infection.1,5 A herald patch then appears, typically on the trunk. This large lesion is commonly 2 to 10 cm in diameter, ovoid, erythematous, and slightly raised, with a typical collarette of scale at the margin (Figure 1). At this stage, however, the diagnosis usually remains unclear. Microscopic examination of potassium hydroxide preparations shows no fungal elements. The lesion cannot be differentiated from eczema and often is treated as such.
+
+View/Print Table
+
+TABLE 1
+Epidemiology of Pityriasis Rosea from Dermatology Practices
+STUDY	SITE	AGE RANGE	PEAK AGES	MALE-TO-FEMALE RATIO	OTHER
+Cheong and Wong1
+
+Singapore
+
+Not reported
+
+20 to 24 years
+
+Male predominance
+
+Peak incidence in March, April, and November
+
+Harman, et al.2
+
+Turkey
+
+10 to 39 years (87 percent of affected patients)
+
+20 to 29 years
+
+1.0 to 1.2
+
+Peak incidence in rainy, snowy months
+
+Tay and Goh3
+
+Singapore
+
+Nine months to 82 years
+
+20 to 29 years
+
+1.2 to 1.0
+
+17 percent had a herald patch; 6 percent had the inverse form (i.e., extremities affected but trunk spared)*
+
+*—It is likely that the percentage of patients with a herald patch is much higher in primary care settings, because patients with a herald patch and a clear diagnosis are unlikely to have been referred.
+
+Information from references 1 through 3.
+
+A few days to a few weeks after the appear ance of the herald patch, crops of smaller lesions, 5 to 10 mm in diameter, develop across the trunk and, less commonly, on the extremities. These lesions are salmon colored, ovoid, raised, and have the same collarette of scale as the herald patch (Figure 2). At this stage, the diagnosis usually is clear, particularly if the physician can observe or elicit a history of the herald patch.
+
+View/Print Figure
+
+
+
+FIGURE 1
+
+Herald patch with collarette of scale at the margin.
+
+View/Print Figure
+
+
+
+FIGURE 2
+
+Classic pityriasis rosea of the lower abdomen with associated herald patch.
+
+View/Print Figure
+
+
+
+FIGURE 3
+
+Typical oblong trunk lesions of pityriasis rosea.
+
+If the diagnosis is uncertain, especially if the palms and soles are affected and the patient is sexually active, the physician should consider the possibility of secondary syphilis. Appropriate evaluation includes direct fluorescent antibody testing of lesion exudates, a VDRL test, or dark-field microscopy.11 Other conditions in the differential diagnosis include diffuse nummular eczema, tinea corporis, pityriasis lichenoides, guttate psoriasis, viral exanthem, lichen planus, and medication reaction.
+
+The smaller secondary lesions of pityriasis rosea follow Langer's lines (Figure 3). When the lesions occur on the back, they align in a typical “Christmas tree” or “fir tree” pattern. Elsewhere on the body, the lesions follow the cleavage lines as follows: transversely across the lower abdomen and back, circumferentially around the shoulders, and in a V-shaped pattern on the upper chest12 (Figure 4). Pruritus is variable. Except for mild to severe itching in 25 percent of patients, no systemic symptoms typically are present during the rash phase of pityriasis rosea.
+
+View/Print Figure
+
+
+
+FIGURE 4
+
+Lesions aligning along Langer's lines
+
+Pityriasis rosea can occur in an inverse form in which the extremities are affected but the trunk is spared (Figure 5). Less commonly, pityriasis rosea occurs in a localized form, which makes the diagnosis more difficult. Gigantean (larger and fewer lesions), pustular, purpuric, or vesicular pityriasis rosea occurs in rare cases.13 At times, no herald patch is found. In one series,3 only 17 percent of patients referred to a dermatology clinic reported a herald patch; absence of a herald patch made the diagnosis more difficult and necessitated referral.
+
+View/Print Figure
+
+
+
+FIGURE 5
+
+Inverse form of pityriasis rosea, with peripheral distribution.
+
+Biopsy usually is not indicated in the evaluation of patients with suspected pityriasis rosea. Histology has shown that in addition to non-specific subacute and chronic inflammation, 55 percent of specimens contain epidermal cells that display dyskeratotic degeneration.14
+
+Worsening of the rash or a second wave of lesions is not uncommon before eventual spontaneous resolution of the eruption. Recurrence of the condition later in life is rare.
+
+Although no causal link has been established, multiple drugs have been associated with an extensive and often prolonged form of pityriasis rosea (Table 2).13,15–21 A review of the literature shows that single case reports account for most of the drug associations.
+
+Treatment
+The rash of pityriasis rosea typically lasts about five weeks and resolves by eight weeks in more than 80 percent of patients.1 An important goal of treatment is to control pruritus, which may be severe in 25 percent of patients.22 For patients with severe pruritus, experts have recommended treatment with zinc oxide, calamine lotion, topical steroids, oral antihistamines, and even oral steroids.13 [Evidence level C, expert opinion]
