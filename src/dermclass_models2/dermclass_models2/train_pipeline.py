@@ -1,22 +1,39 @@
 import logging
 import abc
 import argparse
+from typing import Union
+
+import tensorflow as tf
 
 from dermclass_models2.preprocessing import StructuredPreprocessor, TextPreprocessors, ImagePreprocessors
 from dermclass_models2.pipeline import StructuredPipeline, TextPipeline, ImagePipeline
 from dermclass_models2.config import StructuredConfig, TextConfig, ImageConfig
 from dermclass_models2.persistence import BasePersistence
+from dermclass_models2.pipeline import TransformersModelingPipeline
 
-from sklearn.pipeline import Pipeline
+from sklearn.pipeline import Pipeline as SklearnPipeline
+
+Sequential = tf.keras.models.Sequential
 
 
 class _BaseTrainPipeline(abc.ABC):
     def __init__(self, config):
+        """
+        Abstract base class for training pipeline and saving it
+        :param config: Config object for the class
+        """
         self.config = config
         self.logger = logging.getLogger(__name__)
         self.modeling_pipeline = None
 
-    def _save_modeling_pipeline(self, modeling_pipeline, backend):
+    def _save_modeling_pipeline(self,
+                                modeling_pipeline: Union[TransformersModelingPipeline, SklearnPipeline, Sequential],
+                                backend: str):
+        """
+        Utility function to saave modeling pipeline using provided backend
+        :param modeling_pipeline: A modeling pipeline to save
+        :param backend: Type of backend used for loading given pipeline, has to be one of ["joblib", "tf", "tfm"]
+        """
         modeling_pipeline = self.modeling_pipeline or modeling_pipeline
         persister = BasePersistence(self.config)
         persister.remove_old_pipelines([])
@@ -24,13 +41,19 @@ class _BaseTrainPipeline(abc.ABC):
 
 
 class StructuredTrainPipeline(_BaseTrainPipeline):
+
     def __init__(self, config: StructuredConfig = StructuredConfig):
+        """
+        A class used for training structured pipeline and saving it
+        :param config: Config object for the class
+        """
         super().__init__(config)
 
         self.preprocessor = StructuredPreprocessor(self.config)
         self.pipeline = StructuredPipeline(self.config)
 
     def run(self):
+        """Function to run training of the structured pipeline"""
         x_train, x_test, y_train, y_test = self.preprocessor.load_data()
         self.pipeline.fit_structured_data(x_train, x_test, y_train, y_test)
 
@@ -41,12 +64,17 @@ class StructuredTrainPipeline(_BaseTrainPipeline):
 
 class ImageTrainPipeline(_BaseTrainPipeline):
     def __init__(self, config: ImageConfig = ImageConfig):
+        """
+        A class used for training image pipeline and saving it
+        :param config: Config object for the class
+        """
         super().__init__(config)
 
         self.preprocessor = ImagePreprocessors(self.config)
         self.pipeline = ImagePipeline(self.config)
 
     def run(self):
+        """Function to run training of the structured pipeline"""
         train_dataset, validation_dataset, test_dataset = self.preprocessor.load_data()
         self.pipeline.fit_datasets(train_dataset, validation_dataset, test_dataset)
 
@@ -58,6 +86,10 @@ class ImageTrainPipeline(_BaseTrainPipeline):
 
 class TextTrainPipeline(_BaseTrainPipeline):
     def __init__(self, config: TextConfig = TextConfig):
+        """
+        A class used for training text pipeline and saving it
+        :param config: Config object for the class
+        """
         super().__init__(config)
 
         self.preprocessor = TextPreprocessors(self.config)
@@ -65,6 +97,7 @@ class TextTrainPipeline(_BaseTrainPipeline):
         self.pipeline = TextPipeline(self.config)
 
     def run(self):
+        """Function to train text pipelines, choose if sklearn or transformer is better one and save it"""
         x_train, x_test, y_train, y_test = self.preprocessor.load_data(get_datasets=False)
         self.pipeline.fit_structured_data(x_train, x_test, y_train, y_test)
         sklearn_modeling_pipeline = self.pipeline.get_modeling_pipeline(use_sklearn=True)
@@ -78,7 +111,7 @@ class TextTrainPipeline(_BaseTrainPipeline):
                                                                           x_test,
                                                                           y_test,
                                                                           test_dataset)
-        if isinstance(modeling_pipeline, Pipeline):
+        if isinstance(modeling_pipeline, SklearnPipeline):
             backend = "joblib"
         else:
             backend = "tfm"
@@ -86,13 +119,18 @@ class TextTrainPipeline(_BaseTrainPipeline):
         self._save_modeling_pipeline(modeling_pipeline, backend)
 
 
-def get_parser():
+def _get_parser() -> argparse.ArgumentParser:
+    """Utility function to get parser to run script"""
     parser = argparse.ArgumentParser(description='Parse pipeline types to train')
     parser.add_argument('pipeline_types', metavar="N", type=str, nargs='+', help='Name of pipeline to train')
     return parser
 
 
 def run_controller(pipeline_types=('structured', 'text', "image")):
+    """
+    Controller to run training of given types of pipelines
+    :param pipeline_types: Type of pipeline to train
+    """
     for pipeline_type in pipeline_types:
         if pipeline_type == "structured":
             sm = StructuredTrainPipeline()
@@ -106,6 +144,6 @@ def run_controller(pipeline_types=('structured', 'text', "image")):
 
 
 if __name__ == "__main__":
-    parser = get_parser()
+    parser = _get_parser()
     pipeline_types_args = tuple(vars(parser.parse_args())["pipeline_types"])
     run_controller(pipeline_types_args)

@@ -1,0 +1,7 @@
+include README.md
+include environment.yml
+
+recursive-include dermclass_models2/pickles/*
+recursive-include dermclass_models2/datasets/*
+
+include dermclass_models2/VERSION

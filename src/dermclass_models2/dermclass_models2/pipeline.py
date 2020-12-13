@@ -74,7 +74,6 @@ class _SklearnPipeline(abc.ABC):
                                            **self.config.TUNING_FUNC_PARAMS)
         return model
 
-    # TODO: Add additional metrics
     @staticmethod
     def _hyper_param_optimization(trial, model_name: str, trial_func: Trial,
                                   max_overfit: float, cv: int,
@@ -456,7 +455,7 @@ class TextPipeline(_SklearnPipeline, _TfPipeline):
         self.logger.warning("Warning! get_model for transformers function in TextPipeline returns unfitted model")
         return model
 
-    def get_processing_pipeline(self, use_sklearn=True, path=None):
+    def get_processing_pipeline(self, use_sklearn=True):
         if use_sklearn:
             processing_pipeline = Pipeline([("Lemmatization, punctuation and stopwords removal",
                                              SpacyPreprocessor()),

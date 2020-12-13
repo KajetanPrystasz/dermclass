@@ -14,16 +14,27 @@ from dermclass_models2.config import BaseConfig
 from dermclass_models2.validation import ValidationError
 
 
-# TODO: Add zipping and unzipping for pretrained models
+# TODO: Refactor to make it OOP like rest of modules
 class BasePersistence:
 
     def __init__(self, config: BaseConfig):
+        """
+        Class for saving and loading pipeline objects.
+        :param config: Config object for the class
+        """
         self.config = config
         self.pipeline_version = _version
         self.logger = logging.getLogger(__name__)
 
     def load_pipeline(self, backend: str = None, path: Path = None)\
             -> Union[TransformersModelingPipeline, SklearnPipeline, Sequential]:
+        """
+        Function for loading pipeline from given path using provided backend. Can be used either with set params or
+        params from the config
+        :param backend: Type of backend used for loading given pipeline, has to be one of ["joblib", "tf", "tfm"]
+        :param path: Path to loaded file or directory
+        :return: Returns a pipeline for making predictions
+        """
         if backend not in ["joblib", "tf", "tfm"]:
             raise ValidationError("Please choose proper backend from ['joblib', 'tf', 'tfm']")
 
@@ -43,6 +54,10 @@ class BasePersistence:
 
     @staticmethod
     def _remove_files(path: Path):
+        """
+        Utility function to remove files from given path
+        :param path: Path to directory to remove all files from
+        """
         for root, dirs, files in os.walk(path, topdown=False):
             for file_name in files:
                 (Path(root) / file_name).unlink()
@@ -54,6 +69,10 @@ class BasePersistence:
             path.unlink()
 
     def remove_old_pipelines(self, pipelines_to_keep: List[Path] = None):
+        """
+        Remove old pipelines from directory using either config or list of files not to remove from pickle directory
+        :param pipelines_to_keep: A list of paths to files or directories that shouldn't be removed
+        """
         pipelines_to_keep = pipelines_to_keep or []
         do_not_delete = pipelines_to_keep + [Path(p) for p in ['__init__.py', ".gitkeep"]]
 
@@ -65,6 +84,12 @@ class BasePersistence:
     def save_pipeline(self, pipeline_object: Union[TransformersModelingPipeline, SklearnPipeline, Sequential],
                       backend: str = None,
                       path: Path = None):
+        """
+        A function for saving pipeline using provided backend to given path
+        :param pipeline_object: A pipeline object to save
+        :param backend: Type of backend used for saving given pipeline, has to be one of ["joblib", "tf", "tfm"]
+        :param path: Path to save file or directory
+        """
         if backend not in ["joblib", "tf", "tfm"]:
             raise ValidationError("Please choose proper backend from ['joblib', 'tf', 'tfm']")
 

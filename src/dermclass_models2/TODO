@@ -1,11 +1,6 @@
-# TODO: Write tests and function descriptions
+# TODO: Add tests
+# TODO: Add function descriptions
+# TODO: Add type blockers
+# TODO: Fix readme, clean notebooks
 
-# TODO: Refactor and finalize api package
-
-
-# TODO: Next year:
-# TODO: Get more data / decide on metrics / prepare notebooks
-# TODO: Start writing text
-
-# TODO: Deploy to AWS and have persistent database
-# TODO: Have an ensemble of data inputs
+# TODO: Add more models, better metrics

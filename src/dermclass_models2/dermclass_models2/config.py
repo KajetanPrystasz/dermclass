@@ -12,7 +12,11 @@ import tensorflow as tf
 
 # TODO: Add more models for the future
 def xgboost_trial(trial : trial) -> dict:
-    """This is a setup function for Optuna.study"""
+    """
+    A xgboost trial function te be run inside optuna optimization function
+    :param trial: trial object from optuna
+    :return: Returns dictionary with trial params
+    """
     params = {"subsample": trial.suggest_discrete_uniform("subsample", 0.1, 1, 0.1),
               "colsample_bytree": trial.suggest_discrete_uniform("colsample_bytree", 0.6, 1, 0.1),
               "colsample_bylevel": trial.suggest_discrete_uniform("colsample_bylevel", 0.6, 1, 0.1),
@@ -26,7 +30,11 @@ def xgboost_trial(trial : trial) -> dict:
 
 
 def multinomial_nb_trial(trial: trial) -> dict:
-    """This is a setup function for Optuna.study"""
+    """
+    A multinomial naive bayes trial function te be run inside optuna optimization function
+    :param trial: trial object from optuna
+    :return: Returns dictionary with trial params
+    """
     params = {"alpha": trial.suggest_discrete_uniform("alpha", 0.1, 5, 0.1)}
     return params
 
