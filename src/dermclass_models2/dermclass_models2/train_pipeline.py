@@ -30,7 +30,7 @@ class _BaseTrainPipeline(abc.ABC):
                                 modeling_pipeline: Union[TransformersModelingPipeline, SklearnPipeline, Sequential],
                                 backend: str):
         """
-        Utility function to saave modeling pipeline using provided backend
+        Utility function to save modeling pipeline using provided backend
         :param modeling_pipeline: A modeling pipeline to save
         :param backend: Type of backend used for loading given pipeline, has to be one of ["joblib", "tf", "tfm"]
         """
@@ -54,6 +54,11 @@ class StructuredTrainPipeline(_BaseTrainPipeline):
 
     def run(self):
         """Function to run training of the structured pipeline"""
+        if not self.preprocessor:
+            self.logger.warning("No preprocessor object fitted")
+        if not self.pipeline:
+            self.logger.warning("No pipeline object fitted")
+
         x_train, x_test, y_train, y_test = self.preprocessor.load_data()
         self.pipeline.fit_structured_data(x_train, x_test, y_train, y_test)
 
@@ -75,6 +80,11 @@ class ImageTrainPipeline(_BaseTrainPipeline):
 
     def run(self):
         """Function to run training of the structured pipeline"""
+        if not self.preprocessor:
+            self.logger.warning("No preprocessor object fitted")
+        if not self.pipeline:
+            self.logger.warning("No pipeline object fitted")
+
         train_dataset, validation_dataset, test_dataset = self.preprocessor.load_data()
         self.pipeline.fit_datasets(train_dataset, validation_dataset, test_dataset)
 
@@ -93,11 +103,15 @@ class TextTrainPipeline(_BaseTrainPipeline):
         super().__init__(config)
 
         self.preprocessor = TextPreprocessors(self.config)
-
         self.pipeline = TextPipeline(self.config)
 
     def run(self):
         """Function to train text pipelines, choose if sklearn or transformer is better one and save it"""
+        if not self.preprocessor:
+            self.logger.warning("No preprocessor object fitted")
+        if not self.pipeline:
+            self.logger.warning("No pipeline object fitted")
+
         x_train, x_test, y_train, y_test = self.preprocessor.load_data(get_datasets=False)
         self.pipeline.fit_structured_data(x_train, x_test, y_train, y_test)
         sklearn_modeling_pipeline = self.pipeline.get_modeling_pipeline(use_sklearn=True)
@@ -141,6 +155,8 @@ def run_controller(pipeline_types=('structured', 'text', "image")):
         if pipeline_type == "image":
             im = ImageTrainPipeline()
             im.run()
+        else:
+            print("No pipeline types to train inputted")
 
 
 if __name__ == "__main__":

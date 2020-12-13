@@ -59,7 +59,7 @@ class _SklearnPipeline(abc.ABC):
 
     def _get_sklearn_model(self,
                            x_train: DataFrame = None, x_test: DataFrame = None,
-                           y_train: DataFrame = None, y_test: DataFrame = None):
+                           y_train: Series = None, y_test: Series = None):
         x_train, x_test, y_train, y_test = self._set_dfs(x_train, x_test, y_train, y_test)
 
         processing_pipeline = self.get_processing_pipeline()
@@ -97,7 +97,7 @@ class _SklearnPipeline(abc.ABC):
             output = cv_score
         return output
 
-#   TODO: Remove or adjust
+    # TODO: To remove
     def _set_dfs(self, x_train, x_test, y_train, y_test):
         if isinstance(x_train, (pd.DataFrame, csr_matrix)):
             x_train = x_train
@@ -120,6 +120,7 @@ class _SklearnPipeline(abc.ABC):
             y_test = self.y_test
         return x_train, x_test, y_train, y_test
 
+    # TODO: To remove
     def _set_dfs_test(self, x_test, y_test):
         if isinstance(x_test, (pd.DataFrame, csr_matrix)):
             x_test = x_test
@@ -267,8 +268,8 @@ class StructuredPipeline(_SklearnPipeline):
         return processing_pipeline
 
     def get_model(self,
-                  x_train: pd.DataFrame = None, x_test: pd.DataFrame = None,
-                  y_train: pd.DataFrame = None, y_test: pd.DataFrame = None):
+                  x_train: DataFrame = None, x_test: DataFrame = None,
+                  y_train: Series = None, y_test: Series = None):
         x_train, x_test, y_train, y_test = self._set_dfs(x_train, x_test, y_train, y_test)
         model = self._get_sklearn_model(x_train, x_test, y_train, y_test)
         self.model = model

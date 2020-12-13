@@ -8,7 +8,16 @@ from dermclass_models2.config import StructuredConfig, TextConfig
 DataFrame = pd.DataFrame
 
 
-# TODO: Add isinstance type blockers
+def validate_variables(**kwargs):
+    for key, value in kwargs.items():
+        try:
+            if not isinstance(key, value):
+                raise TypeError(f"Function cannot be run using {value} type for {key}")
+        # Handle pandas DataFrames
+        except ValueError:
+            raise TypeError(f"Function cannot be run using {value} type for {key}")
+
+
 class ValidationError(BaseException):
     pass
 
@@ -31,7 +40,6 @@ class _SklearnValidation(abc.ABC):
         :param proper_order: A list of string columns with proper order
         :return: Returns a pandas DataFrame with reordered columns
         """
-        """A function to order input DataFrame created from json file into proper order"""
         if proper_order is None:
             proper_order = self.config.VARIABLE_ORDER
         df = df.reindex(columns=proper_order)
