@@ -14,6 +14,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.base import TransformerMixin, BaseEstimator
 
 from dermclass_models2.config import StructuredConfig, ImageConfig, TextConfig
+from dermclass_models2.validation import validate_variables
 
 DataFrame = pd.DataFrame
 Series = pd.Series
@@ -23,11 +24,12 @@ Sequential = tf.keras.models.Sequential
 
 class _SklearnPreprocessors(abc.ABC):
 
-    def __init__(self, config: Union[TextConfig, StructuredConfig]):
+    def __init__(self, config):
         """
         An abstract class for  for preprocessing data with sklearn
         :param config: Config object for the class
         """
+        validate_variables(config)
         self.config = config
         self.logger = logging.getLogger(__name__)
 
@@ -63,6 +65,7 @@ class _SklearnPreprocessors(abc.ABC):
         elif df is None:
             df = self.df
         target_col = target_col or self.config.TARGET
+        validate_variables(df, target_col)
 
         x = df.drop(target_col, 1)
         y = df[target_col]
@@ -72,7 +75,9 @@ class _SklearnPreprocessors(abc.ABC):
         self.logger.info("Successfully splat the target")
         return x, y
 
-    def _split_train_test_structured(self, x: DataFrame = None, y: Series = None)\
+    def _split_train_test_structured(self,
+                                     x: DataFrame = None, y: Series = None,
+                                     test_size: float = 0.2, random_state: int = 42)\
             -> Tuple[DataFrame, DataFrame, Series, Series]:
         if isinstance(x, pd.DataFrame):
             x = x
@@ -82,10 +87,13 @@ class _SklearnPreprocessors(abc.ABC):
             y = y
         elif y is None:
             y = self.y
+        test_size = test_size or self.config.TEST_SIZE
+        random_state = random_state or self.config.SEED
+        validate_variables(x, y, test_size, random_state)
 
         x_train, x_test, y_train, y_test = train_test_split(x, y,
-                                                            test_size=self.config.TEST_SIZE,
-                                                            random_state=self.config.SEED)
+                                                            test_size=test_size,
+                                                            random_state=random_state)
 
         self.x_train = x_train
         self.x_test = x_test
@@ -105,11 +113,12 @@ class _SklearnPreprocessors(abc.ABC):
 
 class _TfPreprocessors(abc.ABC):
 
-    def __init__(self, config: Union[TextConfig, ImageConfig]):
+    def __init__(self, config):
         """
         An abstract class for  for preprocessing data with tensorflow
         :param config: Config object for the class
         """
+        validate_variables(config)
         self.config = config
         self.logger = logging.getLogger(__name__)
 
@@ -129,6 +138,7 @@ class _TfPreprocessors(abc.ABC):
         """
         train_dataset = train_dataset or self.train_dataset
         validation_dataset = validation_dataset or self.validation_dataset
+        validate_variables(train_dataset, validation_dataset)
 
         validation_batches = tf.data.experimental.cardinality(validation_dataset)
         test_dataset = validation_dataset.take(validation_batches // 2)
@@ -158,6 +168,7 @@ class StructuredPreprocessor(_SklearnPreprocessors):
         A class for preprocessing structured data
         :param config: Config object for the class
         """
+        validate_variables(config)
         super().__init__(config)
 
     def _load_structured_data(self, path: Path = None) -> DataFrame:
@@ -166,8 +177,9 @@ class StructuredPreprocessor(_SklearnPreprocessors):
         :param path: Path to data file
         :return: Returns a pandas DataFrame with data loaded
         """
-
         path = path or self.config.DATA_PATH
+        validate_variables(path)
+
         df = pd.read_csv(path)
         self.df = df
         self.logger.info("Successfully loaded data from csv")
@@ -179,6 +191,8 @@ class StructuredPreprocessor(_SklearnPreprocessors):
         :param path: Path to data directory
         :return: Returns a tuple with x_train, x_test, y_train, y_test data
         """
+        validate_variables(path)
+
         df = self._load_structured_data(path)
         x_train, x_test, y_train, y_test = self._load_data_structured(df)
         return x_train, x_test, y_train, y_test
@@ -208,6 +222,7 @@ class ImagePreprocessors(_TfPreprocessors):
         :return: Returns a tuple with mean image size from provided image data
         """
         path = path or self.config.DATA_PATH
+        validate_variables(path)
 
         height_list = []
         width_list = []
@@ -233,6 +248,7 @@ class ImagePreprocessors(_TfPreprocessors):
         :return: Returns a tuple of image_size after changing to right static value and EfficientNet object
         """
         img_size = img_size or self.img_size
+        validate_variables(img_size)
 
         img_size = (img_size[0] + img_size[1]) / 2
 
@@ -264,6 +280,7 @@ class ImagePreprocessors(_TfPreprocessors):
         batch_size = batch_size or self.config.BATCH_SIZE
         data_path = data_path or self.config.DATA_PATH
         img_size = img_size or self.img_size
+        validate_variables(batch_size, data_path, img_size)
 
         train_dataset = tf.keras.preprocessing.image_dataset_from_directory(directory=data_path,
                                                                             image_size=img_size,
@@ -294,6 +311,7 @@ class ImagePreprocessors(_TfPreprocessors):
         :return: Returns train, validation and test datasets
         """
         path = path or self.config.DATA_PATH
+        validate_variables(path)
 
         img_size = self._get_avg_img_size(path)
         img_size, _ = self._get_efficientnet_and_size(img_size)
@@ -323,6 +341,7 @@ class TextPreprocessors(_SklearnPreprocessors, _TfPreprocessors):
         :param path: A path to the directory
         :return: Returns pandas DataFrame with csv's loaded from one class directory
         """
+        validate_variables(path)
         class_name = path.name
 
         df = pd.DataFrame()
@@ -346,6 +365,7 @@ class TextPreprocessors(_SklearnPreprocessors, _TfPreprocessors):
         :return: Returns a pandas DataFrame with all classes laoded
         """
         path = path or self.config.DATA_PATH
+        validate_variables(path)
         df = pd.DataFrame()
 
         for class_dir in path.iterdir():
@@ -366,6 +386,7 @@ class TextPreprocessors(_SklearnPreprocessors, _TfPreprocessors):
         """
         batch_size = batch_size or self.config.BATCH_SIZE
         data_path = data_path or self.config.DATA_PATH
+        validate_variables(batch_size, data_path)
 
         train_dataset = tf.keras.preprocessing.text_dataset_from_directory(directory=data_path,
                                                                            validation_split=self.config.TEST_SIZE,
@@ -397,6 +418,7 @@ class TextPreprocessors(_SklearnPreprocessors, _TfPreprocessors):
         :return: Returns train, validation, test datasets or x_train, x_test, y_train, y_test tuples
         """
         path = path or self.config.DATA_PATH
+        validate_variables(path)
 
         if get_datasets:
             train_dataset, validation_dataset = self._load_dataset(data_path=path)

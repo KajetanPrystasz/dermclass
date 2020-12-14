@@ -10,6 +10,7 @@ from dermclass_models2.pipeline import StructuredPipeline, TextPipeline, ImagePi
 from dermclass_models2.config import StructuredConfig, TextConfig, ImageConfig
 from dermclass_models2.persistence import BasePersistence
 from dermclass_models2.pipeline import TransformersModelingPipeline
+from dermclass_models2.validation import validate_variables
 
 from sklearn.pipeline import Pipeline as SklearnPipeline
 
@@ -22,6 +23,8 @@ class _BaseTrainPipeline(abc.ABC):
         Abstract base class for training pipeline and saving it
         :param config: Config object for the class
         """
+        validate_variables(config)
+
         self.config = config
         self.logger = logging.getLogger(__name__)
         self.modeling_pipeline = None
@@ -35,6 +38,10 @@ class _BaseTrainPipeline(abc.ABC):
         :param backend: Type of backend used for loading given pipeline, has to be one of ["joblib", "tf", "tfm"]
         """
         modeling_pipeline = self.modeling_pipeline or modeling_pipeline
+        validate_variables(modeling_pipeline, backend)
+        if not self.config:
+            raise RuntimeError("No config object fitted")
+
         persister = BasePersistence(self.config)
         persister.remove_old_pipelines([])
         persister.save_pipeline(modeling_pipeline, backend)
@@ -48,6 +55,8 @@ class StructuredTrainPipeline(_BaseTrainPipeline):
         :param config: Config object for the class
         """
         super().__init__(config)
+        if not self.config:
+            raise RuntimeError("No config object fitted")
 
         self.preprocessor = StructuredPreprocessor(self.config)
         self.pipeline = StructuredPipeline(self.config)
@@ -55,9 +64,9 @@ class StructuredTrainPipeline(_BaseTrainPipeline):
     def run(self):
         """Function to run training of the structured pipeline"""
         if not self.preprocessor:
-            self.logger.warning("No preprocessor object fitted")
+            raise RuntimeError("No preprocessor object fitted")
         if not self.pipeline:
-            self.logger.warning("No pipeline object fitted")
+            raise RuntimeError("No pipeline object fitted")
 
         x_train, x_test, y_train, y_test = self.preprocessor.load_data()
         self.pipeline.fit_structured_data(x_train, x_test, y_train, y_test)
@@ -74,6 +83,8 @@ class ImageTrainPipeline(_BaseTrainPipeline):
         :param config: Config object for the class
         """
         super().__init__(config)
+        if not self.config:
+            raise RuntimeError("No config object fitted")
 
         self.preprocessor = ImagePreprocessors(self.config)
         self.pipeline = ImagePipeline(self.config)
@@ -81,9 +92,9 @@ class ImageTrainPipeline(_BaseTrainPipeline):
     def run(self):
         """Function to run training of the structured pipeline"""
         if not self.preprocessor:
-            self.logger.warning("No preprocessor object fitted")
+            raise RuntimeError("No preprocessor object fitted")
         if not self.pipeline:
-            self.logger.warning("No pipeline object fitted")
+            raise RuntimeError("No pipeline object fitted")
 
         train_dataset, validation_dataset, test_dataset = self.preprocessor.load_data()
         self.pipeline.fit_datasets(train_dataset, validation_dataset, test_dataset)
@@ -101,6 +112,8 @@ class TextTrainPipeline(_BaseTrainPipeline):
         :param config: Config object for the class
         """
         super().__init__(config)
+        if not self.config:
+            raise RuntimeError("No config object fitted")
 
         self.preprocessor = TextPreprocessors(self.config)
         self.pipeline = TextPipeline(self.config)
@@ -108,9 +121,9 @@ class TextTrainPipeline(_BaseTrainPipeline):
     def run(self):
         """Function to train text pipelines, choose if sklearn or transformer is better one and save it"""
         if not self.preprocessor:
-            self.logger.warning("No preprocessor object fitted")
+            raise RuntimeError("No preprocessor object fitted")
         if not self.pipeline:
-            self.logger.warning("No pipeline object fitted")
+            raise RuntimeError("No pipeline object fitted")
 
         x_train, x_test, y_train, y_test = self.preprocessor.load_data(get_datasets=False)
         self.pipeline.fit_structured_data(x_train, x_test, y_train, y_test)
@@ -156,7 +169,7 @@ def run_controller(pipeline_types=('structured', 'text', "image")):
             im = ImageTrainPipeline()
             im.run()
         else:
-            print("No pipeline types to train inputted")
+            raise RuntimeError("No pipeline types to train inputted")
 
 
 if __name__ == "__main__":

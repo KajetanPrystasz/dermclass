@@ -10,18 +10,19 @@ from dermclass_models2.pipeline import TransformersModelingPipeline
 
 
 from dermclass_models2 import __version__ as _version
-from dermclass_models2.config import BaseConfig
-from dermclass_models2.validation import ValidationError
+from dermclass_models2.validation import ValidationError, validate_variables
 
 
 # TODO: Refactor to make it OOP like rest of modules
 class BasePersistence:
 
-    def __init__(self, config: BaseConfig):
+    def __init__(self, config):
         """
         Class for saving and loading pipeline objects.
         :param config: Config object for the class
         """
+        validate_variables(config)
+
         self.config = config
         self.pipeline_version = _version
         self.logger = logging.getLogger(__name__)
@@ -37,17 +38,17 @@ class BasePersistence:
         """
         if backend not in ["joblib", "tf", "tfm"]:
             raise ValidationError("Please choose proper backend from ['joblib', 'tf', 'tfm']")
-
         path = path or self.config.PICKLE_DIR / f"{self.config.PIPELINE_TYPE}_{self.pipeline_version}"
+        validate_variables(backend, path)
 
         if backend == "joblib":
             pipeline = joblib.load(path + ".joblib")
-
         if backend == "tf":
             pipeline = load_model(path)
-
         if backend == "tfm":
             pipeline = TransformersModelingPipeline.load_from_pretrained(path)
+        else:
+            pipeline = None
 
         self.logger.info(f"{path.name} loaded")
         return pipeline
@@ -58,6 +59,8 @@ class BasePersistence:
         Utility function to remove files from given path
         :param path: Path to directory to remove all files from
         """
+        validate_variables(path)
+
         for root, dirs, files in os.walk(path, topdown=False):
             for file_name in files:
                 (Path(root) / file_name).unlink()
@@ -75,6 +78,8 @@ class BasePersistence:
         """
         pipelines_to_keep = pipelines_to_keep or []
         do_not_delete = pipelines_to_keep + [Path(p) for p in ['__init__.py', ".gitkeep"]]
+        if not self.config:
+            raise RuntimeError("No config object fitted")
 
         for file in self.config.PICKLE_DIR.iterdir():
             if file.name not in do_not_delete and file.name.startswith(self.config.PIPELINE_TYPE):
@@ -92,10 +97,10 @@ class BasePersistence:
         """
         if backend not in ["joblib", "tf", "tfm"]:
             raise ValidationError("Please choose proper backend from ['joblib', 'tf', 'tfm']")
+        path = path or self.config.PICKLE_DIR / f"{self.config.PIPELINE_TYPE}_{self.pipeline_version}"
+        validate_variables(pipeline_object, backend, path)
 
         self.remove_old_pipelines()
-
-        path = path or self.config.PICKLE_DIR / f"{self.config.PIPELINE_TYPE}_{self.pipeline_version}"
 
         if backend == "joblib":
             joblib.dump(pipeline_object, path.with_suffix('.joblib'))

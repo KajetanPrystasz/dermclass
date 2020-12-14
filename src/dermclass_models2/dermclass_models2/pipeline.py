@@ -1,6 +1,6 @@
 import abc
 import logging
-from typing import Union, Tuple
+from typing import Union, Tuple, List
 from pathlib import Path
 
 import pandas as pd
@@ -25,6 +25,7 @@ import tensorflow as tf
 
 from dermclass_models2.config import StructuredConfig, ImageConfig, TextConfig
 from dermclass_models2.preprocessing import CastTypesTransformer, SpacyPreprocessor
+from dermclass_models2.validation import validate_variables
 
 from xgboost import XGBClassifier
 from sklearn.naive_bayes import MultinomialNB
@@ -39,6 +40,8 @@ Sequential = tf.keras.models.Sequential
 class _SklearnPipeline(abc.ABC):
 
     def __init__(self, config):
+        validate_variables(config)
+
         self.config = config
         self.logger = logging.getLogger(__name__)
 
@@ -61,6 +64,7 @@ class _SklearnPipeline(abc.ABC):
                            x_train: DataFrame = None, x_test: DataFrame = None,
                            y_train: Series = None, y_test: Series = None):
         x_train, x_test, y_train, y_test = self._set_dfs(x_train, x_test, y_train, y_test)
+        validate_variables(x_train, x_test, y_train, y_test)
 
         processing_pipeline = self.get_processing_pipeline()
         processing_pipeline.fit(x_train)
@@ -78,7 +82,9 @@ class _SklearnPipeline(abc.ABC):
     def _hyper_param_optimization(trial, model_name: str, trial_func: Trial,
                                   max_overfit: float, cv: int,
                                   x_train: DataFrame, x_test: DataFrame,
-                                  y_train: DataFrame, y_test: DataFrame):
+                                  y_train: Series, y_test: Series):
+        validate_variables(trial, model_name, trial_func, x_train, x_test, y_train, y_test)
+
         model_obj = eval(model_name)
         cv_score = np.mean(cross_val_score(model_obj(**trial_func(trial)),
                                            x_train,
@@ -135,9 +141,12 @@ class _SklearnPipeline(abc.ABC):
 
     # TODO: Add pruning
     def _tune_hyperparameters(self, trials_dict,
-                              x_train: pd.DataFrame = None, x_test: pd.DataFrame = None,
-                              y_train: pd.DataFrame = None, y_test: pd.DataFrame = None,
+                              x_train: DataFrame = None, x_test: DataFrame = None,
+                              y_train: Series = None, y_test: Series = None,
                               max_overfit: float = 0.05, cv: int = 3, n_trials: int = 10, n_jobs: int = -1):
+        validate_variables(trials_dict,
+                           x_train, x_test, y_train, y_test,
+                           cv, n_trials, n_jobs)
 
         x_train, x_test, y_train, y_test = self._set_dfs(x_train, x_test, y_train, y_test)
         self.studies = {}
@@ -171,6 +180,8 @@ class _SklearnPipeline(abc.ABC):
 class _TfPipeline(abc.ABC):
 
     def __init__(self, config):
+        validate_variables(config)
+
         self.config = config
         self.logger = logging.getLogger(__name__)
 
@@ -187,14 +198,19 @@ class _TfPipeline(abc.ABC):
         self.learning_rate = 0.001
 
     def fit_datasets(self, train_dataset: Dataset, validation_dataset: Dataset, test_dataset: Dataset):
+        validate_variables(train_dataset, validation_dataset, test_dataset)
+
         self.train_dataset = train_dataset
         self.validation_dataset = validation_dataset
         self.test_dataset = test_dataset
+        validate_variables(train_dataset, validation_dataset, test_dataset)
 
     def _compile_model(self, model, learning_rate=None, metrics=None):
         model = model or self.model
         learning_rate = learning_rate or self.learning_rate
         metrics = metrics or self.config.METRICS
+        validate_variables(model, learning_rate, metrics)
+
         if isinstance(model, TFDistilBertForSequenceClassification):
             loss = model.compute_loss
         else:
@@ -216,6 +232,7 @@ class _TfPipeline(abc.ABC):
         train_dataset = train_dataset or self.train_dataset
         validation_dataset = validation_dataset or self.validation_dataset
         n_epochs = n_epochs or self.config.NUM_EPOCHS
+        validate_variables(model, train_dataset, validation_dataset, n_epochs)
 
         if isinstance(model, TFDistilBertForSequenceClassification):
             model.fit(train_dataset.batch(self.config.BATCH_SIZE),
@@ -271,6 +288,8 @@ class StructuredPipeline(_SklearnPipeline):
                   x_train: DataFrame = None, x_test: DataFrame = None,
                   y_train: Series = None, y_test: Series = None):
         x_train, x_test, y_train, y_test = self._set_dfs(x_train, x_test, y_train, y_test)
+        validate_variables(x_train, x_test, y_train, y_test)
+
         model = self._get_sklearn_model(x_train, x_test, y_train, y_test)
         self.model = model
 
@@ -278,12 +297,14 @@ class StructuredPipeline(_SklearnPipeline):
         return model
 
     def get_modeling_pipeline(self,
-                              x_train: pd.DataFrame = None, x_test: pd.DataFrame = None,
-                              y_train: pd.DataFrame = None, y_test: pd.DataFrame = None):
+                              x_train: DataFrame = None, x_test: DataFrame = None,
+                              y_train: Series = None, y_test: Series = None):
         x_train, x_test, y_train, y_test = self._set_dfs(x_train, x_test, y_train, y_test)
 
         processing_pipeline = self.get_processing_pipeline()
         model = self.get_model(x_train, x_test, y_train, y_test)
+        validate_variables(x_train, x_test, y_train, y_test, processing_pipeline, model)
+
         modeling_pipeline = Pipeline([("Processing pipeline", processing_pipeline),
                                       ("Model", model)])
         modeling_pipeline.fit(x_train, y_train)
@@ -302,6 +323,8 @@ class ImagePipeline(_TfPipeline):
         self.model_obj = Sequential
 
     def set_img_size_and_model_obj(self, img_size: Tuple[int, int], model_obj: Sequential):
+        validate_variables(img_size, model_obj)
+
         self.img_size = img_size
         self.model_obj = model_obj
         self.logger.info("Successfully set img size and model obj")
@@ -323,6 +346,8 @@ class ImagePipeline(_TfPipeline):
         return processing_pipeline
 
     def get_model(self, model_obj=None):
+        validate_variables(model_obj)
+
         model_obj = model_obj or self.model_obj
         model = model_obj(include_top=False, weights='imagenet', classes=3)
         model.trainable = False
@@ -332,12 +357,15 @@ class ImagePipeline(_TfPipeline):
         self.logger.warning("Warning! get_model function in ImagePipeline returns unfitted model")
         return model
 
-    def get_modeling_pipeline(self, img_size=None, learning_rate=None, metrics=None, n_epochs: int = None,
+    def get_modeling_pipeline(self,
+                              img_size: Tuple[int, int] = None, learning_rate: float = None,
+                              metrics: List[str] = None, n_epochs: int = None,
                               train_dataset: Dataset = None, validation_dataset: Dataset = None):
         img_size = img_size or self.img_size
 
         processing_pipeline = self.get_processing_pipeline()
         model = self.get_model()
+        validate_variables(img_size, learning_rate, metrics, n_epochs, processing_pipeline, model)
 
         modeling_pipeline = tf.keras.Sequential([tf.keras.Input(shape=img_size + (3,)),
                                                  processing_pipeline,
@@ -357,19 +385,27 @@ class ImagePipeline(_TfPipeline):
 
 class TransformersModelingPipeline:
     def __init__(self, processing_pipeline, model):
+        validate_variables(processing_pipeline, model)
+
         self.processing_pipeline = processing_pipeline
         self.model = model
 
-    def __call__(self, dataset, *args, **kwargs):
+    def __call__(self, dataset: Dataset, *args, **kwargs):
+        validate_variables(dataset)
+
         predictions = self.predict(dataset)
         return predictions
 
-    def evaluate(self, dataset, batch_size=4):
+    def evaluate(self, dataset: Dataset, batch_size: int = 4):
+        validate_variables(dataset, batch_size)
+
         dataset_encoded = self.processing_pipeline(dataset)
         evaluations = self.model.evaluate(dataset_encoded.batch(batch_size))
         return evaluations
 
-    def predict(self, dataset, batch_size=4):
+    def predict(self, dataset: Dataset, batch_size: int = 4):
+        validate_variables(dataset, batch_size)
+
         dataset_encoded = self.processing_pipeline(dataset)
         predictions = self.model.predict(dataset_encoded.batch(batch_size))
         return predictions
@@ -379,6 +415,7 @@ class TransformersModelingPipeline:
         model = TFDistilBertForSequenceClassification.from_pretrained(path)
         tokenizer = DistilBertTokenizerFast.from_pretrained(path)
         processing_pipeline = _TransformersProcessingPipeline(TextPipeline.encode_dataset, tokenizer)
+        validate_variables(model, tokenizer, processing_pipeline)
 
         return cls(model=model,
                    processing_pipeline=processing_pipeline)
@@ -386,10 +423,14 @@ class TransformersModelingPipeline:
 
 class _TransformersProcessingPipeline:
     def __init__(self, processing_function, tokenizer):
+        validate_variables(processing_function, tokenizer)
+
         self.processing_function = processing_function
         self.tokenizer = tokenizer
 
-    def __call__(self, dataset, *args, **kwargs):
+    def __call__(self, dataset: Dataset, *args, **kwargs) -> Dataset:
+        validate_variables(dataset)
+
         dataset_encoded = self.processing_function(dataset, self.tokenizer)
         return dataset_encoded
 
@@ -402,7 +443,9 @@ class TextPipeline(_SklearnPipeline, _TfPipeline):
         self.tokenizer = None
 
     @staticmethod
-    def encode_dataset(dataset, tokenizer):
+    def encode_dataset(dataset, tokenizer) -> Dataset:
+        validate_variables(dataset, tokenizer)
+
         text_to_encode = []
         labels = []
         for batch in dataset.as_numpy_iterator():
@@ -421,12 +464,13 @@ class TextPipeline(_SklearnPipeline, _TfPipeline):
     def get_best_modeling_pipeline_type(self,
                                         transformer_modeling_pipeline: TransformersModelingPipeline = None,
                                         sklearn_modeling_pipeline: Pipeline = None,
-                                        x_test=None,
-                                        y_test=None,
+                                        x_test: DataFrame = None,
+                                        y_test: Series = None,
                                         test_dataset: Dataset = None)\
             -> Union[Pipeline, TransformersModelingPipeline]:
         x_test, y_test = self._set_dfs_test(x_test, y_test)
         test_dataset = test_dataset or self.test_dataset
+        validate_variables(x_test, y_test, test_dataset)
 
         transformer_results_metric = (transformer_modeling_pipeline
                                       .evaluate(test_dataset, batch_size=self.config.BATCH_SIZE))[1]
@@ -447,6 +491,7 @@ class TextPipeline(_SklearnPipeline, _TfPipeline):
 
     def get_model(self, use_sklearn=True, x_train=None, x_test=None, y_train=None, y_test=None):
         if use_sklearn:
+            validate_variables(x_train, x_test, y_train, y_test)
             model = self._get_sklearn_model(x_train, x_test, y_train, y_test)
         else:
             model = TFDistilBertForSequenceClassification.from_pretrained('distilbert-base-uncased',
@@ -471,15 +516,21 @@ class TextPipeline(_SklearnPipeline, _TfPipeline):
         return processing_pipeline
 
     def get_modeling_pipeline(self, use_sklearn=True,
-                              x_train=None, x_test=None, y_train=None, y_test=None,
+                              x_train: DataFrame = None, x_test: DataFrame = None,
+                              y_train: Series = None, y_test: Series = None,
                               train_dataset: Dataset = None, validation_dataset: Dataset = None,
-                              learning_rate=None, metrics=None, n_epochs: int = None):
+                              learning_rate: float = None, metrics: List[str] = None, n_epochs: int = None):
         x_train, x_test, y_train, y_test = self._set_dfs(x_train, x_test, y_train, y_test)
         train_dataset = train_dataset or self.train_dataset
         validation_dataset = validation_dataset or self.validation_dataset
+        validate_variables(x_train, x_test, y_train, y_test,
+                           train_dataset, validation_dataset)
 
         processing_pipeline = self.get_processing_pipeline(use_sklearn)
         model = self.get_model(use_sklearn, x_train, x_test, y_train, y_test)
+
+        validate_variables(x_train, x_test, y_train, y_test,
+                           train_dataset, validation_dataset)
 
         if use_sklearn:
             modeling_pipeline = Pipeline([("Processing pipeline", processing_pipeline),
@@ -496,6 +547,3 @@ class TextPipeline(_SklearnPipeline, _TfPipeline):
         self.modeling_pipeline = modeling_pipeline
         self.logger.info("Successfully loaded modeling pipeline")
         return modeling_pipeline
-
-
-

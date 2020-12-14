@@ -12,6 +12,7 @@ dependencies:
 - pytest
 - pytest-sugar
 - pytest-cov
+- pytest-mock
 - numpy
 - pandas
 - opencv

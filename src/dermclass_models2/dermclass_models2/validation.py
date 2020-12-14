@@ -4,18 +4,21 @@ from typing import List
 
 import pandas as pd
 
-from dermclass_models2.config import StructuredConfig, TextConfig
+from dermclass_models2.config import StructuredConfig, TextConfig, BaseConfig
 DataFrame = pd.DataFrame
 
 
-def validate_variables(**kwargs):
-    for key, value in kwargs.items():
+def validate_variables(*args):
+    """
+    Function to check type of variables, raise error if wrong type would stop code from working
+    :param kwargs: Kwargs in variable=type format
+    """
+    for arg in args:
         try:
-            if not isinstance(key, value):
-                raise TypeError(f"Function cannot be run using {value} type for {key}")
-        # Handle pandas DataFrames
+            if arg is None:
+                raise TypeError(f"Function cannot be run using None value for {arg}")
         except ValueError:
-            raise TypeError(f"Function cannot be run using {value} type for {key}")
+            raise TypeError(f"Function cannot be run using None value for {arg}")
 
 
 class ValidationError(BaseException):
@@ -29,6 +32,8 @@ class _SklearnValidation(abc.ABC):
         Abstract class for validation with sklearn
         :param config: Config object for the class
         """
+        validate_variables(config)
+
         self.config = config
         self.logger = logging.getLogger(__name__)
 
@@ -42,18 +47,22 @@ class _SklearnValidation(abc.ABC):
         """
         if proper_order is None:
             proper_order = self.config.VARIABLE_ORDER
+        validate_variables(df, proper_order)
+
         df = df.reindex(columns=proper_order)
         return df
 
-    def _validate_columns(self, df: DataFrame) -> DataFrame:
+    def _validate_columns(self, df: DataFrame, variable_order: List[str] = None) -> DataFrame:
         """
         Utility function to check if one of the input columns aren't unexpected, raises error otherwise
         :param df: A pandas DataFrame to check columns
         :return: A pandas DataFrame with all columns expected
         """
-        expected_columns = self.config.VARIABLE_ORDER
+        variable_order = variable_order or self.config.VARIABLE_ORDER
+        validate_variables(df, variable_order)
+
         for validated_column in df.columns:
-            if validated_column not in expected_columns:
+            if validated_column not in variable_order:
                 raise ValidationError(f"Column {validated_column} not in expected_columns!")
         self.logger.info("Successfully validated input data")
         return df
@@ -83,6 +92,8 @@ class StructuredValidation(_SklearnValidation):
         :param input_data: Input data to drop unexpected NA data
         :return: A pandas DataFrame with unexpected NA removed
         """
+        validate_variables(input_data)
+
         validated_data = input_data.copy()
 
         if input_data[self.config.NA_VALIDATION_VAR_DICT["NUMERIC_NA_NOT_ALLOWED"]].isnull().any().any():
@@ -104,6 +115,8 @@ class StructuredValidation(_SklearnValidation):
         :param df: A Pandas DataFrame to validate
         :return: Returns a validated pandas DataFrame
         """
+        validate_variables(df)
+
         df = self._reorder_df(df)
         df = self._validate_columns(df)
         df = self._drop_unexpected_na(df)
@@ -125,6 +138,7 @@ class TextValidation(_SklearnValidation):
         :param df: A Pandas DataFrame to validate
         :return: Returns a validated pandas DataFrame
         """
+        validate_variables(df)
         df = self._reorder_df(df)
         df = self._validate_columns(df)
         return df
