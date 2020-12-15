@@ -61,7 +61,7 @@ class BasePersistence:
         """
         validate_variables(path)
 
-        for root, dirs, files in os.walk(path, topdown=False):
+        for root, dirs, files in os.walk(str(path), topdown=False):
             for file_name in files:
                 (Path(root) / file_name).unlink()
             for dir_name in dirs:
@@ -71,18 +71,24 @@ class BasePersistence:
         else:
             path.unlink()
 
-    def remove_old_pipelines(self, pipelines_to_keep: List[Path] = None):
+    def remove_old_pipelines(self,
+                             dir_path: Path = None,
+                             pipelines_to_keep: List[Path] = None,
+                             pipeline_type: str = None):
         """
         Remove old pipelines from directory using either config or list of files not to remove from pickle directory
+        :param dir_path: Directory from which files old pipelines should be removed
         :param pipelines_to_keep: A list of paths to files or directories that shouldn't be removed
+        :param pipeline_type: Type of pipeline to be removed as a string name from config.py
         """
+        pipeline_type = pipeline_type or self.config.PIPELINE_TYPE
         pipelines_to_keep = pipelines_to_keep or []
-        do_not_delete = pipelines_to_keep + [Path(p) for p in ['__init__.py', ".gitkeep"]]
-        if not self.config:
-            raise RuntimeError("No config object fitted")
+        dir_path = dir_path or self.config.PICKLE_DIR
 
-        for file in self.config.PICKLE_DIR.iterdir():
-            if file.name not in do_not_delete and file.name.startswith(self.config.PIPELINE_TYPE):
+        do_not_delete = pipelines_to_keep + [Path(p) for p in ['__init__.py', ".gitkeep"]]
+
+        for file in dir_path.iterdir():
+            if file.name not in do_not_delete and file.name.startswith(pipeline_type):
                 self._remove_files(file)
                 self.logger.info(f"{file} removed")
 

@@ -1,6 +1,8 @@
-import pandas as pd
-import tensorflow as tf
 import pytest
+
+import pandas as pd
+import numpy as np
+import tensorflow as tf
 
 
 class TestingConfig:
@@ -8,7 +10,12 @@ class TestingConfig:
 
 
 @pytest.fixture()
-def get_structured_training_set():
+def testing_config():
+    return TestingConfig
+
+
+@pytest.fixture()
+def structured_training_set():
     columns = ["erythema", "scaling", "definite_borders", "itching", "koebner_phenomenon", "polygonal_papules",
                "follicular_papules", "oral_mucosal_involvement", "knee_and_elbow_involvement", "scalp_involvement",
                "family_history", "melanin_incontinence", "eosinophils_in_the_infiltrate", "pnl_infiltrate",
@@ -19,18 +26,15 @@ def get_structured_training_set():
                "vacuolisation_and_damage_of_basal_layer", "spongiosis", "saw_tooth_appearance_of_retes",
                "follicular_horn_plug", "perifollicular_parakeratosis", "inflammatory_monoluclear_inflitrate",
                "band_like_infiltrate", "age", "target"]
-    values = [2, 2, 0, 3, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 3, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 1, 0, 55, 2]
-    df = pd.DataFrame([values], columns=columns)
+    values = [[2, 2, 0, 3, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 3, 2, 0,
+               0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 1, 0, 55, 2],
+              [2, 2, 0, 3, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 3, 2,
+               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 1, 0, 53, 1]]
+    df = pd.DataFrame(np.array(values), columns=columns)
     return df
 
 
 @pytest.fixture()
-def get_train_val_datasets():
-    dataset = tf.data.Dataset.range(10000)
-    return dataset, dataset
-
-
-@pytest.fixture()
-def get_train_val_test_datasets():
-    dataset = tf.data.Dataset.range(10000)
-    return dataset, dataset, dataset
+def train_dataset():
+    dataset = tf.data.Dataset.range(10).batch(1)
+    return dataset

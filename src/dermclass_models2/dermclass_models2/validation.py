@@ -60,10 +60,14 @@ class _SklearnValidation(abc.ABC):
         """
         variable_order = variable_order or self.config.VARIABLE_ORDER
         validate_variables(df, variable_order)
-
         for validated_column in df.columns:
             if validated_column not in variable_order:
                 raise ValidationError(f"Column {validated_column} not in expected_columns!")
+
+        for expected_column in variable_order:
+            if expected_column not in df.columns:
+                raise ValidationError(f"Column {expected_column} is not expected column!")
+
         self.logger.info("Successfully validated input data")
         return df
 
@@ -96,15 +100,13 @@ class StructuredValidation(_SklearnValidation):
 
         validated_data = input_data.copy()
 
-        if input_data[self.config.NA_VALIDATION_VAR_DICT["NUMERIC_NA_NOT_ALLOWED"]].isnull().any().any():
+        disallowed_cols = (self.config.NA_VALIDATION_VAR_DICT["NUMERIC_NA_NOT_ALLOWED"]
+                           + self.config.NA_VALIDATION_VAR_DICT["CATEGORICAL_NA_NOT_ALLOWED"]
+                           + self.config.NA_VALIDATION_VAR_DICT["ORDINAL_NA_NOT_ALLOWED"])
+        if input_data[disallowed_cols].isnull().any().any():
             validated_data = (validated_data
                               .dropna(axis=0,
-                                      subset=self.config.NA_VALIDATION_VAR_DICT["NUMERIC_NA_NOT_ALLOWED"]))
-
-        if input_data[self.config.NA_VALIDATION_VAR_DICT["CATEGORICAL_NA_NOT_ALLOWED"]].isnull().any().any():
-            validated_data = (validated_data
-                              .dropna(axis=0,
-                                      subset=self.config.NA_VALIDATION_VAR_DICT["CATEGORICAL_NA_NOT_ALLOWED"]))
+                                      subset=disallowed_cols))
 
         self.logger.info("Successfully validated input data")
         return validated_data
