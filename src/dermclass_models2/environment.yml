@@ -20,6 +20,7 @@ dependencies:
 - scikit-learn
 - optuna
 - spacy
+- pillow #?
 #- spacy-model-en_core_web_sm
 - transformers
 - pip:

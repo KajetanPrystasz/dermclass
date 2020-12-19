@@ -32,12 +32,12 @@ def _assert_tf(train_dataset, validation_dataset, test_dataset):
 
 class TestStructuredPreprocessor:
 
-    def test_load_data(self, testing_config, structured_training_set, monkeypatch):
+    def test_load_data(self, testing_config, structured_training_df, monkeypatch):
         testing_config.TARGET = "target"
         preprocessor = StructuredPreprocessor(testing_config)
 
         def mock__load_structured_data(path):
-            df = pd.concat([structured_training_set, structured_training_set])
+            df = pd.concat([structured_training_df, structured_training_df])
             return df
 
         monkeypatch.setattr(preprocessor, "_load_structured_data", mock__load_structured_data)
@@ -47,7 +47,7 @@ class TestStructuredPreprocessor:
 
 class TestImagePreprocessors:
 
-    def test_load_data(self, testing_config, structured_training_set, train_dataset, monkeypatch):
+    def test_load_data(self, testing_config, structured_training_df, train_dataset, monkeypatch):
         preprocessor = ImagePreprocessors(testing_config)
 
         monkeypatch.setattr(preprocessor, "_get_avg_img_size", lambda path: (255, 255))
@@ -61,12 +61,12 @@ class TestImagePreprocessors:
 
 class TestTextPreprocessors:
 
-    def test_load_data(self, testing_config, structured_training_set, train_dataset, monkeypatch):
+    def test_load_data(self, testing_config, structured_training_df, train_dataset, monkeypatch):
         testing_config.TARGET = "target"
         preprocessor = TextPreprocessors(testing_config)
 
         def mock__load_structured_data(path):
-            df = pd.concat([structured_training_set, structured_training_set])
+            df = pd.concat([structured_training_df, structured_training_df])
             return df
 
         monkeypatch.setattr(preprocessor, "_load_structured_data", mock__load_structured_data)
@@ -82,8 +82,8 @@ class TestTextPreprocessors:
 
 class TestCastTypesTransformer:
 
-    def test_fit(self, structured_training_set):
-        df = structured_training_set[['erythema', 'scaling', "age"]]
+    def test_fit(self, structured_training_df):
+        df = structured_training_df[['erythema', 'scaling', "age"]]
         transformer = CastTypesTransformer(categorical_variables=[],
                                            ordinal_variables=['erythema', 'scaling'],
                                            numeric_variables=["age"])
@@ -91,8 +91,8 @@ class TestCastTypesTransformer:
 
         assert transformer.x.equals(df)
 
-    def test_transform(self, structured_training_set):
-        df = structured_training_set[['erythema', 'scaling', "age"]]
+    def test_transform(self, structured_training_df):
+        df = structured_training_df[['erythema', 'scaling', "age"]]
         transformer = CastTypesTransformer(categorical_variables=[],
                                            ordinal_variables=['erythema', 'scaling'],
                                            numeric_variables=["age"])

@@ -5,9 +5,9 @@ import pytest
 from dermclass_models2.validation import StructuredValidation, TextValidation, ValidationError, validate_variables
 
 
-def test_validate_variables(structured_training_set):
+def test_validate_variables(structured_training_df):
     args_with_none = ["test", 1, None]
-    args_pd = ["test2", 2, structured_training_set]
+    args_pd = ["test2", 2, structured_training_df]
 
     with pytest.raises(TypeError):
         validate_variables(*args_with_none)
@@ -17,13 +17,13 @@ def test_validate_variables(structured_training_set):
 
 class TestStructuredValidation:
 
-    def test_validate(self, testing_config, structured_training_set):
+    def test_validate(self, testing_config, structured_training_df):
         testing_config.VARIABLE_ORDER = ['erythema', 'scaling', "age"]
         testing_config.NA_VALIDATION_VAR_DICT = {"NUMERIC_NA_NOT_ALLOWED": ["age"],
                                                  "ORDINAL_NA_NOT_ALLOWED": ["erythema", "scaling"],
                                                  "CATEGORICAL_NA_NOT_ALLOWED": []}
         validator = StructuredValidation(testing_config)
-        df = structured_training_set[testing_config.VARIABLE_ORDER]
+        df = structured_training_df[testing_config.VARIABLE_ORDER]
 
         df_nans = (df
                    .copy()
@@ -34,7 +34,7 @@ class TestStructuredValidation:
         df_unexpected_col = df.copy().assign(extra_column=[1, 2])
         df_missing_col = df.copy().drop("erythema", axis=1)
 
-        reordered_columns = structured_training_set[testing_config.VARIABLE_ORDER].columns.to_list()[::-1]
+        reordered_columns = structured_training_df[testing_config.VARIABLE_ORDER].columns.to_list()[::-1]
         df_reordered = (df
                         .copy()
                         .reindex(columns=reordered_columns))

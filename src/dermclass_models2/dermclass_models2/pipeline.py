@@ -346,10 +346,10 @@ class ImagePipeline(_TfPipeline):
         return processing_pipeline
 
     def get_model(self, model_obj=None):
+        model_obj = model_obj or self.model_obj
         validate_variables(model_obj)
 
-        model_obj = model_obj or self.model_obj
-        model = model_obj(include_top=False, weights='imagenet', classes=3)
+        model = model_obj(include_top=False, weights='imagenet', classes=len(self.config.DISEASES))
         model.trainable = False
 
         self.model = model
@@ -362,9 +362,15 @@ class ImagePipeline(_TfPipeline):
                               metrics: List[str] = None, n_epochs: int = None,
                               train_dataset: Dataset = None, validation_dataset: Dataset = None):
         img_size = img_size or self.img_size
+        learning_rate = learning_rate or self.config.LEARNING_RATE
+        metrics = metrics or self.config.METRICS
+        n_epochs = n_epochs or self.config.NUM_EPOCHS
+        train_dataset = train_dataset or self.train_dataset
+        validation_dataset = validation_dataset or self.validation_dataset
 
         processing_pipeline = self.get_processing_pipeline()
         model = self.get_model()
+
         validate_variables(img_size, learning_rate, metrics, n_epochs, processing_pipeline, model)
 
         modeling_pipeline = tf.keras.Sequential([tf.keras.Input(shape=img_size + (3,)),
