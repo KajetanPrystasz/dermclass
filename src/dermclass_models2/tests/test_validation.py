@@ -15,68 +15,59 @@ def test_validate_variables(structured_training_set):
     validate_variables(*args_pd)
 
 
-class Base_SklearnValidation:
+class TestStructuredValidation:
 
-    def base__reorder_df(self, testing_config, structured_training_set, validation_class):
-        validator = validation_class(testing_config)
+    def test_validate(self, testing_config, structured_training_set):
+        testing_config.VARIABLE_ORDER = ['erythema', 'scaling', "age"]
+        testing_config.NA_VALIDATION_VAR_DICT = {"NUMERIC_NA_NOT_ALLOWED": ["age"],
+                                                 "ORDINAL_NA_NOT_ALLOWED": ["erythema", "scaling"],
+                                                 "CATEGORICAL_NA_NOT_ALLOWED": []}
+        validator = StructuredValidation(testing_config)
+        df = structured_training_set[testing_config.VARIABLE_ORDER]
 
-        reordered_columns = structured_training_set.columns.to_list()
-        reordered_columns.reverse()
-        df_reordered = validator._reorder_df(structured_training_set, reordered_columns)
+        df_nans = (df
+                   .copy()
+                   .assign(erythema=[1, np.NaN])
+                   .assign(scaling=[2, 3])
+                   .assign(age=[12, 25]))
+
+        df_unexpected_col = df.copy().assign(extra_column=[1, 2])
+        df_missing_col = df.copy().drop("erythema", axis=1)
+
+        reordered_columns = structured_training_set[testing_config.VARIABLE_ORDER].columns.to_list()[::-1]
+        df_reordered = (df
+                        .copy()
+                        .reindex(columns=reordered_columns))
 
         assert df_reordered.columns.to_list() == reordered_columns
-
-    def base__validate_columns(self, testing_config, structured_training_set, validation_class):
-        validator = validation_class(testing_config)
-
-        df = structured_training_set.copy()
-        df["extra_column"] = [1, 2]
-        df.drop("age", axis=1, inplace=True)
-
-        validated_df = validator._validate_columns(structured_training_set, structured_training_set.columns.tolist())
-        assert not validated_df.empty
+        assert validator.validate(df_nans).shape[0] == 1
         with pytest.raises(ValidationError):
-            validator._validate_columns(df, structured_training_set.columns.tolist())
-
-    def test_validate(self):
-        pass
-
-
-class TestStructuredValidation(Base_SklearnValidation):
-
-    def test__drop_unexpected_na(self, testing_config, structured_training_set):
-
-        testing_config.NA_VALIDATION_VAR_DICT = {"NUMERIC_NA_NOT_ALLOWED": ["age"],
-                                                 "ORDINAL_NA_NOT_ALLOWED": ["erythema"],
-                                                 "CATEGORICAL_NA_NOT_ALLOWED": ["erythema"]
-                                                 }
-
-        df = (structured_training_set[["age", "erythema"]]
-              .assign(age=[12, np.NaN])
-              .assign(erythema=[1, 1]))
-
-        validator = StructuredValidation(testing_config)
-        df_validated = validator._drop_unexpected_na(df)
-        print(df_validated)
-        assert df_validated.shape[0] == 1
-
-    def test__reorder_df(self, testing_config, structured_training_set):
-        super().base__reorder_df(testing_config, structured_training_set, validation_class=StructuredValidation)
-
-    def test__validate_columns(self, testing_config, structured_training_set):
-        super().base__validate_columns(testing_config, structured_training_set, validation_class=StructuredValidation)
-
-    def test_validate(self):
-        pass
+            validator.validate(df_unexpected_col)
+        with pytest.raises(ValidationError):
+            validator.validate(df_missing_col)
 
 
-class TestTextValidation(Base_SklearnValidation):
+class TestTextValidation:
 
-    def test__reorder_df(self, testing_config, structured_training_set):
-        super().base__reorder_df(testing_config, structured_training_set, validation_class=TextValidation)
+    def test_validate(self, testing_config):
 
-    def test__validate_columns(self, testing_config, structured_training_set):
-        super().base__validate_columns(testing_config, structured_training_set, validation_class=TextValidation)
+        testing_config.VARIABLE_ORDER = ["text", "target"]
+        df = pd.DataFrame(np.array([["Some testing text 1", 1],
+                                    ["Some testing text 2", 2]]),
+                          columns=["text", "target"])
 
-    def test_validate(self):
-        pass
+        validator = TextValidation(testing_config)
+
+        df_unexpected_col = df.copy().assign(extra_column=[1, 2])
+        df_missing_col = df.copy().drop("text", axis=1)
+
+        reordered_columns = df.columns.to_list()[::-1]
+        df_reordered = (df
+                        .copy()
+                        .reindex(columns=reordered_columns))
+
+        assert df_reordered.columns.to_list() == reordered_columns
+        with pytest.raises(ValidationError):
+            validator.validate(df_unexpected_col)
+        with pytest.raises(ValidationError):
+            validator.validate(df_missing_col)

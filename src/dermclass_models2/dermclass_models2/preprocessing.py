@@ -517,8 +517,6 @@ class SpacyPreprocessor(TransformerMixin, BaseEstimator):
         array = np.array([])
         for row in x["text"]:
             tokens = self.nlp(row)
-            clean_tokens = [token for token in tokens if not (token.is_punct or token.is_stop)]
-            lemmas = [token.lemma_ for token in clean_tokens]
-            text_lemmatized = " ".join(lemmas)
-            array = np.append(array, text_lemmatized)
+            output_text = " ".join([token.lemma_ for token in tokens if not (token.is_punct or token.is_stop)])
+            array = np.append(array, output_text)
         return array

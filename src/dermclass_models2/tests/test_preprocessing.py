@@ -1,145 +1,129 @@
-from dermclass_models2.preprocessing import (StructuredPreprocessor,
-                                             TextPreprocessors,
-                                             ImagePreprocessors)
+from pathlib import Path
+
 import pandas as pd
 import tensorflow as tf
+import numpy as np
+
+from dermclass_models2.preprocessing import (StructuredPreprocessor,
+                                             TextPreprocessors,
+                                             ImagePreprocessors,
+                                             CastTypesTransformer,
+                                             SpacyPreprocessor)
 
 
-class BaseSklearnPreprocessors:
-
-    def base__split_target_structured(self, testing_config, structured_training_set, preprocessor_class):
-        preprocessors = preprocessor_class(testing_config)
-
-        x, y = preprocessors._split_target_structured(structured_training_set, "target")
-        assert "target" not in x.columns
-        assert y.name == "target"
-
-    def base__split_train_test_structured(self, testing_config, structured_training_set, preprocessor_class):
-        preprocessors = preprocessor_class(testing_config)
-
-        df = structured_training_set.copy()
-        df = pd.concat([df, df])
-        x = df.drop("target", axis=1)
-        y = df["target"]
-
-        x_train, x_test, y_train, y_test = preprocessors._split_train_test_structured(x, y, test_size=0.25)
-
-        assert x_train.shape == (3, 34)
-        assert x_test.shape == (1, 34)
-        assert y_train.shape == (3,)
-        assert y_test.shape == (1,)
-
-    def base__load_data_structured(self):
-        pass
+def _assert_structured(x_train, x_test, y_train, y_test):
+    assert "target" not in x_train.columns + x_test.columns
+    assert y_train.name == "target" and y_test.name == "target"
+    assert x_train.shape == (3, 34)
+    assert x_test.shape == (1, 34)
+    assert y_train.shape == (3,)
+    assert y_test.shape == (1,)
 
 
-class BaseTfPreprocessors:
+def _assert_tf(train_dataset, validation_dataset, test_dataset):
+    train_batches = tf.data.experimental.cardinality(train_dataset)
+    validation_batches = tf.data.experimental.cardinality(validation_dataset)
+    test_batches = tf.data.experimental.cardinality(test_dataset)
 
-    def base_split_train_test_tf(self, testing_config, train_dataset, preprocessor_class):
-        preprocessor = preprocessor_class(testing_config)
-
-        validation_dataset = train_dataset
-
-        train_dataset, validation_dataset, test_dataset = (preprocessor
-                                                           ._split_train_test_tf(train_dataset, validation_dataset))
-
-        train_batches = tf.data.experimental.cardinality(train_dataset)
-        validation_batches = tf.data.experimental.cardinality(validation_dataset)
-        test_batches = tf.data.experimental.cardinality(test_dataset)
-
-        assert train_batches == 10
-        assert validation_batches == 5
-        assert test_batches == 5
+    assert train_batches == 10
+    assert validation_batches == 5
+    assert test_batches == 5
 
 
-class TestStructuredPreprocessor(BaseSklearnPreprocessors):
+class TestStructuredPreprocessor:
 
-    def test__validate_columns(self, testing_config, structured_training_set):
-        super().base__split_target_structured(testing_config,
-                                              structured_training_set,
-                                              preprocessor_class=StructuredPreprocessor)
+    def test_load_data(self, testing_config, structured_training_set, monkeypatch):
+        testing_config.TARGET = "target"
+        preprocessor = StructuredPreprocessor(testing_config)
 
-    def test__split_train_test_structured(self, testing_config, structured_training_set):
-        super().base__split_train_test_structured(testing_config,
-                                                  structured_training_set,
-                                                  preprocessor_class=StructuredPreprocessor)
+        def mock__load_structured_data(path):
+            df = pd.concat([structured_training_set, structured_training_set])
+            return df
 
-    def test__load_data_structured(self):
-        super().base__load_data_structured()
-
-    def test__load_structured_data(self):
-        pass
-
-    def test_load_data(self):
-        pass
+        monkeypatch.setattr(preprocessor, "_load_structured_data", mock__load_structured_data)
+        x_train, x_test, y_train, y_test = preprocessor.load_data(path=Path("test_path"))
+        _assert_structured(x_train, x_test, y_train, y_test)
 
 
-class TestImagePreprocessors(BaseTfPreprocessors):
+class TestImagePreprocessors:
 
-    def test__split_train_test_tf(self, testing_config, train_dataset):
-        super().base_split_train_test_tf(testing_config,
-                                         train_dataset,
-                                         preprocessor_class=ImagePreprocessors)
+    def test_load_data(self, testing_config, structured_training_set, train_dataset, monkeypatch):
+        preprocessor = ImagePreprocessors(testing_config)
 
-    def test__get_avg_img_size(self):
-        pass
+        monkeypatch.setattr(preprocessor, "_get_avg_img_size", lambda path: (255, 255))
+        monkeypatch.setattr(preprocessor, "_load_dataset", lambda img_size, data_path: (train_dataset, train_dataset))
 
-    def test__get_efficientnet_and_size(self):
-        pass
+        train_dataset, validation_dataset, test_dataset = preprocessor.load_data(path=Path("test_path"))
 
-    def test__load_dataset(self):
-        pass
-
-    def test_load_data(self):
-        pass
+        _assert_tf(train_dataset, validation_dataset, test_dataset)
+        # TODO: Add check for size
 
 
-class TestTextPreprocessors(BaseSklearnPreprocessors, BaseTfPreprocessors):
+class TestTextPreprocessors:
 
-    def test__validate_columns(self, testing_config, structured_training_set):
-        super().base__split_target_structured(testing_config,
-                                             structured_training_set,
-                                             preprocessor_class=TextPreprocessors)
+    def test_load_data(self, testing_config, structured_training_set, train_dataset, monkeypatch):
+        testing_config.TARGET = "target"
+        preprocessor = TextPreprocessors(testing_config)
 
-    def test__split_train_test_structured(self, testing_config, structured_training_set):
-        super().base__split_train_test_structured(testing_config,
-                                                  structured_training_set,
-                                                  preprocessor_class=TextPreprocessors)
+        def mock__load_structured_data(path):
+            df = pd.concat([structured_training_set, structured_training_set])
+            return df
 
-    def test__split_train_test_tf(self, testing_config, train_dataset):
-        super().base_split_train_test_tf(testing_config,
-                                         train_dataset,
-                                         preprocessor_class=TextPreprocessors)
+        monkeypatch.setattr(preprocessor, "_load_structured_data", mock__load_structured_data)
+        x_train, x_test, y_train, y_test = preprocessor.load_data(path=Path("test_path"))
 
-    def test__load_data_structured(self):
-        super().base__load_data_structured()
+        monkeypatch.setattr(preprocessor, "_load_dataset", lambda data_path: (train_dataset, train_dataset))
+        train_dataset, validation_dataset, test_dataset = preprocessor.load_data(path=Path("test_path"),
+                                                                                 get_datasets=True)
 
-    def test__load_class_from_dir(self):
-        pass
-
-    def test__load_structured_data(self):
-        pass
-
-    def test__load_dataset(self):
-        pass
-
-    def test_load_data(self):
-        pass
+        _assert_structured(x_train, x_test, y_train, y_test)
+        _assert_tf(train_dataset, validation_dataset, test_dataset)
 
 
 class TestCastTypesTransformer:
 
-    def test_fit(self):
-        pass
+    def test_fit(self, structured_training_set):
+        df = structured_training_set[['erythema', 'scaling', "age"]]
+        transformer = CastTypesTransformer(categorical_variables=[],
+                                           ordinal_variables=['erythema', 'scaling'],
+                                           numeric_variables=["age"])
+        transformer.fit(df)
 
-    def test_transform(self):
-        pass
+        assert transformer.x.equals(df)
+
+    def test_transform(self, structured_training_set):
+        df = structured_training_set[['erythema', 'scaling', "age"]]
+        transformer = CastTypesTransformer(categorical_variables=[],
+                                           ordinal_variables=['erythema', 'scaling'],
+                                           numeric_variables=["age"])
+
+        transformer.fit(df)
+        df_transformed = transformer.transform()
+
+        assert df_transformed["erythema"].dtype == "int"
+        assert df_transformed["scaling"].dtype == "int"
+        assert df_transformed["age"].dtype == "float32"
 
 
 class TestSpacyPreprocessor:
 
     def test_fit(self):
-        pass
+
+        df = pd.DataFrame(np.array([["did good, words and other stuff", 2]]),
+                          columns=["text", "target"])
+
+        transformer = SpacyPreprocessor()
+        transformer.fit(df)
+
+        assert transformer.x.equals(df)
 
     def test_transform(self):
-        pass
+        df = pd.DataFrame(np.array([["did good, words and other stuff", 2]]),
+                          columns=["text", "target"])
+
+        transformer = SpacyPreprocessor()
+        transformer.fit(df)
+
+        df_transformed = transformer.transform()
+
+        assert df_transformed[0] == 'good word stuff'

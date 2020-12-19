@@ -119,8 +119,8 @@ class StructuredValidation(_SklearnValidation):
         """
         validate_variables(df)
 
-        df = self._reorder_df(df)
         df = self._validate_columns(df)
+        df = self._reorder_df(df)
         df = self._drop_unexpected_na(df)
         return df
 
@@ -141,6 +141,6 @@ class TextValidation(_SklearnValidation):
         :return: Returns a validated pandas DataFrame
         """
         validate_variables(df)
-        df = self._reorder_df(df)
         df = self._validate_columns(df)
+        df = self._reorder_df(df)
         return df
