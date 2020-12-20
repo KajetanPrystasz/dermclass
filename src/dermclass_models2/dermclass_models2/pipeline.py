@@ -54,6 +54,8 @@ class _SklearnPipeline(abc.ABC):
         self.y_train = pd.Series
         self.y_test = pd.Series
 
+        self.scoring_function = accuracy_score
+
     def fit_structured_data(self, x_train: DataFrame, x_test: DataFrame, y_train: Series, y_test: Series):
         self.x_train = x_train
         self.x_test = x_test
@@ -420,14 +422,14 @@ class TransformersModelingPipeline:
     def load_from_pretrained(cls, path: Path):
         model = TFDistilBertForSequenceClassification.from_pretrained(path)
         tokenizer = DistilBertTokenizerFast.from_pretrained(path)
-        processing_pipeline = _TransformersProcessingPipeline(TextPipeline.encode_dataset, tokenizer)
+        processing_pipeline = TransformersProcessingPipeline(TextPipeline.encode_dataset, tokenizer)
         validate_variables(model, tokenizer, processing_pipeline)
 
         return cls(model=model,
                    processing_pipeline=processing_pipeline)
 
 
-class _TransformersProcessingPipeline:
+class TransformersProcessingPipeline:
     def __init__(self, processing_function, tokenizer):
         validate_variables(processing_function, tokenizer)
 
@@ -483,7 +485,7 @@ class TextPipeline(_SklearnPipeline, _TfPipeline):
 
         # TODO: Fix this to use specified metric
         sklearn_predictions = sklearn_modeling_pipeline.predict(x_test)
-        sklearn_results_metric = accuracy_score(y_test, sklearn_predictions)
+        sklearn_results_metric = self.scoring_function(y_test, sklearn_predictions)
 
         if transformer_results_metric > sklearn_results_metric:
             modeling_pipeline = transformer_modeling_pipeline
@@ -497,6 +499,7 @@ class TextPipeline(_SklearnPipeline, _TfPipeline):
 
     def get_model(self, use_sklearn=True, x_train=None, x_test=None, y_train=None, y_test=None):
         if use_sklearn:
+            x_train, x_test, y_train, y_test = self._set_dfs(x_train, x_test, y_train, y_test)
             validate_variables(x_train, x_test, y_train, y_test)
             model = self._get_sklearn_model(x_train, x_test, y_train, y_test)
         else:
@@ -515,7 +518,7 @@ class TextPipeline(_SklearnPipeline, _TfPipeline):
         else:
             tokenizer = DistilBertTokenizerFast.from_pretrained('distilbert-base-uncased')
             self.tokenizer = tokenizer
-            processing_pipeline = _TransformersProcessingPipeline(self.encode_dataset, tokenizer)
+            processing_pipeline = TransformersProcessingPipeline(self.encode_dataset, tokenizer)
 
         self.processing_pipeline = processing_pipeline
         self.logger.info("Successfully loaded processing pipeline")

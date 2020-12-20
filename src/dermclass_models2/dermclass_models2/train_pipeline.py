@@ -158,6 +158,9 @@ def run_controller(pipeline_types=('structured', 'text', "image")):
     Controller to run training of given types of pipelines
     :param pipeline_types: Type of pipeline to train
     """
+    if not any(i in pipeline_types for i in ['structured', 'text', "image"]):
+        raise RuntimeError("No pipeline types to train inputted")
+
     for pipeline_type in pipeline_types:
         if pipeline_type == "structured":
             sm = StructuredTrainPipeline()
@@ -165,11 +168,10 @@ def run_controller(pipeline_types=('structured', 'text', "image")):
         if pipeline_type == "text":
             tm = TextTrainPipeline()
             tm.run()
+
         if pipeline_type == "image":
             im = ImageTrainPipeline()
             im.run()
-        else:
-            raise RuntimeError("No pipeline types to train inputted")
 
 
 if __name__ == "__main__":

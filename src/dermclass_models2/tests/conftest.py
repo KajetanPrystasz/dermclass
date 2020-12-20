@@ -9,7 +9,13 @@ from dermclass_models2.config import BaseConfig
 
 
 class TestingConfig:
-    pass
+    PATIENCE = 3
+    BATCH_SIZE = 1
+    TUNING_FUNC_PARAMS = {"n_jobs": -1, "max_overfit": 0.9, "cv": 2, "n_trials": 1}
+    DISEASES = ["test_disease1", "test_disease2", "test_disease3"]
+    SEED = 42
+    METRICS = ["accuracy"]
+    NUM_EPOCHS = 1
 
 
 @pytest.fixture()
@@ -42,7 +48,12 @@ def structured_set():
     df = pd.DataFrame(np.array([[2, 22, 1],
                                 [2, 23, 1],
                                 [1, 2, 0],
-                                [0, 32, 2]]),
+                                [0, 32, 2],
+                                [2, 22, 1],
+                                [2, 23, 1],
+                                [1, 2, 0],
+                                [0, 32, 2]
+                                ]),
                       columns=["erythema", "age", "target"])
     x = df.drop("target", axis=1)
     y = df["target"]
@@ -53,9 +64,41 @@ def structured_set():
 
 
 @pytest.fixture()
+def structured_text_set():
+    df = pd.DataFrame(np.array([["Some sample text1", 1],
+                                ["Some sample text2", 1],
+                                ["Some sample text3", 0],
+                                ["Some sample text4", 2],
+                                ["Some sample text5", 1],
+                                ["Some sample text6", 1],
+                                ["Some sample text7", 0],
+                                ["Some sample text8", 2],
+                                ["Some sample text9", 0],
+                                ["Some sample text10", 2]
+                                ]),
+                      columns=["text", "target"])
+    x = df.drop("target", axis=1)
+    y = df["target"]
+    x_train, x_test, y_train, y_test = train_test_split(x, y,
+                                                        test_size=0.25,
+                                                        random_state=42)
+    return x_train, x_test, y_train, y_test
+
+
+@pytest.fixture()
 def train_dataset():
-    dataset = tf.data.Dataset.range(10).batch(1)
+    dataset = tf.data.Dataset.range(10).batch(2)
     return dataset
+
+
+@pytest.fixture()
+def text_train_dataset():
+    train_dataset = (tf.keras.preprocessing.text_dataset_from_directory(directory=(BaseConfig.PACKAGE_ROOT /
+                                                                                    ".." /
+                                                                                    "tests" /
+                                                                                    "test_text_dir"),
+                                                                        batch_size=10))
+    return train_dataset
 
 
 # TODO: Add mocking for this fixture
