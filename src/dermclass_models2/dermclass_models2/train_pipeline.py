@@ -98,7 +98,6 @@ class ImageTrainPipeline(_BaseTrainPipeline):
 
         train_dataset, validation_dataset, test_dataset = self.preprocessor.load_data()
         self.pipeline.fit_datasets(train_dataset, validation_dataset, test_dataset)
-
         self.pipeline.set_img_size_and_model_obj(self.preprocessor.img_size, self.preprocessor.model)
         modeling_pipeline = self.pipeline.get_modeling_pipeline()
 

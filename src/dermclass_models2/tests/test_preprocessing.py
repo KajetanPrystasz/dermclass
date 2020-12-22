@@ -25,9 +25,9 @@ def _assert_tf(train_dataset, validation_dataset, test_dataset):
     validation_batches = tf.data.experimental.cardinality(validation_dataset)
     test_batches = tf.data.experimental.cardinality(test_dataset)
 
-    assert train_batches == 10
-    assert validation_batches == 5
-    assert test_batches == 5
+    assert train_batches == 5
+    assert validation_batches == 3
+    assert test_batches == 2
 
 
 class TestStructuredPreprocessor:

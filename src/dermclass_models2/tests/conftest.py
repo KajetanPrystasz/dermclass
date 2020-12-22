@@ -113,3 +113,24 @@ def image_train_dataset():
                                                                          seed=BaseConfig.SEED,
                                                                          shuffle=True))
     return train_dataset
+
+
+def _xgboost_trial(trial) -> dict:
+    params = {"subsample": trial.suggest_discrete_uniform("subsample", 0.1, 1, 0.1),
+              "colsample_bytree": trial.suggest_discrete_uniform("colsample_bytree", 0.6, 1, 0.1)}
+    return params
+
+
+def _multinomial_nb_trial(trial) -> dict:
+    params = {"alpha": trial.suggest_discrete_uniform("alpha", 0.1, 5, 0.1)}
+    return params
+
+
+@pytest.fixture()
+def xgboost_trial():
+    return _xgboost_trial
+
+
+@pytest.fixture()
+def multinomial_nb_trial():
+    return _multinomial_nb_trial

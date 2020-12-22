@@ -42,7 +42,7 @@ class BasePersistence:
         validate_variables(backend, path)
 
         if backend == "joblib":
-            pipeline = joblib.load(path + ".joblib")
+            pipeline = joblib.load(path.with_suffix('.joblib'))
         if backend == "tf":
             pipeline = load_model(path)
         if backend == "tfm":

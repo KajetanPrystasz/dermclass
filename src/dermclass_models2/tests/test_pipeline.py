@@ -13,7 +13,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.compose import ColumnTransformer
 from sklearn.base import BaseEstimator
 
-from transformers import DistilBertTokenizerFast
+from transformers import DistilBertTokenizerFast, TFDistilBertForSequenceClassification
 
 _validation_dict = {"NUMERIC_NA_NOT_ALLOWED": ["age"],
                     "ORDINAL_NA_NOT_ALLOWED": ["erythema"],
@@ -30,17 +30,6 @@ def _assert_structured_data(pipeline, x_train, x_test, y_train, y_test):
     assert pipeline.y_test.equals(y_test)
 
 
-def _xgboost_trial(trial) -> dict:
-    params = {"subsample": trial.suggest_discrete_uniform("subsample", 0.1, 1, 0.1),
-              "colsample_bytree": trial.suggest_discrete_uniform("colsample_bytree", 0.6, 1, 0.1)}
-    return params
-
-
-def _multinomial_nb_trial(trial) -> dict:
-    params = {"alpha": trial.suggest_discrete_uniform("alpha", 0.1, 5, 0.1)}
-    return params
-
-
 class TestStructuredPipeline:
 
     def test_get_processing_pipeline(self, testing_config):
@@ -53,10 +42,10 @@ class TestStructuredPipeline:
 
         assert isinstance(processing_pipeline, (Pipeline, ColumnTransformer))
 
-    def test_get_model(self, testing_config, structured_set):
+    def test_get_model(self, testing_config, structured_set, xgboost_trial):
         testing_config = copy.copy(testing_config)
         testing_config.DEFAULT_BEST_MODEL = "XGBClassifier"
-        testing_config.TRIALS_DICT = {"XGBClassifier": _xgboost_trial}
+        testing_config.TRIALS_DICT = {"XGBClassifier": xgboost_trial}
         testing_config.NA_VALIDATION_VAR_DICT = _validation_dict
 
         x_train, x_test, y_train, y_test = structured_set
@@ -68,10 +57,10 @@ class TestStructuredPipeline:
 
         assert isinstance(model, BaseEstimator)
 
-    def test_get_modeling_pipeline(self, testing_config, structured_set):
+    def test_get_modeling_pipeline(self, testing_config, structured_set, xgboost_trial):
         testing_config = copy.copy(testing_config)
         testing_config.TUNING_FUNC_PARAMS = {"n_jobs": -1, "max_overfit": 0.9, "cv": 2, "n_trials": 1}
-        testing_config.TRIALS_DICT = {"XGBClassifier": _xgboost_trial}
+        testing_config.TRIALS_DICT = {"XGBClassifier": xgboost_trial}
         testing_config.NA_VALIDATION_VAR_DICT = _validation_dict
 
         x_train, x_test, y_train, y_test = structured_set
@@ -86,6 +75,8 @@ class TestStructuredPipeline:
         assert isinstance(modeling_pipeline, Pipeline)
         assert isinstance(modeling_pipeline.steps[0][1], (Pipeline, ColumnTransformer))
         assert isinstance(modeling_pipeline.steps[1][1], BaseEstimator)
+        with pytest.raises(ValueError):
+            assert modeling_pipeline.predict(pipeline.x_test)
 
     def test_fit_structured_data(self, testing_config, structured_set):
         testing_config = copy.copy(testing_config)
@@ -128,6 +119,7 @@ class TestImagePipeline:
         assert isinstance(pipeline_rescale.get_layer(index=-1),
                           tf.keras.layers.experimental.preprocessing.Rescaling)
 
+    @pytest.mark.slow
     def test_get_model(self, testing_config):
         testing_config = copy.copy(testing_config)
         testing_config.DISEASES = ["test_disease1", "test_disease2", "test_disease3"]
@@ -138,6 +130,7 @@ class TestImagePipeline:
         assert model.trainable is False
         assert isinstance(model, tf.keras.Model)
 
+    @pytest.mark.slow
     def test_get_modeling_pipeline(self, testing_config, image_train_dataset):
         testing_config = copy.copy(testing_config)
         testing_config.img_size = (456, 456)
@@ -150,6 +143,8 @@ class TestImagePipeline:
 
         modeling_pipeline = pipeline.get_modeling_pipeline()
         assert isinstance(modeling_pipeline, tf.keras.Sequential)
+        with pytest.raises(ValueError):
+            assert modeling_pipeline.predict(pipeline.test_dataset)
 
 
 class TestTextPipeline:
@@ -178,8 +173,7 @@ class TestTextPipeline:
                            .encode_dataset(text_train_dataset,
                                            DistilBertTokenizerFast.from_pretrained('distilbert-base-uncased')))
 
-        for batch in encoded_dataset.as_numpy_iterator():
-            break
+        batch = next(encoded_dataset.as_numpy_iterator())
 
         input_ids_check = batch[0].get("input_ids")
         attention_mask_check = batch[0].get("attention_mask")
@@ -198,9 +192,11 @@ class TestTextPipeline:
         else:
             assert False
 
-    def test_get_best_modeling_pipeline_type(self, testing_config, structured_text_set, text_train_dataset, monkeypatch):
+    @pytest.mark.slow
+    def test_get_best_modeling_pipeline_type(self, monkeypatch, testing_config,
+                                             structured_text_set, text_train_dataset, multinomial_nb_trial):
         testing_config = copy.copy(testing_config)
-        testing_config.TRIALS_DICT = {"MultinomialNB": _multinomial_nb_trial}
+        testing_config.TRIALS_DICT = {"MultinomialNB": multinomial_nb_trial}
         testing_config.DEFAULT_BEST_MODEL = "MultinomialNB"
 
         pipeline = TextPipeline(testing_config)
@@ -242,9 +238,10 @@ class TestTextPipeline:
         assert isinstance(sklearn_pipeline, Pipeline)
         assert isinstance(tf_pipeline, TransformersProcessingPipeline)
 
-    def test_get_model(self, testing_config, structured_text_set, text_train_dataset):
+    @pytest.mark.slow
+    def test_get_model(self, testing_config, structured_text_set, text_train_dataset, multinomial_nb_trial):
         testing_config = copy.copy(testing_config)
-        testing_config.TRIALS_DICT = {"MultinomialNB": _multinomial_nb_trial}
+        testing_config.TRIALS_DICT = {"MultinomialNB": multinomial_nb_trial}
         testing_config.DEFAULT_BEST_MODEL = "MultinomialNB"
         pipeline = TextPipeline(testing_config)
 
@@ -259,9 +256,12 @@ class TestTextPipeline:
         assert isinstance(sklearn_model, BaseEstimator)
         assert isinstance(tf_model, tf.keras.Model)
 
-    def test_get_modeling_pipeline(self, testing_config, structured_text_set, text_train_dataset):
+    @pytest.mark.slow
+    def test_get_modeling_pipeline(self, testing_config,
+                                   structured_text_set, text_train_dataset, structured_training_df,
+                                   multinomial_nb_trial):
         testing_config = copy.copy(testing_config)
-        testing_config.TRIALS_DICT = {"MultinomialNB": _multinomial_nb_trial}
+        testing_config.TRIALS_DICT = {"MultinomialNB": multinomial_nb_trial}
         testing_config.DEFAULT_BEST_MODEL = "MultinomialNB"
         pipeline = TextPipeline(testing_config)
 
@@ -278,10 +278,55 @@ class TestTextPipeline:
         assert isinstance(sklearn_pipeline, Pipeline)
         assert isinstance(tf_pipeline, TransformersModelingPipeline)
 
+        with pytest.raises(ValueError):
+            assert sklearn_pipeline.predict(pipeline.x_test)
+        assert tf_pipeline.predict(pipeline.test_dataset)
+
 
 class TestTransformersModelingPipeline:
-    pass
+    def _get_modeling_pipeline(self, testing_config, text_train_dataset):
+        testing_config = copy.copy(testing_config)
+        pipeline = TextPipeline(testing_config)
+
+        pipeline.fit_datasets(text_train_dataset, text_train_dataset, text_train_dataset)
+
+        modeling_pipeline = pipeline.get_modeling_pipeline(use_sklearn=False,
+                                                           train_dataset=text_train_dataset,
+                                                           validation_dataset=text_train_dataset)
+        return modeling_pipeline, pipeline
+
+    def test__call__(self, testing_config, text_train_dataset):
+        modeling_pipeline, pipeline = self._get_modeling_pipeline(testing_config, text_train_dataset)
+        assert modeling_pipeline(pipeline.test_dataset)
+
+    def test_evaluate(self, testing_config, text_train_dataset):
+        modeling_pipeline, pipeline = self._get_modeling_pipeline(testing_config, text_train_dataset)
+        assert modeling_pipeline.evaluate(pipeline.test_dataset)
+
+    def test_predict(self, testing_config, text_train_dataset):
+        modeling_pipeline, pipeline = self._get_modeling_pipeline(testing_config, text_train_dataset)
+        assert modeling_pipeline.predict(pipeline.test_dataset)
+
+    def test_load_from_pretrained(self, tmp_path):
+        pickle_dir = tmp_path / "pickle_dir"
+        pickle_dir.mkdir()
+
+        model = TFDistilBertForSequenceClassification.from_pretrained('distilbert-base-uncased')
+        tokenizer = DistilBertTokenizerFast.from_pretrained('distilbert-base-uncased')
+
+        model.save_pretrained(pickle_dir)
+        tokenizer.save_pretrained(pickle_dir)
+
+        modeling_pipeline = TransformersModelingPipeline.load_from_pretrained(str(pickle_dir))
+
+        assert isinstance(modeling_pipeline, TransformersModelingPipeline)
 
 
 class TestTransformersProcessingPipeline:
-    pass
+
+    def test__call__(self, text_train_dataset):
+        tokenizer = DistilBertTokenizerFast.from_pretrained('distilbert-base-uncased')
+        processing_pipeline = TransformersProcessingPipeline(TextPipeline.encode_dataset,
+                                                             tokenizer)
+        train_dataset_encoded = processing_pipeline(text_train_dataset)
+        assert text_train_dataset != train_dataset_encoded

@@ -36,7 +36,6 @@ Dataset = tf.data.Dataset
 Sequential = tf.keras.models.Sequential
 
 
-# TODO: Add input safeholders for get model function to make them not run if self.x_train etc. are Nones
 class _SklearnPipeline(abc.ABC):
 
     def __init__(self, config):
