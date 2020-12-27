@@ -1,0 +1,80 @@
+https://en.wikipedia.org/wiki/Pityriasis_rosea#:~:text=Pityriasis%20rosea%20is%20a%20type,the%20trunk%20and%20upper%20limbs.
+
+Pityriasis rosea is a type of skin rash.[2] Classically, it begins with a single red and slightly scaly area known as a "herald patch".[2] This is then followed, days to weeks later, by a rash of many similar but smaller round or oval lesions, mainly on the trunk and upper limbs.[3] About 20% of cases show atypical deviations from this pattern.[3] It usually lasts less than three months and goes away without treatment.[3] Sometimes malaise or a fever may occur before the start of the rash or itchiness, but often there are few other symptoms.[3]
+
+While the cause is not entirely clear, it is believed to be related to human herpesvirus 6 (HHV6) or human herpesvirus 7 (HHV7).[3] It does not appear to be contagious.[3] Certain medications may result in a similar rash.[3] Diagnosis is based on the symptoms.[2]
+
+Evidence for specific treatment is limited.[3] About 1.3% of people are affected at some point in time.[3] It most often occurs in those between the ages of 10 and 35.[2] The condition was described at least as early as 1798.[1]
+
+
+Contents
+1	Signs and symptoms
+2	Causes
+3	Diagnosis
+4	Treatment
+5	Prognosis
+6	Epidemiology
+7	See also
+8	References
+9	External links
+Signs and symptoms
+
+Pityriasis rosea on torso
+The symptoms of this condition include:
+
+Recent upper respiratory tract infections in 8–69% of patients have been reported by some studies.[4][5]
+Occasionally, prodromal flu-like symptoms, including headache, joint pain, mild fever, and fatigue, as well as gastrointestinal symptoms such as nausea, diarrhea, or vomiting, and feeling generally unwell, precede other symptoms.[6][7]
+In most cases, a single, 2 to 10cm (1" to 4") oval red "herald" patch appears, classically on the trunk or neck, having an appearance similar to ringworm.[8] Occasionally, the herald patch may occur in a hidden position (in the armpit, for example) and not be noticed immediately. The herald patch may also appear as a cluster of smaller oval spots, and be mistaken for acne. Rarely, it does not become present at all.
+After the herald patch appears, usually some days or weeks later, a rash of many small (5–10 mm; ¼" to ½") pink or red, flaky, oval or round spots appear. They are mostly situated on the trunk and upper limbs. They follow the skin's cleavage lines, which on the upper chest and back produce a characteristic "christmas-tree" distribution.[8]
+In 6% of cases an "inverse" distribution may occur, with rash mostly on the extremities.[9] In children, presentation can be atypical or inverse, and the course is typically milder.[10][11]
+About one in four people with PR have mild to severe symptomatic itching. (Moderate itching due to skin over-dryness is much more common, especially if soap is used to cleanse the affected areas.) The itching is often non-specific, and worsens if scratched. This tends to fade as the rash develops and does not usually last through the entire course of the disease.[12]
+About a fifth of cases have an atypical form, with significant variations in symptoms including the size, distribution, morphology, and evolution of the lesions.[13][14] In addition to typical papules and scales, forms appearing as very large plaques (pityriasis rosea gigantea), urticaria, large blisters, patches resembling erythema multiforme, oral lesions, and various other appearances have been noted.[7] A vesicular form can mimic chicken pox.[14][7] Variations in distribution include inverted forms, with rashes on the face or extremities without appearing on the trunk, as well as more uncommon versions localized to the armpits, groin, or extremities (pityriasis rosea circinata et marginata of Vidal) or unilateral spread.[7]
+
+Causes
+The cause of pityriasis rosea is not certain, but its clinical presentation and immunologic reactions suggest a viral infection as a cause. Some believe it to be a reactivation[15] of herpes viruses 6 and 7, which cause roseola in infants,[16][17][18][19] though some investigations have found no evidence of this.[20]
+
+Diagnosis
+
+A herald patch of pityriasis rosea which started before the rest of the lesion and was initially mistaken for a fungal infection
+Experienced practitioners may make the diagnosis clinically.[21] Classical symptoms are usually straightforward to recognize, but the wide range of atypical forms may cause difficulty for the clinician in diagnosing some cases.[13] Misdiagnosis by nondermatologists is not uncommon.[6] If the diagnosis is in doubt, tests may be performed to rule out similar conditions such as Lyme disease, ringworm, guttate psoriasis, nummular or discoid eczema, drug eruptions, other viral exanthems.[21][22] The clinical appearance of pityriasis rosea in some cases is similar to that of secondary syphilis, and rapid plasma reagin testing should be performed if there is any clinical concern for syphilis.[23] A biopsy of the lesions will show extravasated erythrocytes within dermal papillae and dyskeratotic cells within the dermis.[21]
+
+A set of validated diagnostic criteria for pityriasis rosea[24][25] is as follows:
+
+A patient is diagnosed as having pityriasis rosea if:
+
+On at least one occasion or clinical encounter, he / she has all the essential clinical features and at least one of the optional clinical features, and
+On all occasions or clinical encounters related to the rash, he / she does not have any of the exclusional clinical features.
+The essential clinical features are the following:
+
+Discrete circular or oval lesions,
+Scaling on most lesions, and
+Peripheral collarette scaling with central clearance on at least two lesions.
+The optional clinical features are the following:
+
+Truncal and proximal limb distribution, with less than 10% of lesions distal to mid-upper-arm and mid-thigh,
+Orientation of most lesions along skin cleavage lines, and
+A herald patch (not necessarily the largest) appearing at least two days before eruption of other lesions, from history of the patient or from clinical observation.
+The exclusional clinical features are the following:
+
+Multiple small vesicles at the centre of two or more lesions,
+Two or more lesions on palmar or plantar skin surfaces, and
+Clinical or serological evidence of secondary syphilis.
+Treatment
+The condition usually resolves on its own, and treatment is not required.[26] Oral antihistamines or topical steroids may be used to decrease itching.[21] Steroids do provide relief from itching, and improve the appearance of the rash, but they also cause the new skin that forms (after the rash subsides) to take longer to match the surrounding skin color. While no scarring has been found to be associated with the rash, scratching should be avoided. It's possible that scratching can make itching worse and an itch-scratch cycle may develop with regular scratching (that is, you itch more because you scratch, so you scratch more because you itch, and so on). Irritants such as soaps with fragrances, hot water, wool, and synthetic fabrics should be avoided. Lotions that help stop or prevent itching may be helpful.[26][27]
+
+Direct sunlight makes the lesions resolve more quickly.[21] According to this principle, medical treatment with ultraviolet light has been used to hasten resolution,[28] though studies disagree whether it decreases itching[28] or not.[29] UV therapy is most beneficial in the first week of the eruption.[28]
+
+A 2007 meta-analysis concluded that there is insufficient evidence for the effectiveness of most treatments.[30] Oral erythromycin was found to be effective for treating the rash and relieving the itch based on one early trial; however, a later study could not confirm these results.[5][30][31]
+
+Prognosis
+In most patients, the condition lasts only a matter of weeks; in some cases it can last longer (up to six months). The disease resolves completely without long-term effects. In a ten-year epidemiological study of 939 people in the United States, less than two percent had a recurrence.[32]
+
+Epidemiology
+The overall prevalence of PR in the United States has been estimated to be 0.13% in men and 0.14% in women. It most commonly occurs between the ages of 10 and 35.[21] It is more common in spring.[21]
+
+PR is not viewed as contagious,[33][34] though there have been reports of small epidemics in fraternity houses and military bases, schools and gyms.[21]
+
+See also
+Pityriasis circinata - a localized form of pityriasis rosea that affects the axillae and groin
+Pityriasis - for list of similarly named flaky skin conditions
+List of cutaneous conditions
