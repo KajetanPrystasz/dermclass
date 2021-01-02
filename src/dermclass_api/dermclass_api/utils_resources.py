@@ -1,5 +1,5 @@
 from flask import jsonify, request, Blueprint
-from dermclass_structured import __version__ as model_version
+from dermclass_models import __version__ as model_version
 from dermclass_api import logger as _logger, __version__ as api_version
 
 utils_blueprint = Blueprint("utils_blueprint", __name__)

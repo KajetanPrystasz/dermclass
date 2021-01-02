@@ -13,8 +13,7 @@ dependencies:
 - flask-sqlalchemy
 - marshmallow-sqlalchemy
 - pytest
-- pytest-dependency
 - pathlib
 - pip:
     - gunicorn
-    - dermclass_structured
+    - dermclass_models

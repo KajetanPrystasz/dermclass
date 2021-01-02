@@ -1,11 +1,32 @@
 from dermclass_api.extensions import db, ma
-from dermclass_structured import __version__ as model_version
+from dermclass_models import __version__ as model_version
 
-class StructuredPredictionModel(db.Model):
 
-    __tablename__ = 'predictions'
-
+class PredictionModel(db.Model):
     prediction_id = db.Column(db.Integer, primary_key=True)
+
+    def json(self):
+        print(self.target)
+        return {"prediction_id": self.prediction_id,
+                "target": self.target,
+                "version": model_version}
+
+    @classmethod
+    def find_by_prediction_id(cls, prediction_id):
+        return cls.query.filter_by(prediction_id=prediction_id).first()
+
+    def save_to_db(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def delete_from_db(self):
+        db.session.delete(self)
+        db.session.commit()
+
+
+class StructuredPredictionModel(PredictionModel):
+
+    __tablename__ = 'structuredPredictions'
 
     erythema = db.Column(db.Integer, nullable=False)
     scaling = db.Column(db.Integer, nullable=False)
@@ -41,16 +62,16 @@ class StructuredPredictionModel(db.Model):
     inflammatory_monoluclear_inflitrate = db.Column(db.Integer, nullable=False)
     band_like_infiltrate = db.Column(db.Integer, nullable=False)                    #changed input name
 
-    age = db.Column(db.Integer, nullable=True)
+    age = db.Column(db.Integer, nullable=False)
 
-    target = db.Column(db.Integer, nullable=True)                                  #changed input name
+    target = db.Column(db.Integer, nullable=False)                                  #changed input name
 
-    def __init__(self, prediction_id, erythema, scaling, definite_borders, itching, koebner_phenomenon, polygonal_papules,
-                 follicular_papules, oral_mucosal_involvement, knee_and_elbow_involvement,scalp_involvement,
-                 family_history, melanin_incontinence, eosinophils_in_the_infiltrate, pnl_infiltrate,
-                 fibrosis_of_the_papillary_dermis, exocytosis, acanthosis, hyperkeratosis, parakeratosis,  clubbing_of_the_rete_ridges,
-                 elongation_of_the_rete_ridges, thinning_of_the_suprapapillary_epidermis, spongiform_pustule,
-                 munro_microabcess, focal_hypergranulosis, disappearance_of_the_granular_layer,
+    def __init__(self, prediction_id, erythema, scaling, definite_borders, itching, koebner_phenomenon,
+                 polygonal_papules, follicular_papules, oral_mucosal_involvement, knee_and_elbow_involvement,
+                 scalp_involvement, family_history, melanin_incontinence, eosinophils_in_the_infiltrate, pnl_infiltrate,
+                 fibrosis_of_the_papillary_dermis, exocytosis, acanthosis, hyperkeratosis, parakeratosis,
+                 clubbing_of_the_rete_ridges, elongation_of_the_rete_ridges, thinning_of_the_suprapapillary_epidermis,
+                 spongiform_pustule, munro_microabcess, focal_hypergranulosis, disappearance_of_the_granular_layer,
                  vacuolisation_and_damage_of_basal_layer, spongiosis, saw_tooth_appearance_of_retes,
                  follicular_horn_plug, perifollicular_parakeratosis, inflammatory_monoluclear_inflitrate,
                  band_like_infiltrate, age, target):
@@ -95,26 +116,46 @@ class StructuredPredictionModel(db.Model):
 
         self.target = target
 
-    def json(self):
-        print(self.target)
-        return {"prediction_id": self.prediction_id,
-                "target" : self.target,
-                "version" : model_version}
 
-    @classmethod
-    def find_by_prediction_id(cls, prediction_id):
-        return cls.query.filter_by(prediction_id=prediction_id).first()
+class TextPredictionModel(PredictionModel):
 
-    def save_to_db(self):
-        db.session.add(self)
-        db.session.commit()
+    __tablename__ = 'textPredictions'
 
-    def delete_from_db(self):
-        db.session.delete(self)
-        db.session.commit()
+    text = db.Column(db.String, nullable=False)
+
+    target = db.Column(db.Integer, nullable=False)
+
+    def __init__(self, text, target):
+        self.target = target
+        self.text = text
+
+
+class ImagePredictionModel(PredictionModel):
+
+    __tablename__ = 'ImagePredictions'
+
+    imgArray = db.Column(db.String, nullable=False)
+
+    target = db.Column(db.Integer, nullable=False)
+
+    def __init__(self, text, target):
+        self.target = target
+        self.text = text
 
 
 class StructuredPredictionSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = StructuredPredictionModel
+        exclude = ("prediction_id",)
+
+
+class TextPredictionSchema(ma.SQLAlchemyAutoSchema):
+    class Meta:
+        model = TextPredictionModel
+        exclude = ("prediction_id",)
+
+
+class ImagePredictionSchema(ma.SQLAlchemyAutoSchema):
+    class Meta:
+        model = ImagePredictionModel
         exclude = ("prediction_id",)
