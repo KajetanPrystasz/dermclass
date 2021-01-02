@@ -5,7 +5,7 @@ from pathlib import Path
 
 from setuptools import find_packages, setup
 
-NAME = 'dermclass_models2'
+NAME = 'dermclass_models'
 DESCRIPTION = 'This package...'
 EMAIL = 'kajetan.prystasz@gmail.com'
 AUTHOR = 'Kajetan Prystasz'
@@ -18,7 +18,7 @@ except FileNotFoundError:
     long_description = DESCRIPTION
 
 ROOT_DIR = Path(__file__).resolve().parent
-PACKAGE_DIR = ROOT_DIR / 'dermclass_models2'
+PACKAGE_DIR = ROOT_DIR / 'dermclass_models'
 with open(PACKAGE_DIR / 'VERSION') as f:
     _version = f.read().strip()
 
@@ -48,7 +48,7 @@ setup(
     author=AUTHOR,
     author_email=EMAIL,
     packages=find_packages(exclude=('tests',)),
-    package_data={'dermclass_models2': ['VERSION']},
+    package_data={'dermclass_models': ['VERSION']},
     install_requires=list_reqs(),
     include_package_data=True,
 )

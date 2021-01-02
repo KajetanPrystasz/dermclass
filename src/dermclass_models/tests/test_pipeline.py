@@ -4,11 +4,11 @@ import pytest
 import numpy as np
 import tensorflow as tf
 
-from dermclass_models2.pipeline import (StructuredPipeline,
-                                        TextPipeline,
-                                        ImagePipeline,
-                                        TransformersProcessingPipeline,
-                                        TransformersModelingPipeline)
+from dermclass_models.pipeline import (StructuredPipeline,
+                                       TextPipeline,
+                                       ImagePipeline,
+                                       TransformersProcessingPipeline,
+                                       TransformersModelingPipeline)
 from sklearn.pipeline import Pipeline
 from sklearn.compose import ColumnTransformer
 from sklearn.base import BaseEstimator

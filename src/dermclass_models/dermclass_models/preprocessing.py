@@ -13,8 +13,8 @@ import tensorflow as tf
 from sklearn.model_selection import train_test_split
 from sklearn.base import TransformerMixin, BaseEstimator
 
-from dermclass_models2.config import StructuredConfig, ImageConfig, TextConfig
-from dermclass_models2.validation import validate_variables
+from dermclass_models.config import StructuredConfig, ImageConfig, TextConfig
+from dermclass_models.validation import validate_variables
 
 DataFrame = pd.DataFrame
 Series = pd.Series

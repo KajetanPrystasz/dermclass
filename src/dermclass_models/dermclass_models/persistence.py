@@ -6,11 +6,11 @@ import os
 
 from sklearn.pipeline import Pipeline as SklearnPipeline
 from tensorflow.keras.models import load_model, Sequential
-from dermclass_models2.pipeline import TransformersModelingPipeline
+from dermclass_models.pipeline import TransformersModelingPipeline
 
 
-from dermclass_models2 import __version__ as _version
-from dermclass_models2.validation import ValidationError, validate_variables
+from dermclass_models import __version__ as _version
+from dermclass_models.validation import ValidationError, validate_variables
 
 
 # TODO: Refactor to make it OOP like rest of modules

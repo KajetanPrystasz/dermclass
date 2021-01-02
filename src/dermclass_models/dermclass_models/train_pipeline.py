@@ -5,12 +5,12 @@ from typing import Union
 
 import tensorflow as tf
 
-from dermclass_models2.preprocessing import StructuredPreprocessor, TextPreprocessors, ImagePreprocessors
-from dermclass_models2.pipeline import StructuredPipeline, TextPipeline, ImagePipeline
-from dermclass_models2.config import StructuredConfig, TextConfig, ImageConfig
-from dermclass_models2.persistence import BasePersistence
-from dermclass_models2.pipeline import TransformersModelingPipeline
-from dermclass_models2.validation import validate_variables
+from dermclass_models.preprocessing import StructuredPreprocessor, TextPreprocessors, ImagePreprocessors
+from dermclass_models.pipeline import StructuredPipeline, TextPipeline, ImagePipeline
+from dermclass_models.config import StructuredConfig, TextConfig, ImageConfig
+from dermclass_models.persistence import BasePersistence
+from dermclass_models.pipeline import TransformersModelingPipeline
+from dermclass_models.validation import validate_variables
 
 from sklearn.pipeline import Pipeline as SklearnPipeline
 

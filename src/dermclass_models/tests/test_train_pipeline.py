@@ -2,10 +2,10 @@ import pytest
 import copy
 import tensorflow as tf
 
-from dermclass_models2.train_pipeline import (StructuredTrainPipeline, TextTrainPipeline,
-                                              ImageTrainPipeline, run_controller)
-from dermclass_models2.preprocessing import StructuredPreprocessor, TextPreprocessors, ImagePreprocessors
-from dermclass_models2.pipeline import StructuredPipeline, TextPipeline, ImagePipeline
+from dermclass_models.train_pipeline import (StructuredTrainPipeline, TextTrainPipeline,
+                                             ImageTrainPipeline, run_controller)
+from dermclass_models.preprocessing import StructuredPreprocessor, TextPreprocessors, ImagePreprocessors
+from dermclass_models.pipeline import StructuredPipeline, TextPipeline, ImagePipeline
 
 _validation_dict = {"NUMERIC_NA_NOT_ALLOWED": ["age"],
                     "ORDINAL_NA_NOT_ALLOWED": ["erythema"],

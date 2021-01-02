@@ -1,4 +1,4 @@
-from dermclass_models2.prediction import StructuredPrediction, ImagePrediction, TextPrediction
+from dermclass_models.prediction import StructuredPrediction, ImagePrediction, TextPrediction
 
 
 # TODO: Finish when prediction ready

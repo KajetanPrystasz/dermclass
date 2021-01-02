@@ -1,6 +1,6 @@
 from pathlib import Path
 import pytest
-from dermclass_models2.persistence import BasePersistence
+from dermclass_models.persistence import BasePersistence
 
 
 class TestBasePersistence:

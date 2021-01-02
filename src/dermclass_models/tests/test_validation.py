@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from dermclass_models2.validation import StructuredValidation, TextValidation, ValidationError, validate_variables
+from dermclass_models.validation import StructuredValidation, TextValidation, ValidationError, validate_variables
 
 
 def test_validate_variables(structured_training_df):

@@ -5,7 +5,7 @@ import numpy as np
 import tensorflow as tf
 
 from sklearn.model_selection import train_test_split
-from dermclass_models2.config import BaseConfig
+from dermclass_models.config import BaseConfig
 
 
 class TestingConfig:

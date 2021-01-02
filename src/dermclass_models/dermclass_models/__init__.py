@@ -1,5 +1,5 @@
 import logging
-from dermclass_models2.config import BaseConfig
+from dermclass_models.config import BaseConfig
 
 VERSION_PATH = BaseConfig.PACKAGE_ROOT / "VERSION"
 with open(VERSION_PATH, 'r') as version_file:

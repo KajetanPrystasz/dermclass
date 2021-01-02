@@ -5,7 +5,7 @@ import abc
 
 from optuna import trial
 
-import dermclass_models2
+import dermclass_models
 
 import tensorflow as tf
 
@@ -41,7 +41,7 @@ def multinomial_nb_trial(trial: trial) -> dict:
 
 class BaseConfig:
 
-    PACKAGE_ROOT = pathlib.Path(dermclass_models2.__file__).resolve().parent
+    PACKAGE_ROOT = pathlib.Path(dermclass_models.__file__).resolve().parent
     PICKLE_DIR = PACKAGE_ROOT / "pickles"
 
     LOG_FORMAT = logging.Formatter("%(asctime)s — %(name)s — %(levelname)s —" "%(funcName)s:%(lineno)d — %(message)s")

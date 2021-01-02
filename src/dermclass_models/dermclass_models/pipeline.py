@@ -23,9 +23,9 @@ from transformers import TFDistilBertForSequenceClassification, DistilBertTokeni
 
 import tensorflow as tf
 
-from dermclass_models2.config import StructuredConfig, ImageConfig, TextConfig
-from dermclass_models2.preprocessing import CastTypesTransformer, SpacyPreprocessor
-from dermclass_models2.validation import validate_variables
+from dermclass_models.config import StructuredConfig, ImageConfig, TextConfig
+from dermclass_models.preprocessing import CastTypesTransformer, SpacyPreprocessor
+from dermclass_models.validation import validate_variables
 
 from xgboost import XGBClassifier
 from sklearn.naive_bayes import MultinomialNB

@@ -4,11 +4,11 @@ import pandas as pd
 import tensorflow as tf
 import numpy as np
 
-from dermclass_models2.preprocessing import (StructuredPreprocessor,
-                                             TextPreprocessors,
-                                             ImagePreprocessors,
-                                             CastTypesTransformer,
-                                             SpacyPreprocessor)
+from dermclass_models.preprocessing import (StructuredPreprocessor,
+                                            TextPreprocessors,
+                                            ImagePreprocessors,
+                                            CastTypesTransformer,
+                                            SpacyPreprocessor)
 
 
 def _assert_structured(x_train, x_test, y_train, y_test):

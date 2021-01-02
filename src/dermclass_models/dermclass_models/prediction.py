@@ -8,12 +8,12 @@ import numpy as np
 
 import tensorflow as tf
 
-from dermclass_models2.config import StructuredConfig, ImageConfig, TextConfig
-from dermclass_models2.persistence import BasePersistence
-from dermclass_models2.validation import TextValidation, StructuredValidation, validate_variables
-from dermclass_models2.pipeline import TransformersModelingPipeline
+from dermclass_models.config import StructuredConfig, ImageConfig, TextConfig
+from dermclass_models.persistence import BasePersistence
+from dermclass_models.validation import TextValidation, StructuredValidation, validate_variables
+from dermclass_models.pipeline import TransformersModelingPipeline
 
-from dermclass_models2 import __version__ as dermclass_models_version
+from dermclass_models import __version__ as dermclass_models_version
 
 from sklearn.pipeline import Pipeline as SklearnPipeline
 

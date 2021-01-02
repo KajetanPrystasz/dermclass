@@ -4,7 +4,7 @@ from typing import List
 
 import pandas as pd
 
-from dermclass_models2.config import StructuredConfig, TextConfig, BaseConfig
+from dermclass_models.config import StructuredConfig, TextConfig, BaseConfig
 DataFrame = pd.DataFrame
 
 

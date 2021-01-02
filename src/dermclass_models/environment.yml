@@ -1,4 +1,4 @@
-name: dermclass_models2
+name: dermclass_models
 channels:
   - defaults
   - conda-forge
@@ -15,7 +15,6 @@ dependencies:
 - pytest-mock
 - numpy
 - pandas
-- opencv
 - scipy
 - scikit-learn
 - optuna
@@ -26,3 +25,4 @@ dependencies:
 - pip:
   - xgboost
   - tensorflow
+  - opencv-python
