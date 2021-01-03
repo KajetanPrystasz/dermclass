@@ -113,6 +113,7 @@ class _TfConfig(abc.ABC):
     DISEASES = ["psoriasis", "lichen_planus", "pityriasis_rosea"]
 
     GPU_CONFIG = tf.compat.v1.ConfigProto()
+    GPU_CONFIG.gpu_options.per_process_gpu_memory_fraction = 0.4
     GPU_CONFIG.gpu_options.allow_growth = True
 
     PATIENCE = 3

@@ -148,7 +148,7 @@ class TextTrainPipeline(_BaseTrainPipeline):
 def _get_parser() -> argparse.ArgumentParser:
     """Utility function to get parser to run script"""
     parser = argparse.ArgumentParser(description='Parse pipeline types to train')
-    parser.add_argument('pipeline_types', metavar="N", type=str, nargs='+', help='Name of pipeline to train')
+    parser.add_argument('--pipeline_types', metavar="N", type=str, nargs='+', help='Name of pipeline to train')
     return parser
 
 

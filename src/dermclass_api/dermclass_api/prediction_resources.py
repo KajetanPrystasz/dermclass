@@ -1,13 +1,16 @@
-from flask_restful import Resource
-from flask import request, flash
 import logging
-import cv2
+
 from PIL import Image
 import numpy as np
+
+from flask_restful import Resource
+from flask import request, flash
+
+from dermclass_models.prediction import StructuredPrediction, TextPrediction, ImagePrediction
+
 from dermclass_api.prediction_models import (StructuredPredictionModel, StructuredPredictionSchema,
                                              TextPredictionModel, TextPredictionSchema,
                                              ImagePredictionModel, ImagePredictionSchema)
-from dermclass_models.prediction import StructuredPrediction, TextPrediction, ImagePrediction
 
 logger = logging.getLogger(__name__)
 

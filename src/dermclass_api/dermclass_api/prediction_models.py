@@ -138,9 +138,11 @@ class ImagePredictionModel(PredictionModel):
 
     target = db.Column(db.Integer, nullable=False)
 
-    def __init__(self, text, target):
+    def __init__(self, imgArray, target):
+
+        self.imgArray = imgArray
+
         self.target = target
-        self.text = text
 
 
 class StructuredPredictionSchema(ma.SQLAlchemyAutoSchema):

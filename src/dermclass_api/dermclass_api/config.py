@@ -47,9 +47,11 @@ class BaseConfig:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SERVER_PORT = 5000
 
+
 class DevelopmentConfig(BaseConfig):
     DEVELOPMENT = True
     DEBUG = True
+
 
 class TestingConfig(BaseConfig):
     TESTING = True

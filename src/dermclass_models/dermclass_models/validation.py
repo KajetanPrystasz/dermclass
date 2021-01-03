@@ -59,6 +59,9 @@ class _SklearnValidation(abc.ABC):
         :return: A pandas DataFrame with all columns expected
         """
         variable_order = variable_order or self.config.VARIABLE_ORDER
+        if "target" in variable_order:
+            variable_order.remove("target")
+
         validate_variables(df, variable_order)
         for validated_column in df.columns:
             if validated_column not in variable_order:

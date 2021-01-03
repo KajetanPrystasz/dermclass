@@ -126,7 +126,7 @@ class _TfPreprocessors(abc.ABC):
         self.validation_dataset = Dataset
         self.test_dataset = Dataset
 
-        self.prefetch = True
+        self.prefetch = False
 
     def _split_train_test_tf(self, train_dataset: Dataset = None, validation_dataset: Dataset = None):
         """
@@ -191,6 +191,7 @@ class StructuredPreprocessor(_SklearnPreprocessors):
         :param path: Path to data directory
         :return: Returns a tuple with x_train, x_test, y_train, y_test data
         """
+        path = path or self.config.DATA_PATH
         validate_variables(path)
 
         df = self._load_structured_data(path)

@@ -37,16 +37,14 @@ class _BasePrediction(abc.ABC):
         self.backend = None
         self.path = None
 
-    def load_pipeline(self, backend: str = None, path: Path = None)\
-            -> Union[TransformersModelingPipeline, SklearnPipeline, Sequential]:
+    def load_pipeline(self, backend: str = None, path: Path = None):
         """Function to load pipeline using persister and fit it as a modeling pipeline
         :param backend: Type of backend used for loading given pipeline, has to be one of ["joblib", "tf", "tfm"]
         :param path: Path to loaded file or directory
         :return: Returns a modeling pipeline to make predictions with
         """
-        path = path or self.path
         backend = backend or self.backend
-        validate_variables(path, backend)
+        validate_variables(backend)
         if not self.persister:
             raise RuntimeError("No preprocessor object fitted")
 
@@ -59,6 +57,7 @@ class _SklearnPrediction(_BasePrediction):
 
     def __init__(self, config):
         super().__init__(config)
+        self.backend = "joblib"
 
     def _make_sklearn_prediction(self, data: dict) -> Tuple[np.ndarray, str]:
         """
@@ -69,15 +68,21 @@ class _SklearnPrediction(_BasePrediction):
         modeling_pipeline = self.modeling_pipeline or self.load_pipeline(self.path)
         validate_variables(modeling_pipeline, data)
 
-        prediction = modeling_pipeline.predict(data)
-        prediction_probabilities = prediction[0]
-        prediction_string = prediction[1]
+        prediction = modeling_pipeline.predict_proba(data)[0]
+        max_pred_idx = np.argmax(prediction)
+        prediction_proba = prediction[max_pred_idx]
 
-        self.logger.info(f"Made predictions with model version: {dermclass_models_version}"
+        try:
+            map_ = self.config.LABEL_MAPPING
+        except AttributeError:
+            map_ = self.config.DISEASES
+        prediction_string = map_[max_pred_idx]
+
+        self.logger.info(f"Made predictions with model version: {dermclass_models_version} "
                          f"Inputs: {data} "
-                         f"Prediction: {prediction_string}"
-                         f"Probability: {prediction_probabilities}")
-        return prediction_probabilities, prediction_string
+                         f"Prediction: {prediction_string} "
+                         f"Probability: {prediction_proba}")
+        return prediction_proba, prediction_string
 
 
 class _TfPrediction(_BasePrediction):
@@ -158,14 +163,13 @@ class ImagePrediction(_TfPrediction):
         return prediction_probabilities, prediction_string
 
 
-# TODO: Finish and add type validation
 class TextPrediction(_TfPrediction, _SklearnPrediction):
     def __init__(self, config: TextConfig = TextConfig):
         super().__init__(config)
         self.backend = self._get_backend()
         self.validator = TextValidation(config)
 
-    def _get_backend(self, pickle_dir: Path = None, pipeline_type=str) -> str:
+    def _get_backend(self, pickle_dir: Path = None, pipeline_type: str = None) -> str:
         """
         Utility function to get type of backend that should be used in the predictions
         :param pickle_dir: Directory which should be iterated to find backend
@@ -177,8 +181,11 @@ class TextPrediction(_TfPrediction, _SklearnPrediction):
         validate_variables(pickle_dir, pipeline_type)
 
         for file in pickle_dir.iterdir():
-            if file.name.startswith(pipeline_type):
-                backend = file.name.split(".")[-1]
+            try:
+                if file.name.startswith(pipeline_type):
+                    backend = file.name.split(".")[-1]
+            except FileNotFoundError:
+                None
         return backend
 
     def _prepare_data(self, input_data: dict) -> Union[DataFrame, np.array]:
@@ -190,13 +197,10 @@ class TextPrediction(_TfPrediction, _SklearnPrediction):
         validate_variables(input_data)
         if not self.validator:
             raise RuntimeError("No validator object fitted")
-        data_validated = self.validator.validate(input_data)
-        data = data_validated["text"]
-        if self.backend == "joblib":
-            data = pd.DataFrame(input_data, index=[0]).drop("label", axis=1)
-        else:
-            data = data
-        return data
+
+        df = pd.DataFrame(input_data, index=[0])
+        df_validated = self.validator.validate(df)
+        return df_validated
 
     def make_prediction(self, input_data: dict) -> Tuple[np.ndarray, str]:
         """
@@ -229,9 +233,9 @@ class StructuredPrediction(_SklearnPrediction):
         if not self.validator:
             raise RuntimeError("No validator object fitted")
 
-        data_validated = self.validator.validate(input_data)
-        data = pd.DataFrame(data_validated, index=[0]).drop("label", axis=1)
-        return data
+        df = pd.DataFrame(input_data, index=[0])
+        df_validated = self.validator.validate(df)
+        return df_validated
 
     def make_prediction(self, input_data: dict) -> Tuple[np.ndarray, str]:
         """

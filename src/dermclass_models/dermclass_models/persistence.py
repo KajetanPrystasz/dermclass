@@ -40,12 +40,11 @@ class BasePersistence:
             raise ValidationError("Please choose proper backend from ['joblib', 'tf', 'tfm']")
         path = path or self.config.PICKLE_DIR / f"{self.config.PIPELINE_TYPE}_{self.pipeline_version}"
         validate_variables(backend, path)
-
         if backend == "joblib":
-            pipeline = joblib.load(path.with_suffix('.joblib'))
-        if backend == "tf":
+            pipeline = joblib.load(str(path) + '.joblib')
+        elif backend == "tf":
             pipeline = load_model(path)
-        if backend == "tfm":
+        elif backend == "tfm":
             pipeline = TransformersModelingPipeline.load_from_pretrained(path)
         else:
             pipeline = None
@@ -109,7 +108,7 @@ class BasePersistence:
         self.remove_old_pipelines()
 
         if backend == "joblib":
-            joblib.dump(pipeline_object, path.with_suffix('.joblib'))
+            joblib.dump(pipeline_object, str(path) + ".joblib")
         if backend == "tf":
             pipeline_object.save(path)
         if backend == "tfm":
