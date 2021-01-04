@@ -98,13 +98,21 @@ class _TfPrediction(_BasePrediction):
         diseases = diseases or self.config.DISEASES
         validate_variables(modeling_pipeline, data, diseases)
 
-        prediction_probabilities = modeling_pipeline.predict(data)
-        prediction_string = diseases[prediction_probabilities.argmax()]
+        prediction = modeling_pipeline.predict(data)[0]
+        max_pred_idx = np.argmax(prediction)
+        prediction_proba = prediction[max_pred_idx]
+
+        try:
+            map_ = self.config.LABEL_MAPPING
+        except AttributeError:
+            map_ = self.config.DISEASES
+        prediction_string = map_[max_pred_idx]
+
         self.logger.info(f"Made predictions with model version: {dermclass_models_version}"
                          f"Inputs: {data} "
                          f"Prediction: {prediction_string}"
-                         f"Probability: {prediction_probabilities}")
-        return prediction_probabilities, prediction_string
+                         f"Probability: {prediction_proba}")
+        return prediction, prediction_string
 
 
 class ImagePrediction(_TfPrediction):
@@ -120,13 +128,12 @@ class ImagePrediction(_TfPrediction):
         :return: A tuple with image shape
         """
         validate_variables(modeling_pipeline)
-
-        if isinstance(modeling_pipeline, tf.keras.applications.EfficientNetB7):
-            img_size = (600, 600)
-        elif isinstance(modeling_pipeline, tf.keras.applications.EfficientNetB6):
-            img_size = (528, 528)
+        if modeling_pipeline.layers[1].name == "efficientnetb7":
+            img_size = (600, 600, 3)
+        elif modeling_pipeline.layers[1].name == "efficientnetb6":
+            img_size = (528, 528, 3)
         else:
-            img_size = (456, 456)
+            img_size = (456, 456, 3)
 
         self.img_size = img_size
         return img_size
@@ -141,24 +148,24 @@ class ImagePrediction(_TfPrediction):
         img_shape = img_shape or self.img_shape
         validate_variables(input_data, img_shape)
 
-        data = input_data["image"]
+        data = input_data["image_array"]
         data = np.resize(data, img_shape)
         data = np.expand_dims(data, 0)
+
         return data
 
-    def make_prediction(self, input_data: dict, img_shape: Tuple[int, int]) -> np.array:
+    def make_prediction(self, input_data: dict, img_shape: Tuple[int, int] = None) -> np.array:
         """
         Function to make prediction on given data
         :param input_data: Input data to make prediction on
         :param img_shape: Shape of image to resize data
         :return: Returns a tuple of class probabilities and str with class prediction
         """
-        if not self.modeling_pipeline:
-            raise RuntimeError("No modeling_pipeline object fitted")
+        self.modeling_pipeline = self.modeling_pipeline or self.load_pipeline(self.path)
         img_shape = img_shape or self._get_img_shape(self.modeling_pipeline)
         validate_variables(input_data, img_shape)
-
         data = self._prepare_data(input_data, img_shape)
+
         prediction_probabilities, prediction_string = self._make_tf_prediction(data)
         return prediction_probabilities, prediction_string
 

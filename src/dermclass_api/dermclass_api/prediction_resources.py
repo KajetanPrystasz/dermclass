@@ -85,7 +85,7 @@ class ImagePredictionResource(BasePrediction, Resource):
         image_file = request.files['file']
         image = Image.open(image_file)
         np_image = np.array(image)
-        data_with_img = data.update({"imgArray": np_image})
+        data_with_img = data.update({"img_array": np_image})
 
         data_valid = self.schema.load(data_with_img)
 

@@ -122,7 +122,6 @@ class TextPredictionModel(PredictionModel):
     __tablename__ = 'textPredictions'
 
     text = db.Column(db.String, nullable=False)
-
     target = db.Column(db.Integer, nullable=False)
 
     def __init__(self, text, target):
@@ -134,14 +133,12 @@ class ImagePredictionModel(PredictionModel):
 
     __tablename__ = 'ImagePredictions'
 
-    imgArray = db.Column(db.String, nullable=False)
-
+    img_array = db.Column(db.String, nullable=False)
     target = db.Column(db.Integer, nullable=False)
 
-    def __init__(self, imgArray, target):
+    def __init__(self, img_array, target):
 
-        self.imgArray = imgArray
-
+        self.img_array = img_array
         self.target = target
 
 

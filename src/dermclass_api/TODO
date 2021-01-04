@@ -1,6 +1,14 @@
-#TODO: Deploy to AWS/Azure
-#TODO: Change DB, make db persistent
-#TODO: Add proper automatic versioning
+# TODO: check API
 
-#TODO: Fix logging in gunicorn
-#TODO: Create independant scripts
+# TODO: Setup/git, Gemfury
+# TODO: Testy prediction
+# TODO: Testy API
+
+# TODO: CircleCI
+# TODO: Docker
+
+# TODO: Heroku
+# TODO: Fix gunicorn logging
+
+#TODO: Change DB, make db persistent
+#TODO: Deploy to AWS/Azure

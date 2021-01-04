@@ -105,7 +105,7 @@ class StructuredConfig(BaseConfig):
 
 class _TfConfig(abc.ABC):
 
-    BATCH_SIZE = 3
+    BATCH_SIZE = 2
     NUM_EPOCHS = 5
     METRICS = ["accuracy"]
     LEARNING_RATE = 0.0001
@@ -113,7 +113,7 @@ class _TfConfig(abc.ABC):
     DISEASES = ["psoriasis", "lichen_planus", "pityriasis_rosea"]
 
     GPU_CONFIG = tf.compat.v1.ConfigProto()
-    GPU_CONFIG.gpu_options.per_process_gpu_memory_fraction = 0.4
+    #GPU_CONFIG.gpu_options.per_process_gpu_memory_fraction = 0.5
     GPU_CONFIG.gpu_options.allow_growth = True
 
     PATIENCE = 3
