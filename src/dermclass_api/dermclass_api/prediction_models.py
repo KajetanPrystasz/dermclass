@@ -2,13 +2,15 @@ from dermclass_api.extensions import db, ma
 from dermclass_models import __version__ as model_version
 
 
-class PredictionModel(db.Model):
+class PredictionModel:
     prediction_id = db.Column(db.Integer, primary_key=True)
+    prediction_proba = None
+    prediction_string = None
 
     def json(self):
-        print(self.target)
         return {"prediction_id": self.prediction_id,
-                "target": self.target,
+                "prediction_proba": self.prediction_proba,
+                "prediction_string": self.prediction_string,
                 "version": model_version}
 
     @classmethod
@@ -24,7 +26,7 @@ class PredictionModel(db.Model):
         db.session.commit()
 
 
-class StructuredPredictionModel(PredictionModel):
+class StructuredPredictionModel(PredictionModel, db.Model):
 
     __tablename__ = 'structuredPredictions'
 
@@ -64,7 +66,8 @@ class StructuredPredictionModel(PredictionModel):
 
     age = db.Column(db.Integer, nullable=False)
 
-    target = db.Column(db.Integer, nullable=False)                                  #changed input name
+    prediction_proba = db.Column(db.Float, nullable=False)
+    prediction_string = db.Column(db.String, nullable=False)
 
     def __init__(self, prediction_id, erythema, scaling, definite_borders, itching, koebner_phenomenon,
                  polygonal_papules, follicular_papules, oral_mucosal_involvement, knee_and_elbow_involvement,
@@ -74,7 +77,7 @@ class StructuredPredictionModel(PredictionModel):
                  spongiform_pustule, munro_microabcess, focal_hypergranulosis, disappearance_of_the_granular_layer,
                  vacuolisation_and_damage_of_basal_layer, spongiosis, saw_tooth_appearance_of_retes,
                  follicular_horn_plug, perifollicular_parakeratosis, inflammatory_monoluclear_inflitrate,
-                 band_like_infiltrate, age, target):
+                 band_like_infiltrate, age, prediction_proba, prediction_string):
 
         self.prediction_id = prediction_id
 
@@ -114,47 +117,54 @@ class StructuredPredictionModel(PredictionModel):
 
         self.age = age
 
-        self.target = target
+        self.prediction_proba = prediction_proba
+        self.prediction_string = prediction_string
 
 
-class TextPredictionModel(PredictionModel):
+class TextPredictionModel(PredictionModel, db.Model):
 
     __tablename__ = 'textPredictions'
 
     text = db.Column(db.String, nullable=False)
-    target = db.Column(db.Integer, nullable=False)
+    prediction_proba = db.Column(db.Float, nullable=False)
+    prediction_string = db.Column(db.String, nullable=False)
 
-    def __init__(self, text, target):
-        self.target = target
+    def __init__(self, prediction_id, text, prediction_proba, prediction_string):
+        self.prediction_id = prediction_id
         self.text = text
+        self.prediction_proba = prediction_proba
+        self.prediction_string = prediction_string
 
 
-class ImagePredictionModel(PredictionModel):
+class ImagePredictionModel(PredictionModel, db.Model):
 
     __tablename__ = 'ImagePredictions'
 
     img_array = db.Column(db.String, nullable=False)
-    target = db.Column(db.Integer, nullable=False)
+    prediction_proba = db.Column(db.Float, nullable=False)
+    prediction_string = db.Column(db.String, nullable=False)
 
-    def __init__(self, img_array, target):
+    def __init__(self, prediction_id, img_array, prediction_proba, prediction_string):
 
+        self.prediction_id = prediction_id
         self.img_array = img_array
-        self.target = target
+        self.prediction_proba = prediction_proba
+        self.prediction_string = prediction_string
 
 
 class StructuredPredictionSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = StructuredPredictionModel
-        exclude = ("prediction_id",)
+        exclude = ("prediction_id", "prediction_proba", "prediction_string")
 
 
 class TextPredictionSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = TextPredictionModel
-        exclude = ("prediction_id",)
+        exclude = ("prediction_id", "prediction_proba", "prediction_string")
 
 
 class ImagePredictionSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = ImagePredictionModel
-        exclude = ("prediction_id",)
+        exclude = ("prediction_id", "prediction_proba", "prediction_string")

@@ -33,10 +33,10 @@ class BasePrediction:
             return {'message': f"An prediction with id '{prediction_id}' already exists."}, 400
 
         data = request.get_json()
+        data_valid = self.schema.load(data=data)
+        data_valid["prediction_proba"], data_valid["prediction_string"] = self.prediction_obj.make_prediction(data_valid)
 
-        data_valid = self.schema.load(data)
-        data_valid["target"] = self.prediction_obj(data_valid)
-        logger.debug(f'Outputs: {data_valid["target"]}')
+        logger.debug(f'Outputs: {data_valid["prediction_proba"]}, {data_valid["prediction_string"]}')
         prediction = self.model(prediction_id, **data_valid)
 
         try:
@@ -53,21 +53,24 @@ class BasePrediction:
 
 
 class StructuredPredictionResource(BasePrediction, Resource):
-    def __init__(self, schema=StructuredPredictionSchema,
+    def __init__(self,
+                 schema=StructuredPredictionSchema(),
                  model=StructuredPredictionModel,
                  prediction_obj=StructuredPrediction()):
         super().__init__(schema, model, prediction_obj)
 
 
 class TextPredictionResource(BasePrediction, Resource):
-    def __init__(self, schema=TextPredictionSchema,
+    def __init__(self,
+                 schema=TextPredictionSchema(),
                  model=TextPredictionModel,
                  prediction_obj=TextPrediction()):
         super().__init__(schema, model, prediction_obj)
 
 
 class ImagePredictionResource(BasePrediction, Resource):
-    def __init__(self, schema=ImagePredictionSchema,
+    def __init__(self,
+                 schema=ImagePredictionSchema(),
                  model=ImagePredictionModel,
                  prediction_obj=ImagePrediction()):
         super().__init__(schema, model, prediction_obj)

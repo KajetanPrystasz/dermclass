@@ -108,9 +108,9 @@ class _TfPrediction(_BasePrediction):
             map_ = self.config.DISEASES
         prediction_string = map_[max_pred_idx]
 
-        self.logger.info(f"Made predictions with model version: {dermclass_models_version}"
+        self.logger.info(f"Made predictions with model version: {dermclass_models_version} "
                          f"Inputs: {data} "
-                         f"Prediction: {prediction_string}"
+                         f"Prediction: {prediction_string} "
                          f"Probability: {prediction_proba}")
         return prediction, prediction_string
 
