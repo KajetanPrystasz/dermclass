@@ -112,7 +112,7 @@ class _TfPrediction(_BasePrediction):
                          f"Inputs: {data} "
                          f"Prediction: {prediction_string} "
                          f"Probability: {prediction_proba}")
-        return prediction, prediction_string
+        return prediction_proba, prediction_string
 
 
 class ImagePrediction(_TfPrediction):
@@ -148,7 +148,7 @@ class ImagePrediction(_TfPrediction):
         img_shape = img_shape or self.img_shape
         validate_variables(input_data, img_shape)
 
-        data = input_data["image_array"]
+        data = input_data["img_array"]
         data = np.resize(data, img_shape)
         data = np.expand_dims(data, 0)
 

@@ -140,14 +140,12 @@ class ImagePredictionModel(PredictionModel, db.Model):
 
     __tablename__ = 'ImagePredictions'
 
-    img_array = db.Column(db.String, nullable=False)
     prediction_proba = db.Column(db.Float, nullable=False)
     prediction_string = db.Column(db.String, nullable=False)
 
-    def __init__(self, prediction_id, img_array, prediction_proba, prediction_string):
+    def __init__(self, prediction_id, prediction_proba, prediction_string):
 
         self.prediction_id = prediction_id
-        self.img_array = img_array
         self.prediction_proba = prediction_proba
         self.prediction_string = prediction_string
 

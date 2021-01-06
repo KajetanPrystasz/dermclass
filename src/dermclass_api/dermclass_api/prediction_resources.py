@@ -1,4 +1,5 @@
 import logging
+import pickle as pck
 
 from PIL import Image
 import numpy as np
@@ -74,6 +75,7 @@ class ImagePredictionResource(BasePrediction, Resource):
                  model=ImagePredictionModel,
                  prediction_obj=ImagePrediction()):
         super().__init__(schema, model, prediction_obj)
+        self.id_counter = 0
 
     def post(self, prediction_id):
         if self.model.find_by_prediction_id(prediction_id):
@@ -83,18 +85,22 @@ class ImagePredictionResource(BasePrediction, Resource):
             flash('No file inputted')
             raise ValueError("No file inputted")
 
-        data = request.get_json()
+        # TODO: Add saving to persistent file storage
+        img_file = request.files['file']
+        with open(f"temp/img_file_{self.id_counter}.jpeg", "wb") as f:
+            self.id_counter += 1
+            f.write(img_file.read())
 
-        image_file = request.files['file']
-        image = Image.open(image_file)
-        np_image = np.array(image)
-        data_with_img = data.update({"img_array": np_image})
+        data = {}
+        data_valid = self.schema.load(data)
 
-        data_valid = self.schema.load(data_with_img)
+        img = Image.open(img_file)
+        data_valid["img_array"] = np.array(img)
 
-        data_valid["target"] = self.prediction_obj(data_valid).make_prediction(input_data=data_valid)
-        logger.debug(f'Outputs: {data_valid["target"]}')
+        data_valid["prediction_proba"], data_valid["prediction_string"] = self.prediction_obj.make_prediction(data_valid)
+        logger.debug(f'Outputs: {data_valid["prediction_proba"]}, {data_valid["prediction_string"]}')
 
+        data_valid.pop("img_array")
         prediction = self.model(prediction_id, **data_valid)
 
         try:
