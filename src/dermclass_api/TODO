@@ -1,7 +1,5 @@
-# TODO: image endpoints
-
-# TODO: Testy API
 # TODO: Testy prediction
+# TODO: Testy API
 # TODO: Setup/git, Gemfury
 
 # TODO: CircleCI
@@ -9,6 +7,8 @@
 # TODO: Heroku
 
 # TODO: Change DB, make db persistent
+# TODO: Documentation
+
 
 # TODO: Fix gunicorn logging
 # TODO: Deploy to AWS/Azure

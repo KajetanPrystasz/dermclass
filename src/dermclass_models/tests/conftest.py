@@ -1,3 +1,4 @@
+import pathlib
 import pytest
 
 import pandas as pd
@@ -5,17 +6,22 @@ import numpy as np
 import tensorflow as tf
 
 from sklearn.model_selection import train_test_split
+
 from dermclass_models.config import BaseConfig
+import dermclass_models
 
 
 class TestingConfig:
     PATIENCE = 3
     BATCH_SIZE = 1
     TUNING_FUNC_PARAMS = {"n_jobs": -1, "max_overfit": 0.9, "cv": 2, "n_trials": 1}
-    DISEASES = ["test_disease1", "test_disease2", "test_disease3"]
+    DISEASES = ["test_disease0", "test_disease1", "test_disease2", "test_disease3", "test_disease4", "test_disease5"]
     SEED = 42
     METRICS = ["accuracy"]
     NUM_EPOCHS = 1
+
+    PACKAGE_ROOT = pathlib.Path(dermclass_models.__file__).resolve().parent
+    PICKLE_DIR = PACKAGE_ROOT / "pickles"
 
 
 @pytest.fixture()
@@ -94,9 +100,9 @@ def train_dataset():
 @pytest.fixture()
 def text_train_dataset():
     train_dataset = (tf.keras.preprocessing.text_dataset_from_directory(directory=(BaseConfig.PACKAGE_ROOT /
-                                                                                    ".." /
-                                                                                    "tests" /
-                                                                                    "test_text_dir"),
+                                                                                   ".." /
+                                                                                   "tests" /
+                                                                                   "test_text_dir"),
                                                                         batch_size=10))
     return train_dataset
 
