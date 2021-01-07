@@ -14,7 +14,7 @@ prepare_env: &prepare_env
     command: |
       wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
       bash miniconda.sh -b -p miniconda
-      pip install --upgrade pip
+      miniconda/etc/profile.d/conda.sh init
 
 jobs:
   test_dermclass_models:
@@ -25,8 +25,6 @@ jobs:
       - run:
           name: Create conda env and download packages
           command: |
-            source miniconda/etc/profile.d/conda.sh
-            conda init
             conda env create -f src/dermclass_models/environment.yml
             conda activate dermclass_models
             python -m spacy download en_core_web_sm
@@ -36,38 +34,36 @@ jobs:
             conda activate dermclass_models
             pytest -vv -m "pipeline_training" src/dermclass_models/tests
 
-#      - run:
-#          name: Train model
-#          command: |
-#            source miniconda/etc/profile.d/conda.sh
-#            conda activate dermclass_models
-#            PYTHONPATH=./src/dermclass_models\
-#            python src/dermclass_models/dermclass_models/train_pipeline.py --pipeline_types structured text image
-#      - run:
-#          name: Run tests
-#          command: |
-#            source miniconda/etc/profile.d/conda.sh
-#            conda activate dermclass_structured
-#            pytest -vv -m "not pipeline_training" src/dermclass_models/tests
+      - run:
+          name: Train model
+          command: |
+            conda activate dermclass_models
+            PYTHONPATH=./src/dermclass_models\
+            python src/dermclass_models/dermclass_models/train_pipeline.py --pipeline_types structured text image
+      - run:
+          name: Run tests
+          command: |
+            conda activate dermclass_structured
+            pytest -vv -m "not pipeline_training" src/dermclass_models/tests
 
-#  test_dermclass_api:
-#    <<: *defaults
-#    steps:
-#      - checkout
-#      - *prepare_env
-#      - run:
-#          name: Create conda env and download packages
-#          command: |
-#            source miniconda/etc/profile.d/conda.sh
-#            conda env create -f src/dermclass_api/environment.yml
-#      - run:
-#          name: Runnning tests
-#          command: |
-#            source miniconda/etc/profile.d/conda.sh
-#            conda activate dermclass_api
-#            pytest -vv src/dermclass_api/tests
-#
-#
+  test_dermclass_api:
+    <<: *defaults
+    steps:
+      - checkout
+      - *prepare_env
+      - restore_cache:
+          keys:
+            - py-deps-{{ checksum "src/dermclass_api/environment.yml" }}
+      - run:
+          name: Runnning tests
+          command: |
+            conda activate dermclass_api
+            pytest -vv src/dermclass_api/tests
+      - save_cache:
+          key: py-deps-{{ checksum "src/dermclass_api/environment.txt" }}
+          paths:
+            - "miniconda/envs/dermclass_api"
+
 #  train_and_upload_structured_model:
 #    <<: *defaults
 #    steps:
@@ -118,7 +114,7 @@ workflows:
   test-all:
     jobs:
       - test_dermclass_models
-#      - test_dermclass_api
+      - test_dermclass_api
 #      - train_and_upload_structured_model:
 #          requires:
 #            - test_dermclass_structured
