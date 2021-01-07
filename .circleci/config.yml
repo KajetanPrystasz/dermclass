@@ -16,12 +16,12 @@ prepare_env: &prepare_conda
       source $HOME/miniconda/bin/activate
       conda --help
 
-#jobs:
-#  test_dermclass_models:
-#    <<: *defaults
-#    steps:
-#      - checkout
-#      - *prepare_conda
+jobs:
+  test_dermclass_models:
+    <<: *defaults
+    steps:
+      - checkout
+      - *prepare_conda
 #      - run:
 #          name: Create conda env and download packages
 #          command: |
