@@ -13,8 +13,9 @@ prepare_env: &prepare_conda
     command: |
       wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
       bash miniconda.sh -b -p miniconda
-      ls
-      source miniconda3/bin/activate
+      ls miniconda
+      ls miniconda/bin
+      source miniconda/bin/activate
       conda --help
 
 jobs:
