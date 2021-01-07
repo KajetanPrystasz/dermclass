@@ -13,8 +13,6 @@ prepare_env: &prepare_conda
     command: |
       wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
       bash miniconda.sh -b -p miniconda
-      ls miniconda
-      ls miniconda/bin
       source miniconda/bin/activate
       conda --help
 
@@ -24,9 +22,10 @@ jobs:
     steps:
       - checkout
       - *prepare_conda
-#      - run:
-#          name: Create conda env and download packages
-#          command: |
+      - run:
+          name: Create conda env and download packages
+          command: |
+             conda --help
 #            conda env create -f src/dermclass_models/environment.yml
 #            conda activate dermclass_models
 #            python -m spacy download en_core_web_sm
