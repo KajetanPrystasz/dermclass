@@ -25,12 +25,11 @@ jobs:
             source miniconda/etc/profile.d/conda.sh
             conda env create -f src/dermclass_models/environment.yml && conda activate dermclass_models
             python -m spacy download en_core_web_sm
-#      This part got commented because training in cloud is turned off for now in this project. Until resuming the project is trained offline
-#      - run:
-#          name: Train model
-#          command: |
-#            source miniconda/etc/profile.d/conda.sh && conda activate dermclass_models
-#            PYTHONPATH=./src/dermclass_models python src/dermclass_models/dermclass_models/train_pipeline.py --pipeline_types structured text image
+      - run:
+          name: Train model
+          command: |
+            source miniconda/etc/profile.d/conda.sh && conda activate dermclass_models
+            PYTHONPATH=./src/dermclass_models python src/dermclass_models/dermclass_models/train_pipeline.py --pipeline_types structured text image
       - run:
           name: Run tests
           command: |
@@ -104,9 +103,8 @@ workflows:
   version: 2
   test-all:
     jobs:
-      - test_dermclass_models
-      - test_dermclass_api
-#      This part got commented because training in cloud is turned off for now in this project. Until resuming the project is trained offline
+#      - test_dermclass_models
+#      - test_dermclass_api
 #      - train_and_upload_model:
 #          requires:
 #            - test_dermclass_models
