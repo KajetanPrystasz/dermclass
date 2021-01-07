@@ -1,3 +1,6 @@
+# TODO: Remove redundant code, fix sourcing and add conda prefixes, add caching of env
+# TODO: Add spacy model download to API
+# TODO: Check this: https://circleci.com/developer/orbs/orb/roopakv/swissknife#commands-run_if_modified
 version: 2
 
 defaults: &defaults
@@ -5,51 +8,44 @@ defaults: &defaults
     - image: circleci/python:3.7.9
   working_directory: ~/project
 
-prepare_env: &prepare_env
+prepare_env: &prepare_conda
   run:
-    name: Prepare conda env
+    name: Prepare conda
     command: |
-      cd /home/circleci
-      echo 'export MINICONDA=$HOME/miniconda' >> ~/.bashrc
-      echo 'export PATH="$MINICONDA/bin:$PATH"' >> ~/.bashrc
-      source ~/.bashrc
-      hash -r
-      wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
-      source miniconda/etc/profile.d/conda.sh
-      conda init
-      source ~/.bashrc
-      conda config --set always_yes yes
-      conda update conda
-      conda info -a
-
-      conda env create -f src/dermclass_models/environment.yml
-      echo 'source activate dermclass_models' >> ~/.bashrc
-      source ~/.bashrc
-      python -m spacy download en_core_web_sm
+      wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
+      bash miniconda.sh -b -p miniconda
+      source $HOME/miniconda3/bin/activate
+      conda --help
 
 jobs:
   test_dermclass_models:
     <<: *defaults
     steps:
       - checkout
-      - *prepare_env
-      - run:
-          name: Run training pipeline tests
-          command: |
-            source ~/.bashrc
-            pytest -vv -m "pipeline_training" src/dermclass_models/tests
-
-      - run:
-          name: Train model
-          command: |
-            conda activate dermclass_models
-            PYTHONPATH=./src/dermclass_models\
-            python src/dermclass_models/dermclass_models/train_pipeline.py --pipeline_types structured text image
-      - run:
-          name: Run tests
-          command: |
-            conda activate dermclass_structured
-            pytest -vv -m "not pipeline_training" src/dermclass_models/tests
+      - *prepare_conda
+#      - run:
+#          name: Create conda env and download packages
+#          command: |
+#            conda env create -f src/dermclass_models/environment.yml
+#            conda activate dermclass_models
+#            python -m spacy download en_core_web_sm
+#      - run:
+#          name: Run trainig pipeline tests
+#          command: |
+#            conda activate dermclass_models
+#            pytest -vv -m "pipeline_training" src/dermclass_models/tests
+#
+#      - run:
+#          name: Train model
+#          command: |
+#            conda activate dermclass_models
+#            PYTHONPATH=./src/dermclass_models\
+#            python src/dermclass_models/dermclass_models/train_pipeline.py --pipeline_types structured text image
+#      - run:
+#          name: Run tests
+#          command: |
+#            conda activate dermclass_structured
+#            pytest -vv -m "not pipeline_training" src/dermclass_models/tests
 
 #  test_dermclass_api:
 #    <<: *defaults
@@ -58,16 +54,18 @@ jobs:
 #      - *prepare_env
 #      - restore_cache:
 #          keys:
-#            - py-deps-{{ checksum "src/dermclass_api/environment.yml" }}
+#            - py-deps-{{ checksum "packages/ml_api/requirements.txt" }}
+#      - run:
+#          name: Create conda env and download packages
+#          command: |
+#            source miniconda/etc/profile.d/conda.sh
+#            conda env create -f src/dermclass_api/environment.yml
 #      - run:
 #          name: Runnning tests
 #          command: |
 #            conda activate dermclass_api
 #            pytest -vv src/dermclass_api/tests
-#      - save_cache:
-#          key: py-deps-{{ checksum "src/dermclass_api/environment.txt" }}
-#          paths:
-#            - "miniconda/envs/dermclass_api"
+
 
 #  train_and_upload_structured_model:
 #    <<: *defaults
@@ -119,10 +117,10 @@ workflows:
   test-all:
     jobs:
       - test_dermclass_models
-#      - test_dermclass_api
+      - test_dermclass_api
 #      - train_and_upload_structured_model:
 #          requires:
-#            - test_dermclass_models
+#            - test_dermclass_structured
 #            - test_dermclass_api
 #          filters:
 #            branches:
