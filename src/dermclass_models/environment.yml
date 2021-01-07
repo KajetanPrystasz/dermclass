@@ -15,7 +15,7 @@ dependencies:
 - pytest-mock
 - numpy
 - pandas
-- pil
+- pillow
 - scipy
 - scikit-learn
 - optuna
