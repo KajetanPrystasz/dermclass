@@ -4,4 +4,6 @@ include environment.yml
 recursive-include dermclass_models/pickles *
 recursive-include dermclass_models/datasets *
 
+recursive-exclude dermclass_models/pickles *
+
 include dermclass_models/VERSION

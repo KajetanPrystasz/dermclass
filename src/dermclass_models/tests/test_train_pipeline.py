@@ -28,6 +28,7 @@ def test_run_controller(monkeypatch):
 
 class TestStructuredTrainPipeline:
 
+    @pytest.mark.pipeline_training
     def test_run(self, testing_config, monkeypatch, tmp_path, structured_set, structured_training_df, xgboost_trial):
         testing_config = copy.copy(testing_config)
         testing_config.DEFAULT_BEST_MODEL = "XGBClassifier"
@@ -54,7 +55,7 @@ class TestStructuredTrainPipeline:
 
 class TestTextTrainPipeline:
 
-    @pytest.mark.slow
+    @pytest.mark.pipeline_training
     def test_run(self, testing_config, monkeypatch, tmp_path,
                  text_train_dataset, structured_text_set, multinomial_nb_trial):
         testing_config = copy.copy(testing_config)
@@ -84,7 +85,7 @@ class TestTextTrainPipeline:
 
 class TestImageTrainPipeline:
 
-    @pytest.mark.slow
+    @pytest.mark.pipeline_training
     def test_run(self, testing_config, monkeypatch, tmp_path, image_train_dataset):
         train_pipeline = ImageTrainPipeline(testing_config)
         testing_config.LEARNING_RATE = 0.01

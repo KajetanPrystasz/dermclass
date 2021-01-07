@@ -17,7 +17,7 @@ prepare_env: &prepare_env
       pip install --upgrade pip
 
 jobs:
-  test_dermclass_structured:
+  test_dermclass_models:
     <<: *defaults
     steps:
       - checkout
@@ -26,101 +26,111 @@ jobs:
           name: Create conda env and download packages
           command: |
             source miniconda/etc/profile.d/conda.sh
-            conda env create -f src/dermclass_structured/environment.yml
+            conda env create -f src/dermclass_models/environment.yml
+            conda activate dermclass_models
+            python -m spacy download en_core_web_sm
       - run:
-          name: Train model
+          name: Run trainig pipeline tests
           command: |
             source miniconda/etc/profile.d/conda.sh
-            conda activate dermclass_structured
-            PYTHONPATH=./src/dermclass_structured python src/dermclass_structured/dermclass_structured/train_pipeline.py --testing=True
-      - run:
-          name: Run tests
-          command: |
-            source miniconda/etc/profile.d/conda.sh
-            conda activate dermclass_structured
-            pytest -vv src/dermclass_structured/tests
+            conda activate dermclass_models
+            pytest -vv -m "pipeline_training" src/dermclass_models/tests
 
-  test_dermclass_api:
-    <<: *defaults
-    steps:
-      - checkout
-      - *prepare_env
-      - run:
-          name: Create conda env and download packages
-          command: |
-            source miniconda/etc/profile.d/conda.sh
-            conda env create -f src/dermclass_api/environment.yml
-      - run:
-          name: Runnning tests
-          command: |
-            source miniconda/etc/profile.d/conda.sh
-            conda activate dermclass_api
-            pytest -vv src/dermclass_api/tests
+#      - run:
+#          name: Train model
+#          command: |
+#            source miniconda/etc/profile.d/conda.sh
+#            conda activate dermclass_models
+#            PYTHONPATH=./src/dermclass_models\
+#            python src/dermclass_models/dermclass_models/train_pipeline.py --pipeline_types structured text image
+#      - run:
+#          name: Run tests
+#          command: |
+#            source miniconda/etc/profile.d/conda.sh
+#            conda activate dermclass_structured
+#            pytest -vv -m "not pipeline_training" src/dermclass_models/tests
 
-
-  train_and_upload_structured_model:
-    <<: *defaults
-    steps:
-      - checkout
-      - *prepare_env
-      - run:
-          name: Create conda env and download packages
-          command: |
-            source miniconda/etc/profile.d/conda.sh
-            conda env create -f src/dermclass_structured/environment.yml
-      - run:
-          name: Train model
-          command: |
-            source miniconda/etc/profile.d/conda.sh
-            conda activate dermclass_structured
-            PYTHONPATH=./src/dermclass_structured python src/dermclass_structured/dermclass_structured/train_pipeline.py
-      - run:
-          name: Publish model to Gemfury
-          command: |
-            chmod +x ./scripts/publish_model.sh
-            source miniconda/etc/profile.d/conda.sh
-            conda activate dermclass_structured
-            ./scripts/publish_model.sh ./src/dermclass_structured/
-
-
-  build_and_push_docker_to_heroku:
-    <<: *defaults
-    steps:
-      - checkout
-      - setup_remote_docker:
-          docker_layer_caching: false
-      - run: docker login --username=$HEROKU_EMAIL --password=$HEROKU_API_KEY registry.heroku.com
-      - run:
-          name: Setup Heroku CLI
-          command: |
-            wget -qO- https://cli-assets.heroku.com/install-ubuntu.sh | sh
-      - run:
-          name: Build and Push Image
-          command: |
-            make build-ml-api-heroku push-dermclass-api-heroku
-      - run:
-          name: Release to Heroku
-          command: |
-            heroku container:release web --app $HEROKU_APP_NAME
+#  test_dermclass_api:
+#    <<: *defaults
+#    steps:
+#      - checkout
+#      - *prepare_env
+#      - run:
+#          name: Create conda env and download packages
+#          command: |
+#            source miniconda/etc/profile.d/conda.sh
+#            conda env create -f src/dermclass_api/environment.yml
+#      - run:
+#          name: Runnning tests
+#          command: |
+#            source miniconda/etc/profile.d/conda.sh
+#            conda activate dermclass_api
+#            pytest -vv src/dermclass_api/tests
+#
+#
+#  train_and_upload_structured_model:
+#    <<: *defaults
+#    steps:
+#      - checkout
+#      - *prepare_env
+#      - run:
+#          name: Create conda env and download packages
+#          command: |
+#            source miniconda/etc/profile.d/conda.sh
+#            conda env create -f src/dermclass_structured/environment.yml
+#      - run:
+#          name: Train model
+#          command: |
+#            source miniconda/etc/profile.d/conda.sh
+#            conda activate dermclass_structured
+#            PYTHONPATH=./src/dermclass_structured python src/dermclass_structured/dermclass_structured/train_pipeline.py
+#      - run:
+#          name: Publish model to Gemfury
+#          command: |
+#            chmod +x ./scripts/publish_model.sh
+#            source miniconda/etc/profile.d/conda.sh
+#            conda activate dermclass_structured
+#            ./scripts/publish_model.sh ./src/dermclass_structured/
+#
+#
+#  build_and_push_docker_to_heroku:
+#    <<: *defaults
+#    steps:
+#      - checkout
+#      - setup_remote_docker:
+#          docker_layer_caching: false
+#      - run: docker login --username=$HEROKU_EMAIL --password=$HEROKU_API_KEY registry.heroku.com
+#      - run:
+#          name: Setup Heroku CLI
+#          command: |
+#            wget -qO- https://cli-assets.heroku.com/install-ubuntu.sh | sh
+#      - run:
+#          name: Build and Push Image
+#          command: |
+#            make build-ml-api-heroku push-dermclass-api-heroku
+#      - run:
+#          name: Release to Heroku
+#          command: |
+#            heroku container:release web --app $HEROKU_APP_NAME
 
 workflows:
   version: 2
   test-all:
     jobs:
-      - test_dermclass_structured
-      - test_dermclass_api
-      - train_and_upload_structured_model:
-          requires:
-            - test_dermclass_structured
-            - test_dermclass_api
-          filters:
-            branches:
-              only:
-                - main
-      - build_and_push_docker_to_heroku:
-          requires:
-            - train_and_upload_structured_model
-          filters:
-            branches:
-              only:
-                - main
+      - test_dermclass_models
+#      - test_dermclass_api
+#      - train_and_upload_structured_model:
+#          requires:
+#            - test_dermclass_structured
+#            - test_dermclass_api
+#          filters:
+#            branches:
+#              only:
+#                - main
+#      - build_and_push_docker_to_heroku:
+#          requires:
+#            - train_and_upload_structured_model
+#          filters:
+#            branches:
+#              only:
+#                - main

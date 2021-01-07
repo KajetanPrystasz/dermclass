@@ -24,4 +24,3 @@ dependencies:
   - xgboost
   - tensorflow==2.4.0
   - opencv-python
-#  - spacy-model-en_core_web_sm

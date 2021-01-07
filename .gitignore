@@ -10,3 +10,5 @@ __pycache__
 *.pkl
 *.h5
 .pytest_cache
+
+src/dermclass_models/dermclass_models/pickles/*
