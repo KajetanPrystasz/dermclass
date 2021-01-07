@@ -25,14 +25,14 @@ jobs:
       - run:
           name: Create conda env and download packages
           command: |
-            source miniconda/etc/profile.d/conda.sh
+#            source miniconda/etc/profile.d/conda.sh
             conda env create -f src/dermclass_models/environment.yml
             conda activate dermclass_models
             python -m spacy download en_core_web_sm
       - run:
           name: Run trainig pipeline tests
           command: |
-            source miniconda/etc/profile.d/conda.sh
+#            source miniconda/etc/profile.d/conda.sh
             conda activate dermclass_models
             pytest -vv -m "pipeline_training" src/dermclass_models/tests
 
