@@ -33,7 +33,6 @@ jobs:
       - run:
           name: Run trainig pipeline tests
           command: |
-#           source miniconda/etc/profile.d/conda.sh
             conda activate dermclass_models
             pytest -vv -m "pipeline_training" src/dermclass_models/tests
 
