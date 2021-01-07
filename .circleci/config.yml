@@ -93,7 +93,7 @@ jobs:
       - run:
           name: Build and Push Image
           command: |
-            make build-ml-api-heroku push-dermclass-api-heroku
+            make build-dermclass-api-heroku push-dermclass-api-heroku
       - run:
           name: Release to Heroku
           command: |
