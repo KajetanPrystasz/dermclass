@@ -16,6 +16,8 @@ prepare_env: &prepare_env
       hash -r
       wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
       bash miniconda.sh -b -f -p $MINICONDA
+      conda init
+      source ~/.bashrc
       conda config --set always_yes yes
       conda update conda
       conda info -a
@@ -117,7 +119,7 @@ workflows:
   test-all:
     jobs:
       - test_dermclass_models
-      - test_dermclass_api
+#      - test_dermclass_api
 #      - train_and_upload_structured_model:
 #          requires:
 #            - test_dermclass_models
