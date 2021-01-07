@@ -16,14 +16,15 @@ structured_input_data = {"erythema": 2, "scaling": 2, "definite_borders": 2, "it
                          "saw_tooth_appearance_of_retes": 0, "follicular_horn_plug": 0,
                          "perifollicular_parakeratosis": 0,
                          "inflammatory_monoluclear_inflitrate": 1, "band_like_infiltrate": 0, "age": 55}
-structured_json = json.dumps(structured_input_data)
-
 text_input_data = {"text": "Hello, I'm so very sick person"}
+
+structured_json = json.dumps(structured_input_data)
 text_json = json.dumps(text_input_data)
 
 
-class TestPredictionModels:
+class TestPredictionModel:
     def test_json(self):
+        # TODO: Add this
         pass
 
     @pytest.mark.parametrize("prediction_data,prediction_endpoint",
