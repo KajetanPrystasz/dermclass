@@ -23,8 +23,7 @@ jobs:
           name: Create conda env and download packages
           command: |
             source miniconda/etc/profile.d/conda.sh
-            conda env create -f src/dermclass_models/environment.yml
-            conda activate dermclass_models
+            conda env create -f src/dermclass_models/environment.yml && conda activate dermclass_models
             python -m spacy download en_core_web_sm
 
       - run:
@@ -44,66 +43,66 @@ jobs:
             source miniconda/etc/profile.d/conda.sh && conda activate dermclass_models
             pytest -vv -m "not pipeline_training" src/dermclass_models/tests
 
-#  test_dermclass_api:
-#    <<: *defaults
-#    steps:
-#      - checkout
-#      - *prepare_env
-#      - run:
-#          name: Create conda env and download packages
-#          command: |
-#            source miniconda/etc/profile.d/conda.sh
-#            conda env create -f src/dermclass_api/environment.yml
-#            export source_activate_api="source miniconda/etc/profile.d/conda.sh && conda activate dermclass_api"
-#      - run:
-#          name: Runnning tests
-#          command: |
-#            $source_activate_api
-#            pytest -vv src/dermclass_api/tests
-#
-#
-#  train_and_upload_structured_model:
-#    <<: *defaults
-#    steps:
-#      - checkout
-#      - *prepare_env
-#      - run:
-#          name: Create conda env and download packages
-#          command: |
-#            source miniconda/etc/profile.d/conda.sh
-#            conda env create -f src/dermclass_structured/environment.yml
-#      - run:
-#          name: Train model
-#          command: |
-#            $source_activate
-#            PYTHONPATH=./src/dermclass_structured python src/dermclass_structured/dermclass_structured/train_pipeline.py
-#      - run:
-#          name: Publish model to Gemfury
-#          command: |
-#            chmod +x ./scripts/publish_model.sh
-#            $source_activate
-#            ./scripts/publish_model.sh ./src/dermclass_models/
-#
-#
-#  build_and_push_docker_to_heroku:
-#    <<: *defaults
-#    steps:
-#      - checkout
-#      - setup_remote_docker:
-#          docker_layer_caching: false
-#      - run: docker login --username=$HEROKU_EMAIL --password=$HEROKU_API_KEY registry.heroku.com
-#      - run:
-#          name: Setup Heroku CLI
-#          command: |
-#            wget -qO- https://cli-assets.heroku.com/install-ubuntu.sh | sh
-#      - run:
-#          name: Build and Push Image
-#          command: |
-#            make build-ml-api-heroku push-dermclass-api-heroku
-#      - run:
-#          name: Release to Heroku
-#          command: |
-#            heroku container:release web --app $HEROKU_APP_NAME
+  test_dermclass_api:
+    <<: *defaults
+    steps:
+      - checkout
+      - *prepare_env
+      - run:
+          name: Create conda env and download packages
+          command: |
+            source miniconda/etc/profile.d/conda.sh
+            conda env create -f src/dermclass_api/environment.yml
+      - run:
+          name: Runnning tests
+          command: |
+            source miniconda/etc/profile.d/conda.sh && conda activate dermclass_api
+            pytest -vv src/dermclass_api/tests
+
+
+  train_and_upload_structured_model:
+    <<: *defaults
+    steps:
+      - checkout
+      - *prepare_env
+      - run:
+          name: Create conda env and download packages
+          command: |
+            source miniconda/etc/profile.d/conda.sh
+            conda env create -f src/dermclass_models/environment.yml
+      - run:
+          name: Train model
+          command: |
+            source miniconda/etc/profile.d/conda.sh && conda activate dermclass_models
+            PYTHONPATH=./src/dermclass_structured python\
+            src/dermclass_models/dermclass_models/train_pipeline.py  --pipeline_types structured text image
+      - run:
+          name: Publish model to Gemfury
+          command: |
+            chmod +x ./scripts/publish_model.sh
+            $source_activate
+            ./scripts/publish_model.sh ./src/dermclass_models/
+
+
+  build_and_push_docker_to_heroku:
+    <<: *defaults
+    steps:
+      - checkout
+      - setup_remote_docker:
+          docker_layer_caching: false
+      - run: docker login --username=$HEROKU_EMAIL --password=$HEROKU_API_KEY registry.heroku.com
+      - run:
+          name: Setup Heroku CLI
+          command: |
+            wget -qO- https://cli-assets.heroku.com/install-ubuntu.sh | sh
+      - run:
+          name: Build and Push Image
+          command: |
+            make build-ml-api-heroku push-dermclass-api-heroku
+      - run:
+          name: Release to Heroku
+          command: |
+            heroku container:release web --app $HEROKU_APP_NAME
 
 workflows:
   version: 2
