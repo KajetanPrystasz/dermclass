@@ -15,6 +15,10 @@ prepare_env: &prepare_conda
       bash miniconda.sh -b -p miniconda
       source miniconda/bin/activate
       conda --help
+      pwd
+      ls
+      echo $HOME
+      export PATH="$HOME/circleci/miniconda/bin:$PATH"
 
 jobs:
   test_dermclass_models:
