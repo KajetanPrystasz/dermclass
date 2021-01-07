@@ -54,10 +54,11 @@ jobs:
 #          command: |
 #            source miniconda/etc/profile.d/conda.sh
 #            conda env create -f src/dermclass_api/environment.yml
+#            export source_activate_api="source miniconda/etc/profile.d/conda.sh && conda activate dermclass_api"
 #      - run:
 #          name: Runnning tests
 #          command: |
-#            &source_activate_api source miniconda/etc/profile.d/conda.sh && conda activate dermclass_api
+#            $source_activate_api
 #            pytest -vv src/dermclass_api/tests
 #
 #
@@ -74,13 +75,13 @@ jobs:
 #      - run:
 #          name: Train model
 #          command: |
-#            *source_activate
+#            $source_activate
 #            PYTHONPATH=./src/dermclass_structured python src/dermclass_structured/dermclass_structured/train_pipeline.py
 #      - run:
 #          name: Publish model to Gemfury
 #          command: |
 #            chmod +x ./scripts/publish_model.sh
-#            *source_activate
+#            $source_activate
 #            ./scripts/publish_model.sh ./src/dermclass_models/
 #
 #
