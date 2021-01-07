@@ -25,7 +25,7 @@ jobs:
       - run:
           name: Create conda env and download packages
           command: |
-             conda --help
+             cat ~/.bashrc
 #            conda env create -f src/dermclass_models/environment.yml
 #            conda activate dermclass_models
 #            python -m spacy download en_core_web_sm
