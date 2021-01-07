@@ -2,7 +2,7 @@ from dermclass_api.extensions import db, ma
 from dermclass_models import __version__ as model_version
 
 
-class PredictionModel:
+class _PredictionModel:
     prediction_id = db.Column(db.Integer, primary_key=True)
     prediction_proba = None
     prediction_string = None
@@ -26,7 +26,7 @@ class PredictionModel:
         db.session.commit()
 
 
-class StructuredPredictionModel(PredictionModel, db.Model):
+class StructuredPredictionModel(_PredictionModel, db.Model):
 
     __tablename__ = 'structuredPredictions'
 
@@ -58,11 +58,11 @@ class StructuredPredictionModel(PredictionModel, db.Model):
     disappearance_of_the_granular_layer = db.Column(db.Integer, nullable=False)
     vacuolisation_and_damage_of_basal_layer = db.Column(db.Integer, nullable=False)
     spongiosis = db.Column(db.Integer, nullable=False)
-    saw_tooth_appearance_of_retes = db.Column(db.Integer, nullable=False)           #changed input name
+    saw_tooth_appearance_of_retes = db.Column(db.Integer, nullable=False)
     follicular_horn_plug = db.Column(db.Integer, nullable=False)
     perifollicular_parakeratosis = db.Column(db.Integer, nullable=False)
     inflammatory_monoluclear_inflitrate = db.Column(db.Integer, nullable=False)
-    band_like_infiltrate = db.Column(db.Integer, nullable=False)                    #changed input name
+    band_like_infiltrate = db.Column(db.Integer, nullable=False)
 
     age = db.Column(db.Integer, nullable=False)
 
@@ -121,7 +121,7 @@ class StructuredPredictionModel(PredictionModel, db.Model):
         self.prediction_string = prediction_string
 
 
-class TextPredictionModel(PredictionModel, db.Model):
+class TextPredictionModel(_PredictionModel, db.Model):
 
     __tablename__ = 'textPredictions'
 
@@ -136,7 +136,7 @@ class TextPredictionModel(PredictionModel, db.Model):
         self.prediction_string = prediction_string
 
 
-class ImagePredictionModel(PredictionModel, db.Model):
+class ImagePredictionModel(_PredictionModel, db.Model):
 
     __tablename__ = 'ImagePredictions'
 
