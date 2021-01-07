@@ -25,23 +25,18 @@ jobs:
             source miniconda/etc/profile.d/conda.sh
             conda env create -f src/dermclass_models/environment.yml && conda activate dermclass_models
             python -m spacy download en_core_web_sm
-
-      - run:
-          name: Run trainig pipeline tests
-          command: |
-            source miniconda/etc/profile.d/conda.sh && conda activate dermclass_models
-            pytest -vv -m "pipeline_training" src/dermclass_models/tests
-      - run:
-          name: Train model
-          command: |
-            source miniconda/etc/profile.d/conda.sh && conda activate dermclass_models
-            PYTHONPATH=./src/dermclass_models\
-            python src/dermclass_models/dermclass_models/train_pipeline.py --pipeline_types structured text image
-      - run:
-          name: Run tests
-          command: |
-            source miniconda/etc/profile.d/conda.sh && conda activate dermclass_models
-            pytest -vv -m "not pipeline_training" src/dermclass_models/tests
+            PYTHONPATH=./src/dermclass_models python src/dermclass_models/dermclass_models/train_pipeline.py --pipeline_types structured
+#      - run:
+#          name: Train model
+#          command: |
+#            source miniconda/etc/profile.d/conda.sh && conda activate dermclass_models
+#            PYTHONPATH=./src/dermclass_models\
+#            python src/dermclass_models/dermclass_models/train_pipeline.py --pipeline_types structured text image
+#      - run:
+#          name: Run tests
+#          command: |
+#            source miniconda/etc/profile.d/conda.sh && conda activate dermclass_models
+#            pytest -vv -m "not pipeline_training" src/dermclass_models/tests
 
   test_dermclass_api:
     <<: *defaults
@@ -70,6 +65,11 @@ jobs:
           command: |
             source miniconda/etc/profile.d/conda.sh
             conda env create -f src/dermclass_models/environment.yml
+      - run:
+          name: Run trainig pipeline tests
+          command: |
+            source miniconda/etc/profile.d/conda.sh && conda activate dermclass_models
+            pytest -vv -m "pipeline_training" src/dermclass_models/tests
       - run:
           name: Train model
           command: |
