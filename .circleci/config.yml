@@ -25,11 +25,12 @@ jobs:
             source miniconda/etc/profile.d/conda.sh
             conda env create -f src/dermclass_models/environment.yml && conda activate dermclass_models
             python -m spacy download en_core_web_sm
-      - run:
-          name: Train model
-          command: |
-            source miniconda/etc/profile.d/conda.sh && conda activate dermclass_models
-            PYTHONPATH=./src/dermclass_models python src/dermclass_models/dermclass_models/train_pipeline.py --pipeline_types structured text image
+#      This part got commented because training in cloud is turned off for now in this project. Until resuming the project is trained offline
+#      - run:
+#          name: Train model
+#          command: |
+#            source miniconda/etc/profile.d/conda.sh && conda activate dermclass_models
+#            PYTHONPATH=./src/dermclass_models python src/dermclass_models/dermclass_models/train_pipeline.py --pipeline_types structured text image
       - run:
           name: Run tests
           command: |
@@ -52,8 +53,7 @@ jobs:
             source miniconda/etc/profile.d/conda.sh && conda activate dermclass_api
             pytest -vv src/dermclass_api/tests
 
-
-  train_and_upload_structured_model:
+  train_and_upload_model:
     <<: *defaults
     steps:
       - checkout
@@ -72,15 +72,13 @@ jobs:
           name: Train model
           command: |
             source miniconda/etc/profile.d/conda.sh && conda activate dermclass_models
-            PYTHONPATH=./src/dermclass_structured python\
-            src/dermclass_models/dermclass_models/train_pipeline.py  --pipeline_types structured text image
+            PYTHONPATH=./src/dermclass_models python src/dermclass_models/dermclass_models/train_pipeline.py  --pipeline_types structured text image
       - run:
           name: Publish model to Gemfury
           command: |
             chmod +x ./scripts/publish_model.sh
             source miniconda/etc/profile.d/conda.sh && conda activate dermclass_models
             ./scripts/publish_model.sh ./src/dermclass_models/
-
 
   build_and_push_docker_to_heroku:
     <<: *defaults
@@ -107,19 +105,20 @@ workflows:
   test-all:
     jobs:
       - test_dermclass_models
-#      - test_dermclass_api
-#      - train_and_upload_structured_model:
+      - test_dermclass_api
+#      This part got commented because training in cloud is turned off for now in this project. Until resuming the project is trained offline
+#      - train_and_upload_model:
 #          requires:
-#            - test_dermclass_structured
+#            - test_dermclass_models
 #            - test_dermclass_api
 #          filters:
 #            branches:
 #              only:
 #                - main
-#      - build_and_push_docker_to_heroku:
+      - build_and_push_docker_to_heroku:
 #          requires:
-#            - train_and_upload_structured_model
-#          filters:
-#            branches:
-#              only:
-#                - main
+#            - train_and_upload_model
+          filters:
+            branches:
+              only:
+                - main
