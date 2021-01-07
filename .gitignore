@@ -1,4 +1,5 @@
 .idea
+.idea/*
 .idea/dermclass.iml
 .idea/misc.xml
 .ipynb_checkpoints
@@ -9,3 +10,5 @@ __pycache__
 *.pkl
 *.h5
 .pytest_cache
+
+src/dermclass_models/dermclass_models/pickles/*

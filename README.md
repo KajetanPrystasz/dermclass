@@ -7,14 +7,14 @@ As an input, Dermclass can take up to three types of data with symptoms of disea
 To accomplish it's goals, project is splat into 2 main packages: dermclass_models and dermclass_api.
 
 <h2>Dermclass_models</h2>
-Dermclass_models - main component, consisting of multiple models to be served via REST API. It's splat into 3 parts, each
+Models - main component, consisting of multiple models to be served via REST API. It's splat into 3 parts, each
  corresponding to type of input data used in it:
 
 * Structured - First submodule created for modeling tabular data, with use of sklearn. To perform it the model is chosen
 by using Bayesian Hyperparameter Tuning with Optuna and chosen between the most popular model types.
 
 * Image - Component which uses deep learning network called EfficientNet and transfer learning to classify photos of
-diesease symtoms, with Tensorflow backend.
+disease symptoms, with Tensorflow backend.
 
 * Text - Hybrid submodule which can use either sklearn with TF-IDF or Huggingface transformers DistilBERT to perform the
 classification. This element of ML structure, also uses fine tuning to let model learn specific medical text descriptions.

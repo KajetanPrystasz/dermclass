@@ -2,6 +2,12 @@ import pytest
 from dermclass_api.app import create_app
 from dermclass_api.config import TestingConfig
 
+
+@pytest.fixture()
+def testing_config():
+    return TestingConfig
+
+
 @pytest.fixture
 def app():
     app = create_app(config_object=TestingConfig)

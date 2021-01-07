@@ -2,7 +2,6 @@
 
 # Code based on:
 #https://github.com/trainindata/deploying-machine-learning-models/blob/fa819c2bc9de6cfd4f06c3e5e7b12f01a88b4b10/scripts/publish_model.sh
-#TODO: Check why there's double upload for gemfury
 
 GEMFURY_URL=$PIP_EXTRA_INDEX_URL
 
