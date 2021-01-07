@@ -5,7 +5,7 @@ import json
 
 
 def test_add_to_db(flask_test_client):
-    # Given
+
     with open(config.TEST_DB_FILE) as json_file:
         data = json.load(json_file)
 

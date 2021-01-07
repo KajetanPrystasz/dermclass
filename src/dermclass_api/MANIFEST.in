@@ -1,6 +1,10 @@
 include README.md
 include environment.yml
-recursive-include ./dermclass_api/*
+include run.py
+include run.sh
+include temp
+
+recursive-include ./dermclass_api *
 
 include dermclass_api/logs/api.log
 include dermclass_api/VERSION

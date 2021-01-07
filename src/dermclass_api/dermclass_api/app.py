@@ -16,7 +16,7 @@ _logger = logging.getLogger(__name__)
 def create_app(config_object=DevelopmentConfig):
     """Create a flask app instance."""
 
-    flask_app = Flask('api')
+    flask_app = Flask('app')
     flask_app.config.from_object(config_object)
     flask_app.register_blueprint(utils_blueprint)
 

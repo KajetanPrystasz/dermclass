@@ -1,9 +1,8 @@
 from dermclass_api.app import create_app
-from dermclass_api.config import ProductionConfig, DevelopmentConfig
+from dermclass_api.config import ProductionConfig
 
-# TODO: CHANGE CONFIG!!!
 application = create_app(
-    config_object=DevelopmentConfig)
+    config_object=ProductionConfig)
 
 if __name__ == '__main__':
     application.run()

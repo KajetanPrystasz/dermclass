@@ -1,5 +1,5 @@
 import logging
-import pickle as pck
+import abc
 
 from PIL import Image
 import numpy as np
@@ -16,7 +16,7 @@ from dermclass_api.prediction_models import (StructuredPredictionModel, Structur
 logger = logging.getLogger(__name__)
 
 
-class BasePrediction:
+class _BasePrediction:
 
     def __init__(self, schema, model, prediction_obj):
         self.schema = schema
@@ -53,7 +53,7 @@ class BasePrediction:
         return {'message': 'Prediction not found.'}, 404
 
 
-class StructuredPredictionResource(BasePrediction, Resource):
+class StructuredPredictionResource(_BasePrediction, Resource):
     def __init__(self,
                  schema=StructuredPredictionSchema(),
                  model=StructuredPredictionModel,
@@ -61,7 +61,7 @@ class StructuredPredictionResource(BasePrediction, Resource):
         super().__init__(schema, model, prediction_obj)
 
 
-class TextPredictionResource(BasePrediction, Resource):
+class TextPredictionResource(_BasePrediction, Resource):
     def __init__(self,
                  schema=TextPredictionSchema(),
                  model=TextPredictionModel,
@@ -69,7 +69,7 @@ class TextPredictionResource(BasePrediction, Resource):
         super().__init__(schema, model, prediction_obj)
 
 
-class ImagePredictionResource(BasePrediction, Resource):
+class ImagePredictionResource(_BasePrediction, Resource):
     def __init__(self,
                  schema=ImagePredictionSchema(),
                  model=ImagePredictionModel,
@@ -79,8 +79,7 @@ class ImagePredictionResource(BasePrediction, Resource):
 
     def post(self, prediction_id):
         if self.model.find_by_prediction_id(prediction_id):
-            return {'message': f"An prediction with id '{prediction_id}' already exists."}, 400
-
+            return {'message': f"A prediction with id '{prediction_id}' already exists."}, 400
         if 'file' not in request.files:
             flash('No file inputted')
             raise ValueError("No file inputted")

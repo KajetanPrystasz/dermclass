@@ -1,14 +1,11 @@
-# TODO: Testy prediction
-# TODO: Testy API
 # TODO: Setup/git, Gemfury
-
 # TODO: CircleCI
+
 # TODO: Docker
 # TODO: Heroku
 
-# TODO: Change DB, make db persistent
 # TODO: Documentation
-
+# TODO: Make db persistent, add file storage
 
 # TODO: Fix gunicorn logging
 # TODO: Deploy to AWS/Azure

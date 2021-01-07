@@ -59,7 +59,7 @@ class BaseConfig:
 
     TRIALS_DICT = {}
 
-    TUNING_FUNC_PARAMS = {"n_jobs": -1, "max_overfit": 0.05, "cv": 3, "n_trials": 10}
+    TUNING_FUNC_PARAMS = {"n_jobs": -1, "max_overfit": 0.1, "cv": 3, "n_trials": 2}
 
 
 class StructuredConfig(BaseConfig):
@@ -106,14 +106,13 @@ class StructuredConfig(BaseConfig):
 class _TfConfig(abc.ABC):
 
     BATCH_SIZE = 2
-    NUM_EPOCHS = 5
+    NUM_EPOCHS = 2
     METRICS = ["accuracy"]
-    LEARNING_RATE = 0.0001
+    LEARNING_RATE = 0.001
 
     DISEASES = ["psoriasis", "lichen_planus", "pityriasis_rosea"]
 
     GPU_CONFIG = tf.compat.v1.ConfigProto()
-    #GPU_CONFIG.gpu_options.per_process_gpu_memory_fraction = 0.5
     GPU_CONFIG.gpu_options.allow_growth = True
 
     PATIENCE = 3
@@ -143,7 +142,7 @@ class TextConfig(BaseConfig, _TfConfig):
 
     TRIALS_DICT = {"MultinomialNB": multinomial_nb_trial}
 
-    TUNING_FUNC_PARAMS = {"n_jobs": -1, "max_overfit": 0.2, "cv": 2, "n_trials": 10}
+    TUNING_FUNC_PARAMS = {"n_jobs": -1, "max_overfit": 0.1, "cv": 3, "n_trials": 2}
 
 
 def get_console_handler() -> logging:

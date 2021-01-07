@@ -1,4 +1,5 @@
 .idea
+.idea/*
 .idea/dermclass.iml
 .idea/misc.xml
 .ipynb_checkpoints

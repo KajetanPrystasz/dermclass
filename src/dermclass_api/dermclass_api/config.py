@@ -46,6 +46,8 @@ class BaseConfig:
     SQLALCHEMY_DATABASE_URI = "sqlite://"
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SERVER_PORT = 5000
+    SECRET_KEY = "secret_key"
+    SESSION_TYPE = "filesystem"
 
 
 class DevelopmentConfig(BaseConfig):
@@ -55,6 +57,7 @@ class DevelopmentConfig(BaseConfig):
 
 class TestingConfig(BaseConfig):
     TESTING = True
+    TEST_FILE_DIR = PACKAGE_ROOT / ".." / "tests"
 
 
 class ProductionConfig(BaseConfig):
