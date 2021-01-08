@@ -23,4 +23,4 @@ USER dermclass_api_user
 
 EXPOSE 5000
 
-CMD ["conda", "run", "-n", "dermclass_api", "bash", "./run.sh"]
+ENTRYPOINT ["conda", "run", "-n", "dermclass_api", "bash", "./run.sh"]
