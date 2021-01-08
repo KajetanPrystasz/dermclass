@@ -1,8 +1,2 @@
-# TODO: Fix circleci tests
-# TODO: Heroku
-
 # TODO: Documentation
-# TODO: Make db persistent, add file storage
-
-# TODO: Fix gunicorn logging
-# TODO: Deploy to AWS/Azure
+# TODO: Deploy to AWS/Azure, add persistent DB

@@ -86,6 +86,7 @@ jobs:
       - setup_remote_docker:
           docker_layer_caching: false
       - run: docker login --username=$HEROKU_EMAIL --password=$HEROKU_API_KEY registry.heroku.com
+      - run: heroku container:login
       - run:
           name: Setup Heroku CLI
           command: |
@@ -103,19 +104,19 @@ workflows:
   version: 2
   test-all:
     jobs:
-#      - test_dermclass_models
-#      - test_dermclass_api
-#      - train_and_upload_model:
-#          requires:
-#            - test_dermclass_models
-#            - test_dermclass_api
-#          filters:
-#            branches:
-#              only:
-#                - main
+      - test_dermclass_models
+      - test_dermclass_api
+      - train_and_upload_model:
+          requires:
+            - test_dermclass_models
+            - test_dermclass_api
+          filters:
+            branches:
+              only:
+                - main
       - build_and_push_docker_to_heroku:
-#          requires:
-#            - train_and_upload_model
+          requires:
+            - train_and_upload_model
           filters:
             branches:
               only:
