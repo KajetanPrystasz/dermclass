@@ -6,7 +6,7 @@ RUN apt install -y libgl1-mesa-glx
 
 WORKDIR /opt/dermclass_api
 
-ARG PIP_EXTRA_INDEX_URL=https://PTVi5ytmxjQBEx69qdPm@pypi.fury.io/kajetanprystasz/
+ARG PIP_EXTRA_INDEX_URL
 ENV FLASK_APP run.py
 
 ADD ./src/dermclass_api /opt/dermclass_api/
