@@ -104,19 +104,19 @@ workflows:
   version: 2
   test-all:
     jobs:
-#      - test_dermclass_models
-#      - test_dermclass_api
-#      - train_and_upload_model:
-#          requires:
-#            - test_dermclass_models
-#            - test_dermclass_api
-#          filters:
-#            branches:
-#              only:
-#                - main
+      - test_dermclass_models
+      - test_dermclass_api
+      - train_and_upload_model:
+          requires:
+            - test_dermclass_models
+            - test_dermclass_api
+          filters:
+            branches:
+              only:
+                - main
       - build_and_push_docker_to_heroku:
-#          requires:
-#            - train_and_upload_model
+          requires:
+            - train_and_upload_model
           filters:
             branches:
               only:

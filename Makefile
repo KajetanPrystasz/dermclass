@@ -1,6 +1,5 @@
 NAME=dermclass
 COMMIT_ID=$(shell git rev-parse HEAD)
-COMMIT_ID=latest1
 
 build-dermclass-api-heroku:
 	docker build --build-arg PIP_EXTRA_INDEX_URL=${PIP_EXTRA_INDEX_URL} -t registry.heroku.com/$(NAME)/web:$(COMMIT_ID) .
