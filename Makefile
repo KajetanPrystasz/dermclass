@@ -1,4 +1,4 @@
-NAME=dermclass-api
+NAME=dermclass
 COMMIT_ID=$(shell git rev-parse HEAD)
 
 build-dermclass-api-heroku:

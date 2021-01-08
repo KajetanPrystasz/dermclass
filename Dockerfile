@@ -21,4 +21,4 @@ RUN chown -R dermclass_api_user /opt/conda/envs/dermclass_api
 RUN chmod +x /opt/dermclass_api/run.sh
 USER dermclass_api_user
 
-ENTRYPOINT ["conda", "run", "-n", "dermclass_api", "bash", "./run.sh"]
+CMD ["conda", "run", "-n", "dermclass_api", "bash", "./run.sh"]
