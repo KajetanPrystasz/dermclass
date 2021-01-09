@@ -114,10 +114,11 @@ workflows:
             branches:
               only:
                 - main
-      - build_and_push_docker_to_heroku:
-          requires:
-            - train_and_upload_model
-          filters:
-            branches:
-              only:
-                - main
+#  Deployment to heroku froze during development of deployment on AWS
+#      - build_and_push_docker_to_heroku:
+#          requires:
+#            - train_and_upload_model
+#          filters:
+#            branches:
+#              only:
+#                - main
