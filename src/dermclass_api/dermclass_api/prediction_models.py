@@ -1,5 +1,10 @@
+import logging
+from typing import List
+
 from dermclass_api.extensions import db, ma
 from dermclass_models import __version__ as model_version
+
+logger = logging.getLogger(__name__)
 
 
 class _PredictionModel:
@@ -7,23 +12,36 @@ class _PredictionModel:
     prediction_proba = None
     prediction_string = None
 
-    def json(self):
+    def json(self) -> dict:
+        """
+        Basic function to get basic info to jsonify
+        return: Returns a dict version of prediction information
+        """
         return {"prediction_id": self.prediction_id,
                 "prediction_proba": self.prediction_proba,
                 "prediction_string": self.prediction_string,
                 "version": model_version}
 
     @classmethod
-    def find_by_prediction_id(cls, prediction_id):
-        return cls.query.filter_by(prediction_id=prediction_id).first()
+    def find_by_prediction_id(cls, prediction_id: int) -> List:
+        prediction = cls.query.filter_by(prediction_id=prediction_id).first()
+        if prediction:
+            logger.info(f"Item with {prediction_id} prediction_id found in database")
+            return prediction
+        else:
+            logger.info(f"Item with {prediction_id} prediction_id not found in database")
 
     def save_to_db(self):
+        """ Utility function to save given item to database"""
         db.session.add(self)
         db.session.commit()
+        logger.info("Item properly saved to the database")
 
     def delete_from_db(self):
+        """Utility function to delete given item from database"""
         db.session.delete(self)
         db.session.commit()
+        logger.info("Item properly deleted from the database")
 
 
 class StructuredPredictionModel(_PredictionModel, db.Model):
@@ -78,6 +96,7 @@ class StructuredPredictionModel(_PredictionModel, db.Model):
                  vacuolisation_and_damage_of_basal_layer, spongiosis, saw_tooth_appearance_of_retes,
                  follicular_horn_plug, perifollicular_parakeratosis, inflammatory_monoluclear_inflitrate,
                  band_like_infiltrate, age, prediction_proba, prediction_string):
+        """Structured model for the SQL alchemy database"""
 
         self.prediction_id = prediction_id
 
@@ -130,6 +149,7 @@ class TextPredictionModel(_PredictionModel, db.Model):
     prediction_string = db.Column(db.String, nullable=False)
 
     def __init__(self, prediction_id, text, prediction_proba, prediction_string):
+        """Text model for the SQL alchemy database"""
         self.prediction_id = prediction_id
         self.text = text
         self.prediction_proba = prediction_proba
@@ -144,6 +164,7 @@ class ImagePredictionModel(_PredictionModel, db.Model):
     prediction_string = db.Column(db.String, nullable=False)
 
     def __init__(self, prediction_id, prediction_proba, prediction_string):
+        """Image model for the SQL alchemy database"""
 
         self.prediction_id = prediction_id
         self.prediction_proba = prediction_proba
@@ -151,18 +172,21 @@ class ImagePredictionModel(_PredictionModel, db.Model):
 
 
 class StructuredPredictionSchema(ma.SQLAlchemyAutoSchema):
+    """Automatic Structured table, Marshmallow-SQLAlchemy schema for validation"""
     class Meta:
         model = StructuredPredictionModel
         exclude = ("prediction_id", "prediction_proba", "prediction_string")
 
 
 class TextPredictionSchema(ma.SQLAlchemyAutoSchema):
+    """Automatic Text table, Marshmallow-SQLAlchemy schema for validation"""
     class Meta:
         model = TextPredictionModel
         exclude = ("prediction_id", "prediction_proba", "prediction_string")
 
 
 class ImagePredictionSchema(ma.SQLAlchemyAutoSchema):
+    """Automatic Image table, Marshmallow-SQLAlchemy schema for validation"""
     class Meta:
         model = ImagePredictionModel
         exclude = ("prediction_id", "prediction_proba", "prediction_string")

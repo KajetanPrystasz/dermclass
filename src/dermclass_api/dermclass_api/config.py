@@ -1,16 +1,17 @@
-import dermclass_api
 import pathlib
 import logging
-from logging.handlers import TimedRotatingFileHandler
 import sys
 import os
+import abc
+from logging.handlers import TimedRotatingFileHandler
+
+import dermclass_api
 
 PACKAGE_ROOT = pathlib.Path(dermclass_api.__file__).resolve().parent
 log_format = logging.Formatter("%(asctime)s — %(name)s — %(levelname)s —" "%(funcName)s:%(lineno)d — %(message)s")
 LOG_DIR = PACKAGE_ROOT / 'logs'
 LOG_DIR.mkdir(exist_ok=True)
 LOG_FILE = LOG_DIR / 'api.log'
-TEST_DB_FILE = PACKAGE_ROOT.parent / "tests" / "test_db.json"
 
 
 LABEL_MAPPING = {
@@ -24,23 +25,27 @@ LABEL_MAPPING = {
 
 
 def get_console_handler() -> logging:
-    """Use stream handler for logger to log to stdout using proper format"""
-
+    """
+    Use stream handler for logger to log to stdout using proper format
+    return: Logger object with console handling
+    """
     console_handler = logging.StreamHandler(sys.stdout)
     console_handler.setFormatter(log_format)
     return console_handler
 
 
-def get_file_handler():
-    """Use file handler for logger to log to file using proper format"""
-
+def get_file_handler() -> logging:
+    """
+    Use file handler for logger to log to file using proper format
+    return: Logger object with file handling
+    """
     file_handler = TimedRotatingFileHandler(LOG_FILE, when='midnight')
     file_handler.setFormatter(log_format)
     file_handler.setLevel(logging.WARNING)
     return file_handler
 
 
-class BaseConfig:
+class BaseConfig(abc.ABC):
     DEBUG = False
     TESTING = False
     SQLALCHEMY_DATABASE_URI = "sqlite://"

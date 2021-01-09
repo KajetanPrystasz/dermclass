@@ -13,6 +13,7 @@ dependencies:
 - flask-sqlalchemy
 - marshmallow-sqlalchemy
 - pytest
+- numpy
 - pillow
 - pip:
     - gunicorn
