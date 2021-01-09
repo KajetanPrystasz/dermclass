@@ -13,8 +13,12 @@ from dermclass_api.prediction_resources import (StructuredPredictionResource,
 _logger = logging.getLogger(__name__)
 
 
-def create_app(config_object=DevelopmentConfig):
-    """Create a flask app instance."""
+def create_app(config_object=DevelopmentConfig) -> Flask.app_context:
+    """
+    Create a flask app instance with main REST endpoints for structured, text and image data
+    param config_object: Config object from config.py
+    return: Returns flask app object
+    """
 
     flask_app = Flask('app')
     flask_app.config.from_object(config_object)
